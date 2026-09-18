@@ -61,6 +61,7 @@
       justify-content: space-between;
       align-items: center;
       border-bottom: 2px solid var(--border-color);
+      flex-shrink: 0;
     }
 
     .fun-logo {
@@ -90,6 +91,9 @@
       color: var(--text-muted);
       cursor: pointer;
       transition: all 0.25s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
 
     .tab-pill:hover {
@@ -116,7 +120,7 @@
     .tab-pane { display: none; flex-direction: column; gap: 24px; }
     .tab-pane.active { display: flex; }
 
-    /* HRAVÉ KARTY */
+    /* HERO BANNER & CÍL */
     .hero-banner {
       background: linear-gradient(135deg, #FF6B6B 0%, #FF8E53 100%);
       border-radius: 28px;
@@ -128,8 +132,35 @@
       box-shadow: 0 10px 25px rgba(255, 107, 107, 0.3);
     }
 
-    .hero-banner h1 { font-size: 28px; font-weight: 800; margin-bottom: 6px; }
-    .hero-banner p { font-size: 14px; opacity: 0.9; font-weight: 500; }
+    .hero-banner h1 { font-size: 26px; font-weight: 800; margin-bottom: 6px; }
+    .hero-banner p { font-size: 14px; opacity: 0.95; font-weight: 500; }
+
+    .goal-progress-box {
+      background: #FFFFFF;
+      border-radius: 24px;
+      padding: 24px;
+      border: 2px solid var(--border-color);
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .goal-bar-bg {
+      width: 100%;
+      height: 14px;
+      background: #F1F5F9;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .goal-bar-fill {
+      height: 100%;
+      background: linear-gradient(135deg, #8B5CF6 0%, #EC4899 100%);
+      border-radius: 10px;
+      transition: width 0.4s ease;
+      width: 0%;
+    }
 
     .btn-fun {
       background: #FFFFFF;
@@ -143,6 +174,10 @@
       cursor: pointer;
       transition: transform 0.2s, box-shadow 0.2s;
       box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      justify-content: center;
     }
 
     .btn-fun:hover {
@@ -162,7 +197,7 @@
     /* MŘÍŽKA KNIH */
     .books-grid-fun {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
       gap: 20px;
     }
 
@@ -179,17 +214,18 @@
     }
 
     .book-card-fun:hover {
-      transform: translateY(-5px);
+      transform: translateY(-4px);
       border-color: var(--primary);
     }
 
     .book-cover-fun {
-      width: 70px;
-      height: 100px;
+      width: 75px;
+      height: 110px;
       border-radius: 12px;
       object-fit: cover;
       background: #E2E8F0;
       flex-shrink: 0;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     }
 
     .book-details-fun {
@@ -213,7 +249,7 @@
       font-size: 13px;
       font-weight: 600;
       color: var(--text-muted);
-      margin-bottom: 8px;
+      margin-bottom: 6px;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -229,10 +265,38 @@
       color: var(--primary);
     }
 
+    /* PROGRAS BAR U KNIHY */
+    .mini-prog-container {
+      margin: 8px 0;
+    }
+    .mini-prog-text {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
+    .mini-prog-bar-bg {
+      width: 100%;
+      height: 6px;
+      background: #F1F5F9;
+      border-radius: 6px;
+      overflow: hidden;
+    }
+    .mini-prog-bar-fill {
+      height: 100%;
+      background: var(--primary);
+      border-radius: 6px;
+      transition: width 0.3s;
+    }
+
     .actions-row {
       display: flex;
-      gap: 8px;
-      margin-top: 10px;
+      gap: 6px;
+      margin-top: 6px;
+      align-items: center;
+      justify-content: space-between;
     }
 
     .icon-btn {
@@ -254,6 +318,69 @@
       color: #FFFFFF;
     }
 
+    /* FORMULÁŘE A VYHLEDÁVÁNÍ */
+    .form-input {
+      width: 100%;
+      padding: 14px 16px;
+      border-radius: 14px;
+      border: 2px solid var(--border-color);
+      font-family: 'Outfit';
+      font-size: 14px;
+      outline: none;
+      background: #FFFFFF;
+      color: var(--text-main);
+      transition: border-color 0.2s;
+    }
+    .form-input:focus { border-color: var(--primary); }
+
+    .search-results-list {
+      max-height: 220px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .search-result-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px;
+      background: #F8FAFC;
+      border: 2px solid var(--border-color);
+      border-radius: 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .search-result-item:hover {
+      border-color: var(--primary);
+      background: #FFFFFF;
+    }
+
+    /* PROFIL KARTA */
+    .profile-card {
+      background: #FFFFFF;
+      border-radius: 24px;
+      padding: 32px;
+      border: 2px solid var(--border-color);
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 16px;
+      max-width: 450px;
+      margin: 0 auto;
+    }
+    .profile-avatar {
+      width: 80px; height: 80px; border-radius: 50%;
+      background: linear-gradient(135deg, #8B5CF6 0%, #EC4899 100%);
+      color: #FFF; font-size: 32px; font-weight: 800;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 8px 20px rgba(139,92,246,0.3);
+    }
+
     /* RESPONSIVNÍ PRO MOBIL */
     @media (max-width: 768px) {
       body { padding: 0; align-items: flex-end; }
@@ -271,12 +398,13 @@
     <!-- HORNÍ LIŠTA -->
     <header class="fun-header">
       <div class="fun-logo">
-        <i class="fas fa-book-open-reader" style="color: var(--primary);"></i> Knihomol
+        <i class="fas fa-book-open-reader"></i> Knihomol
       </div>
       <nav class="fun-nav">
         <button class="tab-pill active" onclick="switchTab('domu', this)"><i class="fas fa-house"></i> Domů</button>
         <button class="tab-pill" onclick="switchTab('knihovna', this)"><i class="fas fa-layer-group"></i> Knihovna</button>
         <button class="tab-pill" onclick="switchTab('pridat', this)"><i class="fas fa-plus-circle"></i> Přidat</button>
+        <button class="tab-pill" onclick="switchTab('profil', this)"><i class="fas fa-user-gear"></i> Profil</button>
       </nav>
     </header>
 
@@ -287,10 +415,24 @@
       <div id="tab-domu" class="tab-pane active">
         <div class="hero-banner">
           <div>
-            <h1>Tvoje roční výzva</h1>
-            <p>Jsi na skvělé cestě! Pokračuj v čtení a plň své cíle.</p>
+            <h1 id="welcome-title">Ahoj, Čtenáři!</h1>
+            <p id="welcome-bio">Vítej ve svém barevném čtenářském světě.</p>
           </div>
           <button class="btn-fun" onclick="switchTab('pridat', document.querySelectorAll('.tab-pill')[2])"><i class="fas fa-plus"></i> Nová kniha</button>
+        </div>
+
+        <div class="goal-progress-box">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <div style="font-size: 12px; font-weight: 800; color: var(--text-muted); text-transform: uppercase;">Roční čtenářská výzva</div>
+              <div style="font-size: 24px; font-weight: 800; color: var(--text-main); margin-top: 2px;">
+                <span id="goal-current">0</span> / <span id="goal-total">12</span> knih
+              </div>
+            </div>
+            <button class="icon-btn" onclick="editGoalPrompt()" title="Upravit cíl"><i class="fas fa-pen"></i></button>
+          </div>
+          <div class="goal-bar-bg"><div class="goal-bar-fill" id="goal-bar-fill"></div></div>
+          <div style="font-size: 12px; font-weight: 700; color: var(--text-muted); text-align: right;" id="goal-percent">Splněno 0 %</div>
         </div>
 
         <div>
@@ -301,23 +443,70 @@
 
       <!-- KNIHOVNA -->
       <div id="tab-knihovna" class="tab-pane">
-        <div class="section-heading"><i class="fas fa-bookmark" style="color: var(--primary);"></i> Všechny tvoje knihy</div>
+        <div class="section-heading"><i class="fas fa-bookmark" style="color: var(--primary);"></i> Kompletní knihovna</div>
         <div id="library-books-grid" class="books-grid-fun" style="margin-top: 10px;"></div>
       </div>
 
-      <!-- PŘIDAT KNIHU -->
+      <!-- PŘIDAT KNIHU (OPEN LIBRARY + RUČNĚ) -->
       <div id="tab-pridat" class="tab-pane">
-        <div class="section-heading"><i class="fas fa-wand-magic-sparkles" style="color: var(--accent-pink);"></i> Přidat novou knihu</div>
-        <div style="background: #FFFFFF; padding: 24px; border-radius: 24px; border: 2px solid var(--border-color); max-width: 500px;">
-          <div style="margin-bottom: 16px;">
-            <label style="font-size: 12px; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 6px;">NÁZEV KNIHY</label>
-            <input type="text" id="new-title" placeholder="např. Harry Potter" style="width: 100%; padding: 12px 16px; border-radius: 12px; border: 2px solid var(--border-color); font-family: 'Outfit'; outline: none;">
+        <div class="section-heading"><i class="fas fa-wand-magic-sparkles" style="color: var(--accent-pink);"></i> Přidat knihu do knihovny</div>
+        
+        <div style="background: #FFFFFF; padding: 28px; border-radius: 24px; border: 2px solid var(--border-color); max-width: 600px; box-shadow: var(--shadow);">
+          <div style="margin-bottom: 20px;">
+            <label style="font-size: 12px; font-weight: 800; color: var(--text-muted); display: block; margin-bottom: 8px;">HLEDAT V OPEN LIBRARY</label>
+            <div style="display: flex; gap: 8px;">
+              <input type="text" id="api-search-input" class="form-input" placeholder="Zadej název knihy nebo autora...">
+              <button class="btn-fun" style="background: var(--primary); color: #FFF; padding: 0 20px;" onclick="searchOpenLibrary()"><i class="fas fa-search"></i></button>
+            </div>
+            <div id="search-results-container" class="search-results-list" style="display:none;"></div>
           </div>
-          <div style="margin-bottom: 16px;">
-            <label style="font-size: 12px; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 6px;">AUTOR</label>
-            <input type="text" id="new-author" placeholder="např. J. K. Rowling" style="width: 100%; padding: 12px 16px; border-radius: 12px; border: 2px solid var(--border-color); font-family: 'Outfit'; outline: none;">
+
+          <div style="border-top: 2px solid var(--border-color); padding-top: 20px; margin-top: 10px;">
+            <div style="font-size: 14px; font-weight: 800; margin-bottom: 14px;">Nebo vyplnit ručně:</div>
+            
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+              <input type="text" id="manual-title" class="form-input" placeholder="Název knihy *">
+              <input type="text" id="manual-author" class="form-input" placeholder="Autor *">
+              
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                <div>
+                  <label style="font-size: 11px; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 4px;">Celkem stran</label>
+                  <input type="number" id="manual-total-pages" class="form-input" value="300" min="1">
+                </div>
+                <div>
+                  <label style="font-size: 11px; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 4px;">Stav</label>
+                  <select id="manual-status" class="form-input">
+                    <option value="reading">Právě čtu</option>
+                    <option value="tbr">Chci číst</option>
+                    <option value="read">Přečteno</option>
+                  </select>
+                </div>
+              </div>
+
+              <input type="hidden" id="manual-cover" value="">
+              <button class="btn-fun" style="background: var(--accent-green); color: #FFF; margin-top: 10px; width: 100%; padding: 14px;" onclick="saveManualBook()"><i class="fas fa-check"></i> Uložit knihu do sbírky</button>
+            </div>
           </div>
-          <button class="btn-fun" style="background: var(--primary); color: #FFF; width: 100%; padding: 14px;" onclick="addNewBook()">Uložit do knihovny</button>
+        </div>
+      </div>
+
+      <!-- PROFIL A NASTAVENÍ -->
+      <div id="tab-profil" class="tab-pane">
+        <div class="section-heading"><i class="fas fa-user-circle" style="color: var(--primary);"></i> Nastavení profilu</div>
+        
+        <div class="profile-card">
+          <div class="profile-avatar" id="profile-avatar-letter">Č</div>
+          <div style="width: 100%; text-align: left; display: flex; flex-direction: column; gap: 14px;">
+            <div>
+              <label style="font-size: 11px; font-weight: 800; color: var(--text-muted); display: block; margin-bottom: 4px;">TVÉ JMÉNO / PŘEZDÍVKA</label>
+              <input type="text" id="profile-name-input" class="form-input" placeholder="např. Vášeň pro knihy">
+            </div>
+            <div>
+              <label style="font-size: 11px; font-weight: 800; color: var(--text-muted); display: block; margin-bottom: 4px;">BIO / O MNĚ</label>
+              <textarea id="profile-bio-input" class="form-input" style="resize: vertical; min-height: 80px;" placeholder="Milovník detektivek a kávy..."></textarea>
+            </div>
+            <button class="btn-fun" style="background: var(--primary); color: #FFF; width: 100%; padding: 14px;" onclick="saveProfile()"><i class="fas fa-floppy-disk"></i> Uložit profil</button>
+          </div>
         </div>
       </div>
 
@@ -325,74 +514,214 @@
   </div>
 
   <script>
-    let myBooks = JSON.parse(localStorage.getItem('knihomol_fun_books')) || [
-      { title: "Hobit", author: "J. R. R. Tolkien", genre: "Fantasy", status: "reading", cover: "https://covers.openlibrary.org/b/id/8431969-M.jpg" }
+    let myBooks = JSON.parse(localStorage.getItem('knihomol_fun_books_v2')) || [
+      { title: "Hobit", author: "J. R. R. Tolkien", totalPages: 320, currentPage: 120, status: "reading", cover: "https://covers.openlibrary.org/b/id/8431969-M.jpg" }
     ];
+    let annualGoal = parseInt(localStorage.getItem('knihomol_fun_goal')) || 12;
+    let userProfile = JSON.parse(localStorage.getItem('knihomol_fun_profile')) || { name: "Vášnivý Čtenář", bio: "Vítej ve svém barevném čtenářském světě." };
+
+    function initApp() {
+      document.getElementById('profile-name-input').value = userProfile.name;
+      document.getElementById('profile-bio-input').value = userProfile.bio;
+      document.getElementById('welcome-title').textContent = `Ahoj, ${userProfile.name}!`;
+      document.getElementById('welcome-bio').textContent = userProfile.bio;
+      document.getElementById('profile-avatar-letter').textContent = userProfile.name.charAt(0).toUpperCase();
+      renderAll();
+    }
 
     function switchTab(tabId, btn) {
       document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
       document.querySelectorAll('.tab-pill').forEach(b => b.classList.remove('active'));
       document.getElementById('tab-' + tabId).classList.add('active');
       if(btn) btn.classList.add('active');
+      renderAll();
+    }
+
+    function renderAll() {
+      renderGoal();
       renderBooks();
+    }
+
+    function renderGoal() {
+      const readCount = myBooks.filter(b => b.status === 'read' || (b.totalPages > 0 && b.currentPage >= b.totalPages)).length;
+      document.getElementById('goal-current').textContent = readCount;
+      document.getElementById('goal-total').textContent = annualGoal;
+      const pct = Math.min(100, Math.round((readCount / annualGoal) * 100));
+      document.getElementById('goal-bar-fill').style.width = pct + '%';
+      document.getElementById('goal-percent').textContent = `Splněno ${pct} %`;
+    }
+
+    function editGoalPrompt() {
+      const newG = prompt("Zadej nový roční cíl (počet knih):", annualGoal);
+      if(newG && !isNaN(newG) && parseInt(newG) > 0) {
+        annualGoal = parseInt(newG);
+        localStorage.setItem('knihomol_fun_goal', annualGoal);
+        renderGoal();
+      }
     }
 
     function renderBooks() {
       const homeGrid = document.getElementById('home-books-grid');
       const libGrid = document.getElementById('library-books-grid');
 
-      const htmlContent = myBooks.map((b, index) => `
-        <div class="book-card-fun">
-          <img src="${b.cover || 'https://via.placeholder.com/70x100?text=Kniha'}" class="book-cover-fun">
-          <div class="book-details-fun">
-            <div>
-              <div class="book-title-fun">${b.title}</div>
-              <div class="book-author-fun">${b.author}</div>
-              <span class="badge-fun">${b.genre || 'Beletrie'}</span>
-            </div>
-            <div class="actions-row">
-              <button class="icon-btn" onclick="deleteBook(${index})" title="Smazat"><i class="fas fa-trash"></i></button>
+      const readingList = myBooks.map((b, idx) => ({ ...b, originalIndex: idx })).filter(b => b.status === 'reading');
+
+      homeGrid.innerHTML = readingList.map(b => {
+        const total = b.totalPages || 100;
+        const current = Math.min(b.currentPage || 0, total);
+        const percent = Math.round((current / total) * 100);
+
+        return `
+          <div class="book-card-fun">
+            <img src="${b.cover || 'https://via.placeholder.com/75x110?text=Kniha'}" class="book-cover-fun">
+            <div class="book-details-fun">
+              <div>
+                <div class="book-title-fun">${escapeHtml(b.title)}</div>
+                <div class="book-author-fun">${escapeHtml(b.author)}</div>
+                <span class="badge-fun">Právě čtu</span>
+              </div>
+              
+              <div class="mini-prog-container">
+                <div class="mini-prog-text"><span>Stránky: ${current}/${total}</span><span>${percent}%</span></div>
+                <div class="mini-prog-bar-bg"><div class="mini-prog-bar-fill" style="width: ${percent}%;"></div></div>
+              </div>
+
+              <div class="actions-row">
+                <button class="icon-btn" onclick="updatePagesPrompt(${b.originalIndex})" title="Změnit stránky"><i class="fas fa-bookmark"></i></button>
+                <button class="icon-btn" onclick="deleteBook(${b.originalIndex})" title="Smazat"><i class="fas fa-trash"></i></button>
+              </div>
             </div>
           </div>
-        </div>
-      `).join('');
+        `;
+      }).join('') || '<p style="color:var(--text-muted); font-size:14px;">Momentálně nečteš žádnou knihu. Přepni si ji nebo přidej novou!</p>';
 
-      homeGrid.innerHTML = myBooks.filter(b => b.status === 'reading').map((b, index) => `
-        <div class="book-card-fun">
-          <img src="${b.cover || 'https://via.placeholder.com/70x100?text=Kniha'}" class="book-cover-fun">
-          <div class="book-details-fun">
-            <div>
-              <div class="book-title-fun">${b.title}</div>
-              <div class="book-author-fun">${b.author}</div>
-              <span class="badge-fun">Právě čtu</span>
+      libGrid.innerHTML = myBooks.map((b, index) => {
+        const total = b.totalPages || 100;
+        const current = Math.min(b.currentPage || 0, total);
+        const percent = Math.round((current / total) * 100);
+        const labels = { reading: 'Právě čtu', tbr: 'Chci číst', read: 'Přečteno' };
+
+        return `
+          <div class="book-card-fun">
+            <img src="${b.cover || 'https://via.placeholder.com/75x110?text=Kniha'}" class="book-cover-fun">
+            <div class="book-details-fun">
+              <div>
+                <div class="book-title-fun">${escapeHtml(b.title)}</div>
+                <div class="book-author-fun">${escapeHtml(b.author)}</div>
+                <span class="badge-fun">${labels[b.status] || b.status}</span>
+              </div>
+              
+              <div class="mini-prog-container">
+                <div class="mini-prog-text"><span>Stránky: ${current}/${total}</span><span>${percent}%</span></div>
+                <div class="mini-prog-bar-bg"><div class="mini-prog-bar-fill" style="width: ${percent}%;"></div></div>
+              </div>
+
+              <div class="actions-row">
+                <button class="icon-btn" onclick="updatePagesPrompt(${index})" title="Změnit stránky"><i class="fas fa-bookmark"></i></button>
+                <button class="icon-btn" onclick="deleteBook(${index})" title="Smazat"><i class="fas fa-trash"></i></button>
+              </div>
             </div>
           </div>
-        </div>
-      `).join('') || '<p style="color:var(--text-muted); font-size:14px;">Zatím nic nečteš. Přidej si knihu!</p>';
-
-      libGrid.innerHTML = htmlContent || '<p style="color:var(--text-muted); font-size:14px;">Knihovna je prázdná.</p>';
+        `;
+      }).join('') || '<p style="color:var(--text-muted); font-size:14px;">Knihovna je prázdná.</p>';
     }
 
-    function addNewBook() {
-      const title = document.getElementById('new-title').value.trim();
-      const author = document.getElementById('new-author').value.trim();
-      if(!title || !author) { alert("Vyplň prosím název i autora!"); return; }
+    async function searchOpenLibrary() {
+      const q = document.getElementById('api-search-input').value.trim();
+      const container = document.getElementById('search-results-container');
+      if(!q) { container.style.display = 'none'; return; }
 
-      myBooks.push({ title, author, genre: "Dobrodružné", status: "reading", cover: "" });
-      localStorage.setItem('knihomol_fun_books', JSON.stringify(myBooks));
-      
-      document.getElementById('new-title').value = '';
-      document.getElementById('new-author').value = '';
+      container.style.display = 'flex';
+      container.innerHTML = '<div style="text-align:center; padding:10px; font-size:13px; color:var(--text-muted);">Hledám v Open Library...</div>';
+
+      try {
+        const res = await fetch(`https://openlibrary.org/search.json?q=${encodeURIComponent(q)}&limit=5`);
+        const data = await res.json();
+
+        if(!data.docs || data.docs.length === 0) {
+          container.innerHTML = '<div style="text-align:center; padding:10px; font-size:13px; color:var(--text-muted);">Žádné výsledky.</div>';
+          return;
+        }
+
+        container.innerHTML = data.docs.map(doc => {
+          const title = doc.title || 'Neznámý název';
+          const author = doc.author_name ? doc.author_name.join(', ') : 'Neznámý autor';
+          const pages = doc.number_of_pages_median || 300;
+          const cover = doc.cover_i ? `https://covers.openlibrary.org/b/id/${doc.cover_i}-M.jpg` : '';
+
+          return `
+            <div class="search-result-item" onclick="selectApiBook('${escapeHtml(title)}', '${escapeHtml(author)}', ${pages}, '${cover}')">
+              <img src="${cover || 'https://via.placeholder.com/40x60?text=?'}" style="width:36px; height:52px; object-fit:cover; border-radius:6px;">
+              <div style="flex:1; min-width:0;">
+                <div style="font-size:13px; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${escapeHtml(title)}</div>
+                <div style="font-size:11px; color:var(--text-muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${escapeHtml(author)}</div>
+              </div>
+            </div>
+          `;
+        }).join('');
+      } catch(e) {
+        container.innerHTML = '<div style="text-align:center; padding:10px; font-size:13px; color:#ef4444;">Chyba při stahování dat.</div>';
+      }
+    }
+
+    function selectApiBook(title, author, pages, cover) {
+      myBooks.push({ title, author, totalPages: pages, currentPage: 0, status: 'reading', cover });
+      localStorage.setItem('knihomol_fun_books_v2', JSON.stringify(myBooks));
+      document.getElementById('api-search-input').value = '';
+      document.getElementById('search-results-container').style.display = 'none';
       switchTab('domu', document.querySelectorAll('.tab-pill')[0]);
     }
 
-    function deleteBook(index) {
-      myBooks.splice(index, 1);
-      localStorage.setItem('knihomol_fun_books', JSON.stringify(myBooks));
-      renderBooks();
+    function saveManualBook() {
+      const title = document.getElementById('manual-title').value.trim();
+      const author = document.getElementById('manual-author').value.trim();
+      const totalPages = parseInt(document.getElementById('manual-total-pages').value) || 300;
+      const status = document.getElementById('manual-status').value;
+
+      if(!title || !author) { alert("Vyplň název i autora!"); return; }
+
+      myBooks.push({ title, author, totalPages, currentPage: 0, status, cover: "" });
+      localStorage.setItem('knihomol_fun_books_v2', JSON.stringify(myBooks));
+
+      document.getElementById('manual-title').value = '';
+      document.getElementById('manual-author').value = '';
+      switchTab('domu', document.querySelectorAll('.tab-pill')[0]);
     }
 
-    renderBooks();
+    function updatePagesPrompt(index) {
+      const b = myBooks[index];
+      const val = prompt(`Kolik stran jsi z knihy „${b.title}“ už přečetl? (celkem: ${b.totalPages})`, b.currentPage || 0);
+      if(val !== null && !isNaN(val)) {
+        b.currentPage = Math.min(parseInt(val), b.totalPages);
+        if(b.currentPage >= b.totalPages) b.status = 'read';
+        localStorage.setItem('knihomol_fun_books_v2', JSON.stringify(myBooks));
+        renderAll();
+      }
+    }
+
+    function deleteBook(index) {
+      if(confirm("Opravdu smazat tuto knihu?")) {
+        myBooks.splice(index, 1);
+        localStorage.setItem('knihomol_fun_books_v2', JSON.stringify(myBooks));
+        renderAll();
+      }
+    }
+
+    function saveProfile() {
+      const name = document.getElementById('profile-name-input').value.trim() || "Čtenář";
+      const bio = document.getElementById('profile-bio-input').value.trim();
+      userProfile = { name, bio };
+      localStorage.setItem('knihomol_fun_profile', JSON.stringify(userProfile));
+      initApp();
+      alert("Profil byl úspěšně uložen!");
+    }
+
+    function escapeHtml(str) {
+      if(!str) return '';
+      return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+    }
+
+    initApp();
   </script>
 </body>
 </html>
