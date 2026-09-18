@@ -75,7 +75,6 @@
   </script>
 
   <style>
-    /* KÁVOVÝ UI KIT VIBE (Podle vzoru) */
     :root {
       --bg-main: #EFE6DD; 
       --bg-dark: #FAF4EF; 
@@ -304,7 +303,7 @@
     </header>
 
     <main class="app-content">
-      <!-- PŘEHLED -->
+      <!-- PŘEHLED (S VÝZVOU I ŽIVÝM PROGRESEM ROZEČTENÝCH KNIH) -->
       <div id="tab-prehled" class="tab-content active">
         <div class="clean-card goal-box">
           <div style="display: flex; justify-content: space-between; align-items: center;">
@@ -318,6 +317,13 @@
           </div>
           <div class="goal-bar-bg"><div class="goal-bar-fill" id="goal-bar-fill"></div></div>
           <div style="font-size: 12px; color: var(--text-muted); text-align: right; font-weight: 600;" id="goal-percent-text">Splněno 0 %</div>
+        </div>
+
+        <div>
+          <div class="section-title">Právě rozečteno</div>
+          <div id="home-reading-list" style="display: flex; flex-direction: column; gap: 10px;">
+            <!-- Zde se dynamicky vykreslí aktuálně čtené knihy -->
+          </div>
         </div>
 
         <div>
@@ -468,6 +474,7 @@
     function renderAll() {
       renderGoal();
       renderLibrary();
+      renderHomeReading();
       renderStats();
     }
 
@@ -485,6 +492,50 @@
       const readBooksCount = userBooks.filter(b => b.status === 'read').length;
       document.getElementById('stat-pages').textContent = totalPagesRead;
       document.getElementById('stat-books').textContent = readBooksCount;
+    }
+
+    function renderHomeReading() {
+      const container = document.getElementById('home-reading-list');
+      const readingBooks = userBooks.map((b, idx) => ({ ...b, originalIndex: idx })).filter(b => b.status === 'reading');
+
+      if(readingBooks.length === 0) {
+        container.innerHTML = `
+          <div class="clean-card" style="text-align: center; padding: 20px; color: var(--text-muted); font-size: 13px;">
+            Momentálně nečteš žádnou knihu. V knihovně ji přepni do stavu „Právě čtu“.
+          </div>`;
+        return;
+      }
+
+      container.innerHTML = readingBooks.map(book => {
+        const total = book.totalPages || 100;
+        const current = Math.min(book.currentPage || 0, total);
+        const percent = Math.round((current / total) * 100);
+
+        return `
+          <div class="book-item-card">
+            <img src="${book.coverUrl || 'https://via.placeholder.com/50x75?text=Kniha'}" class="book-cover" alt="Obálka">
+            <div class="book-info">
+              <div class="book-title-text">${escapeHtml(book.title)}</div>
+              <div class="book-author-text">${escapeHtml(book.author)}</div>
+              
+              <div class="progress-info">
+                <span>Progres: ${current} / ${total} str.</span>
+                <span>${percent}%</span>
+              </div>
+              <div class="mini-progress-bar">
+                <div class="mini-progress-fill" style="width: ${percent}%;"></div>
+              </div>
+
+              <div class="book-actions-row">
+                <span class="book-status-badge">Právě čtu</span>
+                <button onclick="openProgressModal(${book.originalIndex})" class="btn-main btn-secondary" style="padding: 4px 10px; font-size: 11px; width: auto;" title="Upravit stránky">
+                  <i class="fas fa-bookmark"></i> Aktualizovat
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
     }
 
     function renderLibrary() {
@@ -682,7 +733,7 @@
       if(btn) btn.classList.add('active');
     }
 
-    function openAddBookModal() { resetAddBookModal(); document.getElementById('modal-add-modal') || document.getElementById('modal-add-book').classList.add('open'); }
+    function openAddBookModal() { resetAddBookModal(); document.getElementById('modal-add-book').classList.add('open'); }
     function openGoalModal() { document.getElementById('goal-input-val').value = annualGoal; document.getElementById('modal-goal').classList.add('open'); }
     function closeModal(id) { document.getElementById(id).classList.remove('open'); }
 
