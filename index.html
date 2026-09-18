@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Knihomol — Barevný svět knih</title>
+  <title>Knihomol</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -291,6 +291,7 @@
     .badge-fun { display: inline-block; font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 6px; background: #EDE9FE; color: var(--primary); }
     .badge-genre { background: #FEF3C7; color: #D97706; }
 
+    .rating-container { display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 700; color: var(--text-muted); margin: 2px 0; }
     .stars-display { color: var(--accent-yellow); font-size: 12px; display: inline-flex; gap: 2px; }
 
     .mini-prog-container { margin: 6px 0; }
@@ -309,7 +310,7 @@
     .search-result-item { display: flex; align-items: center; gap: 12px; padding: 10px; background: #F8FAFC; border: 2px solid var(--border-color); border-radius: 14px; cursor: pointer; transition: 0.2s; }
     .search-result-item:hover { border-color: var(--primary); background: #FFF; }
 
-    .profile-card { background: #FFF; border-radius: 24px; padding: 32px; border: 2px solid var(--border-color); box-shadow: var(--shadow); display: flex; flex-direction: column; align-items: center; text-align: center; gap: 16px; max-width: 450px; margin: 0 auto; }
+    .profile-card { background: #FFF; border-radius: 24px; padding: 32px; border: 2px solid var(--border-color); box-shadow: var(--shadow); display: flex; flex-direction: column; align-items: center; text-align: center; gap: 16px; max-width: 480px; margin: 0 auto; width: 100%; }
     .profile-avatar { width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, #8B5CF6 0%, #EC4899 100%); color: #FFF; font-size: 32px; font-weight: 800; display: flex; align-items: center; justify-content: center; }
 
     /* ADMIN DASHBOARD */
@@ -320,7 +321,7 @@
     .admin-table th { background: #F8FAFC; font-weight: 800; color: var(--text-muted); }
   </style>
 
-  <!-- FIREBASE LOGIKA -->
+  <!-- FIREBASE LOGIKA OPRAVENÁ PRO BEZPROBLÉMOVÝ CHOD -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { 
@@ -334,21 +335,25 @@
     } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
     const firebaseConfig = {
-      apiKey: "AIzaSyAskaujKDExzAVlb_1uskQDXm7LEMlrtcU",
+      apiKey: "AIzaSyAskaujKDExzAVlb_1luskQDXm7LEMlrtcU",
       authDomain: "knihomol-c559a.firebaseapp.com",
-      projectId: "Knihomol-c559a",
+      projectId: "knihomol-c559a",
       storageBucket: "knihomol-c559a.firebasestorage.app",
       messagingSenderId: "341475099358",
       appId: "1:341475099358:web:d748b9f1f3dbe2e0d7f84f",
       measurementId: "G-1LWDHMEQXW"
     };
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const googleProvider = new GoogleAuthProvider();
+    let app, auth, googleProvider;
+    try {
+      app = initializeApp(firebaseConfig);
+      auth = getAuth(app);
+      googleProvider = new GoogleAuthProvider();
+    } catch (e) {
+      console.error("Firebase init error:", e);
+    }
 
     const ADMIN_EMAIL = "foxikfox603@gmail.com";
-
     let isRegisterMode = false;
     
     window.toggleAuthMode = function() {
@@ -375,7 +380,8 @@
         document.getElementById('auth-error-msg').textContent = "";
         await signInWithPopup(auth, googleProvider);
       } catch (error) {
-        document.getElementById('auth-error-msg').textContent = "Chyba Google přihlášení: " + error.message;
+        document.getElementById('auth-error-msg').textContent = "Google přihlášení selhalo (zkontrolujte doménu ve Firebase).";
+        console.error(error);
       }
     };
 
@@ -403,7 +409,8 @@
           await signInWithEmailAndPassword(auth, email, pass);
         }
       } catch (error) {
-        errBox.textContent = "Chyba: " + error.message;
+        errBox.textContent = "Chyba přihlášení: " + error.message;
+        console.error(error);
       }
     };
 
@@ -413,34 +420,40 @@
       }
     };
 
-    onAuthStateChanged(auth, (user) => {
-      const overlay = document.getElementById('auth-overlay');
-      if (user) {
-        overlay.style.display = 'none';
-        const email = user.email || "Neznámý";
-        const name = user.displayName || email.split('@')[0];
-        
-        document.getElementById('welcome-title').textContent = `Ahoj, ${name}!`;
-        document.getElementById('profile-name-input').value = `${name} (${email})`;
-        document.getElementById('profile-avatar-letter').textContent = name.charAt(0).toUpperCase();
+    if (auth) {
+      onAuthStateChanged(auth, (user) => {
+        const overlay = document.getElementById('auth-overlay');
+        if (user) {
+          overlay.style.display = 'none';
+          const email = user.email || "Neznámý";
+          const defaultName = user.displayName || email.split('@')[0];
+          
+          let profile = JSON.parse(localStorage.getItem('knihomol_user_profile')) || { name: defaultName, bio: "Vášnivý čtenář a milovník příběhů." };
+          
+          document.getElementById('welcome-title').textContent = `Ahoj, ${profile.name}!`;
+          document.getElementById('profile-email-input').value = email;
+          document.getElementById('profile-name-input').value = profile.name;
+          document.getElementById('profile-bio-input').value = profile.bio;
+          document.getElementById('profile-avatar-letter').textContent = profile.name.charAt(0).toUpperCase();
 
-        const adminBtn = document.getElementById('nav-admin-btn');
-        if(email.toLowerCase() === ADMIN_EMAIL.toLowerCase()) {
-          adminBtn.style.display = 'flex';
-          document.getElementById('admin-owner-email').textContent = ADMIN_EMAIL;
+          const adminBtn = document.getElementById('nav-admin-btn');
+          if(email.toLowerCase() === ADMIN_EMAIL.toLowerCase()) {
+            adminBtn.style.display = 'flex';
+            document.getElementById('admin-owner-email').textContent = ADMIN_EMAIL;
+          } else {
+            adminBtn.style.display = 'none';
+          }
+
+          let traffic = JSON.parse(localStorage.getItem('knihomol_real_traffic')) || { totalVisits: 0, logs: [] };
+          traffic.totalVisits += 1;
+          traffic.logs.unshift({ time: new Date().toLocaleString('cs-CZ'), user: email });
+          if(traffic.logs.length > 20) traffic.logs.pop();
+          localStorage.setItem('knihomol_real_traffic', JSON.stringify(traffic));
         } else {
-          adminBtn.style.display = 'none';
+          overlay.style.display = 'flex';
         }
-
-        let traffic = JSON.parse(localStorage.getItem('knihomol_real_traffic')) || { totalVisits: 0, logs: [] };
-        traffic.totalVisits += 1;
-        traffic.logs.unshift({ time: new Date().toLocaleString('cs-CZ'), user: email });
-        if(traffic.logs.length > 20) traffic.logs.pop();
-        localStorage.setItem('knihomol_real_traffic', JSON.stringify(traffic));
-      } else {
-        overlay.style.display = 'flex';
-      }
-    });
+      });
+    }
   </script>
 </head>
 <body>
@@ -448,7 +461,7 @@
   <!-- PŘIHLAŠOVACÍ OKNO -->
   <div id="auth-overlay">
     <div class="auth-card">
-      <div class="auth-logo"><i class="fas fa-book-open-reader"></i> Knihomol</div>
+      <div class="auth-logo"><i class="fas fa-book-open-reader"></i> KNIHOMOL</div>
       <p id="auth-card-title" style="font-size: 16px; font-weight: 700; color: var(--text-main);">Přihlášení do knihovny</p>
       
       <button class="google-login-btn" onclick="loginWithGoogle()">
@@ -475,7 +488,7 @@
 
   <div class="fun-app-container">
     <header class="fun-header">
-      <div class="fun-logo"><i class="fas fa-book-open-reader"></i> Knihomol</div>
+      <div class="fun-logo"><i class="fas fa-book-open-reader"></i> KNIHOMOL</div>
       <nav class="fun-nav">
         <button class="tab-pill active" onclick="switchTab('domu', this)"><i class="fas fa-house"></i> Domů</button>
         <button class="tab-pill" onclick="switchTab('knihovna', this)"><i class="fas fa-layer-group"></i> Knihovna</button>
@@ -491,7 +504,7 @@
         <div class="hero-banner">
           <div>
             <h1 id="welcome-title">Ahoj, Čtenáři!</h1>
-            <p>Vítej ve svém barevném čtenářském světě.</p>
+            <p>Vítej ve svém čtenářském světě.</p>
           </div>
           <button class="btn-fun" onclick="switchTab('pridat', document.querySelectorAll('.tab-pill')[2])"><i class="fas fa-plus"></i> Nová kniha</button>
         </div>
@@ -605,12 +618,21 @@
         <div class="section-heading"><i class="fas fa-user-circle" style="color: var(--primary);"></i> Nastavení profilu</div>
         <div class="profile-card">
           <div class="profile-avatar" id="profile-avatar-letter">Č</div>
-          <div style="width: 100%; text-align: left; display: flex; flex-direction: column; gap: 14px;">
+          <div style="width: 100%; text-align: left; display: flex; flex-direction: column; gap: 12px;">
             <div>
-              <label style="font-size: 11px; font-weight: 800; color: var(--text-muted); display: block; margin-bottom: 4px;">PŘIHLÁŠENÝ ÚČET</label>
-              <input type="text" id="profile-name-input" class="form-input" readonly style="background:#F1F5F9; color:var(--text-muted);">
+              <label style="font-size: 11px; font-weight: 800; color: var(--text-muted); display: block; margin-bottom: 4px;">E-MAIL ÚČTU</label>
+              <input type="text" id="profile-email-input" class="form-input" readonly style="background:#F1F5F9; color:var(--text-muted);">
             </div>
-            <button class="btn-fun" style="background: #E2E8F0; color: var(--text-main); width: 100%; padding: 14px; margin-top: 10px;" onclick="logoutUser()"><i class="fas fa-right-from-bracket"></i> Odhlásit se</button>
+            <div>
+              <label style="font-size: 11px; font-weight: 800; color: var(--text-muted); display: block; margin-bottom: 4px;">JMÉNO ČTENÁŘE</label>
+              <input type="text" id="profile-name-input" class="form-input" placeholder="Zadej své jméno...">
+            </div>
+            <div>
+              <label style="font-size: 11px; font-weight: 800; color: var(--text-muted); display: block; margin-bottom: 4px;">BIO / O MNĚ</label>
+              <textarea id="profile-bio-input" class="form-input" rows="3" placeholder="Napiš něco o sobě a svém čtení..." style="resize: none;"></textarea>
+            </div>
+            <button class="btn-fun" style="background: var(--primary); color: #FFF; width: 100%; padding: 14px; margin-top: 6px;" onclick="saveUserProfile()"><i class="fas fa-floppy-disk"></i> Uložit profil</button>
+            <button class="btn-fun" style="background: #E2E8F0; color: var(--text-main); width: 100%; padding: 12px;" onclick="logoutUser()"><i class="fas fa-right-from-bracket"></i> Odhlásit se</button>
           </div>
         </div>
       </div>
@@ -710,7 +732,8 @@
         const current = Math.min(b.currentPage || 0, total);
         const percent = Math.round((current / total) * 100);
         const genre = b.genre || "Beletrie";
-        const starsHtml = renderStars(b.rating || 0);
+        const ratingNum = b.rating || 0;
+        const starsHtml = renderStars(ratingNum);
 
         return `
           <div class="book-card-fun">
@@ -723,7 +746,10 @@
                   <span class="badge-fun">Právě čtu</span>
                   <span class="badge-fun badge-genre">${escapeHtml(genre)}</span>
                 </div>
-                ${b.rating ? `<div class="stars-display">${starsHtml}</div>` : ''}
+                <div class="rating-container">
+                  <span class="stars-display">${starsHtml}</span>
+                  <span>(${ratingNum}/5)</span>
+                </div>
               </div>
               <div class="mini-prog-container">
                 <div class="mini-prog-text"><span>Stránky: ${current}/${total}</span><span>${percent}%</span></div>
@@ -750,7 +776,8 @@
         const percent = Math.round((current / total) * 100);
         const labels = { reading: 'Právě čtu', tbr: 'Chci číst', read: 'Přečteno' };
         const genre = b.genre || "Beletrie";
-        const starsHtml = renderStars(b.rating || 0);
+        const ratingNum = b.rating || 0;
+        const starsHtml = renderStars(ratingNum);
 
         return `
           <div class="book-card-fun">
@@ -763,7 +790,10 @@
                   <span class="badge-fun">${labels[b.status] || b.status}</span>
                   <span class="badge-fun badge-genre">${escapeHtml(genre)}</span>
                 </div>
-                ${b.rating ? `<div class="stars-display">${starsHtml}</div>` : ''}
+                <div class="rating-container">
+                  <span class="stars-display">${starsHtml}</span>
+                  <span>(${ratingNum}/5)</span>
+                </div>
               </div>
               <div class="mini-prog-container">
                 <div class="mini-prog-text"><span>Stránky: ${current}/${total}</span><span>${percent}%</span></div>
@@ -813,10 +843,9 @@
           const author = doc.author_name ? doc.author_name.join(', ') : 'Neznámý autor';
           const pages = doc.number_of_pages_median || 300;
           const cover = doc.cover_i ? `https://covers.openlibrary.org/b/id/${doc.cover_i}-M.jpg` : '';
-          const subjects = doc.subject ? doc.subject.slice(0, 3).join(', ') : 'Beletrie';
 
           return `
-            <div class="search-result-item" onclick="selectApiBook('${escapeHtml(title)}', '${escapeHtml(author)}', ${pages}, '${cover}', '${escapeHtml(subjects)}')">
+            <div class="search-result-item" onclick="selectApiBook('${escapeHtml(title)}', '${escapeHtml(author)}', ${pages}, '${cover}')">
               <img src="${cover || 'https://via.placeholder.com/40x60?text=?'}" style="width:36px; height:52px; object-fit:cover; border-radius:6px;">
               <div style="flex:1; min-width:0;">
                 <div style="font-size:13px; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${escapeHtml(title)}</div>
@@ -830,7 +859,7 @@
       }
     }
 
-    function selectApiBook(title, author, pages, cover, subjects) {
+    function selectApiBook(title, author, pages, cover) {
       myBooks.push({ title, author, totalPages: pages, currentPage: 0, status: 'reading', genre: 'Beletrie', rating: 0, cover });
       localStorage.setItem('knihomol_real_books', JSON.stringify(myBooks));
       document.getElementById('api-search-input').value = '';
@@ -880,6 +909,23 @@
           alert("Zadej číslo v rozmezí 0 až 5.");
         }
       }
+    }
+
+    function saveUserProfile() {
+      const newName = document.getElementById('profile-name-input').value.trim();
+      const newBio = document.getElementById('profile-bio-input').value.trim();
+
+      if(!newName) {
+        alert("Jméno nemůže být prázdné!");
+        return;
+      }
+
+      const profile = { name: newName, bio: newBio };
+      localStorage.setItem('knihomol_user_profile', JSON.stringify(profile));
+
+      document.getElementById('welcome-title').textContent = `Ahoj, ${newName}!`;
+      document.getElementById('profile-avatar-letter').textContent = newName.charAt(0).toUpperCase();
+      alert("Profil byl úspěšně uložen!");
     }
 
     function deleteBook(index) {
