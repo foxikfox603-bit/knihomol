@@ -74,7 +74,7 @@
       align-items: center;
       min-height: 100vh;
       font-weight: 500;
-      transition: all 0.3s ease;
+      transition: background-color 0.3s ease, color 0.3s ease;
     }
 
     .app-frame {
@@ -260,7 +260,7 @@
     .tab-content.active { display: flex; flex-direction: column; gap: 16px; }
   </style>
 </head>
-<body data-theme="academic">
+<body>
 
   <div class="app-frame">
     <header class="app-header">
@@ -451,10 +451,24 @@
     let currentFilter = 'all';
 
     function setTheme(themeName, btn) {
-      document.body.setAttribute('data-theme', themeName);
+      // Oprava: Nastavujeme data-theme rovnou na element <html> (root) a ukládáme do localStorage
+      document.documentElement.setAttribute('data-theme', themeName);
+      localStorage.setItem('knihomol_theme', themeName);
+
       document.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'));
       if(btn) btn.classList.add('active');
     }
+
+    // Načtení uloženého moodu při startu
+    const savedTheme = localStorage.getItem('knihomol_theme') || 'academic';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+    window.addEventListener('DOMContentLoaded', () => {
+      const activeBtn = document.querySelector(`.theme-btn[onclick*="${savedTheme}"]`);
+      if(activeBtn) {
+        document.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'));
+        activeBtn.classList.add('active');
+      }
+    });
 
     function switchTab(tabId, btn) {
       document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
@@ -572,7 +586,6 @@
     function renderAll() {
       renderGoal();
       
-      // Stats
       const readBooks = userBooks.filter(b => b.status === 'read');
       const readingBooks = userBooks.filter(b => b.status === 'reading');
       const tbrBooks = userBooks.filter(b => b.status === 'tbr');
@@ -583,7 +596,6 @@
       document.getElementById('stat-pages').textContent = totalPages;
       document.getElementById('total-books-count').textContent = `${userBooks.length} knih`;
 
-      // Dashboard Reading Box
       const dashReadingBox = document.getElementById('dashboard-reading-box');
       if(readingBooks.length === 0) {
         dashReadingBox.innerHTML = `
