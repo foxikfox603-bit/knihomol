@@ -430,10 +430,18 @@
   </div>
 
   <script>
-    let userBooks = JSON.parse(localStorage.getItem('knihomol_books')) || [
+    // Načtení a oprava starých dat z úložiště, aby nikdy nechyběly stránky
+    let rawBooks = JSON.parse(localStorage.getItem('knihomol_books')) || [
       { id: '1', title: 'Jméno růže', author: 'Umberto Eco', status: 'read', pages: 512, currentPage: 512 },
       { id: '2', title: 'Sto roků samoty', author: 'G. G. Márquez', status: 'reading', pages: 360, currentPage: 120 }
     ];
+
+    let userBooks = rawBooks.map(b => ({
+      ...b,
+      pages: b.pages || 300,
+      currentPage: b.currentPage !== undefined ? b.currentPage : (b.status === 'read' ? (b.pages || 300) : 0)
+    }));
+
     let annualGoal = parseInt(localStorage.getItem('knihomol_goal')) || 12;
     let currentFilter = 'all';
     window.isRegisterMode = false;
@@ -487,14 +495,12 @@
           if (bookInfo.pageCount) document.getElementById('book-pages').value = bookInfo.pageCount;
           alert("Kniha byla úspěšně nalezena a předvyplněna!");
         } else {
-          if (confirm("Nenašli jsme knihu v databázi. Chceš pokračovat v ručním zadání?")) {
-            document.getElementById('book-author').focus();
-          }
-        }
-      } catch (err) {
-        if (confirm("Chyba při vyhledávání. Chceš vyplnit údaje ručně?")) {
+          alert("Kniha nebyla v online databázi nalezena. Můžeš vyplnit název i autora ručně.");
           document.getElementById('book-author').focus();
         }
+      } catch (err) {
+        alert("Vyhledávání selhalo (možná blokace sítě). Vyplň prosím údaje ručně.");
+        document.getElementById('book-author').focus();
       }
     }
 
@@ -572,7 +578,7 @@
       const title = document.getElementById('book-title').value.trim();
       const author = document.getElementById('book-author').value.trim();
       const status = document.getElementById('book-status').value;
-      const pages = parseInt(document.getElementById('book-pages').value) || 0;
+      const pages = parseInt(document.getElementById('book-pages').value) || 300;
 
       if(!title || !author) { alert('Vyplň název i autora.'); return; }
 
@@ -655,7 +661,7 @@
       } else {
         dashBox.innerHTML = readingBooks.map(b => {
           const cur = b.currentPage || 0;
-          const tot = b.pages || 0;
+          const tot = b.pages || 300;
           const pct = tot > 0 ? Math.min(100, Math.round((cur / tot) * 100)) : 0;
           return `
             <div style="display: flex; flex-direction: column; gap: 8px;">
@@ -669,7 +675,7 @@
               <div style="display: flex; align-items: center; gap: 8px; font-size: 11px; color: var(--text-muted);">
                 <span>Strana:</span>
                 <input type="number" value="${cur}" onchange="updateProgress('${b.id}', this.value)" class="form-control" style="width: 70px; padding: 4px 6px; font-size: 11px; text-align: center;">
-                <span>z ${tot > 0 ? tot : '?'} (${pct} %)</span>
+                <span>z ${tot} (${pct} %)</span>
               </div>
             </div>
           `;
