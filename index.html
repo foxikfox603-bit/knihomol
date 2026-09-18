@@ -35,13 +35,17 @@
         .book-details { flex: 1; display: flex; flex-direction: column; justify-content: space-between; min-width: 0; }
         .book-title { font-size: 15px; font-weight: 700; color: var(--dark); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .book-author { font-size: 13px; color: #666; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        
         .tag { display: inline-block; font-size: 11px; font-weight: 600; padding: 3px 8px; border-radius: 6px; background: #E3F2FD; color: #1976D2; }
         .tag-genre { background: #FFF9C4; color: #F57F17; margin-left: 4px; }
+        .stars { color: #ffc107; font-size: 12px; margin-top: 2px; }
         
         .input-field { width: 100%; padding: 12px 16px; border-radius: 12px; border: 2px solid #eee; font-size: 14px; outline: none; background: #fafafa; transition: 0.2s; }
         .input-field:focus { border-color: var(--primary); background: white; }
         .btn-main { background: var(--gradient); color: white; border: none; padding: 12px 20px; border-radius: 12px; font-weight: 600; font-size: 14px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3); transition: 0.2s; }
         .btn-main:hover { opacity: 0.9; transform: translateY(-1px); }
+        .btn-secondary { background: #e2e8f0; color: #334155; border: none; padding: 10px 16px; border-radius: 12px; font-weight: 600; font-size: 13px; cursor: pointer; transition: 0.2s; }
+        .btn-secondary:hover { background: #cbd5e1; }
         .icon-btn { background: #f8f9fa; border: 1px solid #dee2e6; width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #6c757d; }
         .icon-btn:hover { background: #fee2e2; color: #ef4444; border-color: #fca5a5; }
 
@@ -78,18 +82,57 @@
             document.getElementById('prof-bio').value = profile.bio;
         }
 
+        // Open Library API vyhledávání
+        window.searchOpenLibrary = async function() {
+            const query = document.getElementById('book-title').value.trim();
+            if(!query) { alert("Nejprve zadej název knihy."); return; }
+
+            const btn = document.getElementById('search-api-btn');
+            btn.textContent = "Hledám...";
+            btn.disabled = true;
+
+            try {
+                const res = await fetch(`https://openlibrary.org/search.json?title=${encodeURIComponent(query)}`);
+                const data = await res.json();
+                
+                if(data.docs && data.docs.length > 0) {
+                    const book = data.docs[0];
+                    if(book.title) document.getElementById('book-title').value = book.title;
+                    if(book.author_name && book.author_name.length > 0) {
+                        document.getElementById('book-author').value = book.author_name[0];
+                    }
+                    if(book.subject && book.subject.length > 0) {
+                        document.getElementById('book-genre').value = book.subject[0];
+                    }
+                    if(book.cover_i) {
+                        document.getElementById('book-cover').value = `https://covers.openlibrary.org/b/id/${book.cover_i}-M.jpg`;
+                    }
+                    alert("Kniha byla úspěšně dohledána z Open Library!");
+                } else {
+                    alert("V Open Library se nic nenašlo, vyplň údaje ručně.");
+                }
+            } catch(e) {
+                console.error(e);
+                alert("Chyba při komunikaci s Open Library.");
+            } finally {
+                btn.innerHTML = '<i class="fas fa-search"></i> Dohledat z Open Library';
+                btn.disabled = false;
+            }
+        };
+
         window.addBook = function() {
             const title = document.getElementById('book-title').value.trim();
             const author = document.getElementById('book-author').value.trim();
             const status = document.getElementById('book-status').value;
             const genre = document.getElementById('book-genre').value.trim();
+            const rating = parseInt(document.getElementById('book-rating').value) || 0;
             const cover = document.getElementById('book-cover').value.trim();
 
             if(!title || !author) { alert("Vyplň prosím název a autora knihy."); return; }
 
             const newBook = {
                 id: Date.now().toString(),
-                title, author, status, genre, cover_url: cover
+                title, author, status, genre, rating, cover_url: cover
             };
 
             books.push(newBook);
@@ -101,6 +144,7 @@
             document.getElementById('book-author').value = '';
             document.getElementById('book-genre').value = '';
             document.getElementById('book-cover').value = '';
+            document.getElementById('book-rating').value = '5';
 
             switchTab('knihovna', document.querySelector('nav button:nth-child(2)'));
         };
@@ -135,6 +179,7 @@
                                 <span class="tag">${getStatusLabel(b.status)}</span>
                                 ${b.genre ? `<span class="tag tag-genre">${escapeHtml(b.genre)}</span>` : ''}
                             </div>
+                            ${b.rating > 0 ? `<div class="stars">${'★'.repeat(b.rating)}${'☆'.repeat(5 - b.rating)}</div>` : ''}
                         </div>
                         <div style="display: flex; justify-content: flex-end; margin-top: 8px;">
                             <button class="icon-btn" onclick="deleteBook('${b.id}')" title="Smazat"><i class="fas fa-trash"></i></button>
@@ -224,7 +269,10 @@
                     <div style="display: flex; flex-direction: column; gap: 12px;">
                         <div>
                             <label style="font-size: 12px; font-weight: 600; color: #666;">Název knihy *</label>
-                            <input type="text" id="book-title" class="input-field" placeholder="např. Zaklínač">
+                            <div style="display: flex; gap: 8px;">
+                                <input type="text" id="book-title" class="input-field" placeholder="např. Zaklínač">
+                                <button type="button" id="search-api-btn" class="btn-secondary" onclick="searchOpenLibrary()" style="white-space: nowrap;"><i class="fas fa-search"></i> Dohledat</button>
+                            </div>
                         </div>
                         <div>
                             <label style="font-size: 12px; font-weight: 600; color: #666;">Autor *</label>
@@ -244,9 +292,22 @@
                                 <input type="text" id="book-genre" class="input-field" placeholder="např. Fantasy">
                             </div>
                         </div>
-                        <div>
-                            <label style="font-size: 12px; font-weight: 600; color: #666;">URL adresa přebalu (obrázku - nepovinné)</label>
-                            <input type="url" id="book-cover" class="input-field" placeholder="https://...">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                            <div>
+                                <label style="font-size: 12px; font-weight: 600; color: #666;">Hodnocení (hvězdičky)</label>
+                                <select id="book-rating" class="input-field">
+                                    <option value="5">★★★★★ (5/5)</option>
+                                    <option value="4">★★★★☆ (4/5)</option>
+                                    <option value="3">★★★☆☆ (3/5)</option>
+                                    <option value="2">★★☆☆☆ (2/5)</option>
+                                    <option value="1">★☆☆☆☆ (1/5)</option>
+                                    <option value="0" selected>Nehodnoceno</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label style="font-size: 12px; font-weight: 600; color: #666;">URL přebalu (obrázku)</label>
+                                <input type="url" id="book-cover" class="input-field" placeholder="Doplní se automaticky">
+                            </div>
                         </div>
                         <button class="btn-main" onclick="addBook()" style="margin-top: 10px;"><i class="fas fa-check"></i> Uložit knihu</button>
                     </div>
