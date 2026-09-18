@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Knihomol — Čtenářský kabinet</title>
+  <title>Knihomol — Váš čtenářský kabinet</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
@@ -78,8 +78,9 @@
     :root {
       --bg-gradient: linear-gradient(135deg, #2D1B14 0%, #1A100C 100%);
       --app-bg: #FAF6F0;
-      --card-bg: rgba(255, 255, 255, 0.85);
-      --card-border: rgba(226, 210, 195, 0.6);
+      --sidebar-bg: #FFFFFF;
+      --card-bg: rgba(255, 255, 255, 0.9);
+      --card-border: rgba(226, 210, 195, 0.7);
       --text-main: #231713;
       --text-muted: #7E685C;
       --accent: #C2693D;
@@ -88,106 +89,191 @@
       --btn-hover: #4A3026;
       --btn-text: #FFFFFF;
       --star-color: #E09F3E;
-      --shadow-app: 0 24px 60px rgba(0, 0, 0, 0.35);
-      --shadow-card: 0 12px 32px rgba(45, 27, 20, 0.05);
+      --shadow-card: 0 10px 30px rgba(45, 27, 20, 0.04);
+      --shadow-app: 0 20px 50px rgba(0, 0, 0, 0.3);
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-tap-highlight-color: transparent; }
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
     
     body {
       background: var(--bg-gradient);
       font-family: 'Plus Jakarta Sans', sans-serif;
       color: var(--text-main); 
-      display: flex; justify-content: center;
-      align-items: center; min-height: 100vh; 
+      min-height: 100vh; 
       font-size: 14px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
 
-    .app-frame {
-      width: 100%; max-width: 430px; height: 100vh; max-height: 900px;
-      background-color: var(--app-bg);
-      display: flex; flex-direction: column;
-      position: relative; overflow: hidden; 
-      border-radius: 40px;
-      border: 4px solid rgba(255, 255, 255, 0.1);
-      box-shadow: var(--shadow-app);
-    }
-
-    @media (max-width: 767px) {
-      .app-frame { max-height: 100vh; border-radius: 0; border: none; }
-    }
-
+    /* PŘIHLAŠOVACÍ OBRAZOVKA */
     #auth-screen {
-      position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-      background: var(--app-bg); z-index: 1000; display: flex;
-      flex-direction: column; justify-content: center; align-items: center; padding: 28px; text-align: center;
+      position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+      background: var(--bg-gradient); z-index: 2000; display: flex;
+      justify-content: center; align-items: center; padding: 20px;
     }
     .auth-card { 
-      background: var(--card-bg); backdrop-filter: blur(12px);
+      background: var(--app-bg); backdrop-filter: blur(16px);
       border: 1px solid var(--card-border); 
-      border-radius: 32px; padding: 40px 24px; width: 100%; max-width: 380px;
-      box-shadow: var(--shadow-card);
+      border-radius: 32px; padding: 40px 32px; width: 100%; max-width: 420px;
+      box-shadow: var(--shadow-app); text-align: center;
     }
     .auth-card h1 { font-family: 'Playfair Display', serif; color: var(--text-main); font-size: 32px; margin-bottom: 8px; font-weight: 700; }
     .auth-card p { color: var(--text-muted); font-size: 14px; margin-bottom: 28px; line-height: 1.5; }
 
-    .app-header {
-      padding: 24px 24px 12px; background: transparent;
-      display: flex; justify-content: space-between; align-items: center; z-index: 10;
+    /* HLAVNÍ LAYOUT - DESKTOP DASHBOARD */
+    .app-layout {
+      width: 100vw; height: 100vh;
+      background-color: var(--app-bg);
+      display: flex;
+      overflow: hidden;
     }
-    .app-header h1 {
-      font-family: 'Playfair Display', serif; font-size: 26px; font-weight: 700;
-      color: var(--text-main); letter-spacing: -0.5px;
+
+    /* BOČNÍ PANEL (SIDEBAR) */
+    .sidebar {
+      width: 280px;
+      background: var(--sidebar-bg);
+      border-right: 1px solid var(--card-border);
+      display: flex;
+      flex-direction: column;
+      padding: 32px 24px;
+      justify-content: space-between;
+      z-index: 10;
     }
-    .header-badge {
-      font-size: 12px; background: rgba(194, 105, 61, 0.08); color: var(--accent);
-      border: 1px solid rgba(194, 105, 61, 0.2); padding: 6px 14px; border-radius: 20px; font-weight: 700;
+    .sidebar-brand {
+      font-family: 'Playfair Display', serif;
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 40px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .sidebar-brand i { color: var(--accent); font-size: 24px; }
+    
+    .sidebar-nav {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      flex: 1;
+    }
+    .nav-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      padding: 14px 18px;
+      border-radius: 16px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      transition: all 0.2s ease;
+      text-align: left;
+    }
+    .nav-btn i { font-size: 18px; width: 20px; text-align: center; }
+    .nav-btn:hover { background: rgba(194, 105, 61, 0.05); color: var(--text-main); }
+    .nav-btn.active { background: var(--accent-glow); color: var(--accent); font-weight: 700; }
+
+    .sidebar-footer {
+      border-top: 1px solid var(--card-border);
+      padding-top: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .user-pill {
+      font-size: 13px; font-weight: 700; color: var(--text-main);
+      display: flex; align-items: center; gap: 8px;
+    }
+
+    /* HLAVNÍ OBSAHOVÁ ČÁST */
+    .main-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+      height: 100vh;
+      position: relative;
     }
     
-    .app-content {
-      flex: 1; overflow-y: auto; padding: 12px 24px 28px; display: flex; flex-direction: column; gap: 20px;
+    .top-header {
+      padding: 24px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(250, 246, 240, 0.8);
+      backdrop-filter: blur(10px);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      border-bottom: 1px solid var(--card-border);
     }
-    .app-content::-webkit-scrollbar { width: 4px; }
-    .app-content::-webkit-scrollbar-thumb { background: var(--card-border); border-radius: 4px; }
+    .top-header h2 { font-family: 'Playfair Display', serif; font-size: 24px; font-weight: 700; }
+
+    .content-body {
+      padding: 40px;
+      max-width: 1400px;
+      width: 100%;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+      flex: 1;
+    }
 
     .section-title {
       font-size: 12px; font-weight: 700; color: var(--text-muted); 
-      letter-spacing: 1.5px; margin-bottom: 12px; text-transform: uppercase;
+      letter-spacing: 1.5px; margin-bottom: 16px; text-transform: uppercase;
     }
 
     .clean-card {
-      background: var(--card-bg); backdrop-filter: blur(10px);
-      border-radius: 24px; padding: 20px;
-      border: 1px solid var(--card-border); 
+      background: var(--card-bg);
+      backdrop-filter: blur(10px);
+      border-radius: 24px;
+      padding: 24px;
+      border: 1px solid var(--card-border);
       box-shadow: var(--shadow-card);
     }
 
-    .book-item-card {
-      display: flex; gap: 16px; align-items: flex-start;
-      background: var(--card-bg); backdrop-filter: blur(10px);
-      border: 1px solid var(--card-border);
-      border-radius: 24px; padding: 18px; position: relative;
-      box-shadow: var(--shadow-card); transition: transform 0.2s ease;
+    /* MŘÍŽKA PRO KNIHY (GRID) */
+    .books-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 20px;
     }
+
+    .book-item-card {
+      display: flex; gap: 18px; align-items: flex-start;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 24px; padding: 20px; position: relative;
+      box-shadow: var(--shadow-card); transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .book-item-card:hover { transform: translateY(-2px); box-shadow: 0 14px 35px rgba(45, 27, 20, 0.08); }
+
     .book-cover {
-      width: 62px; height: 92px; object-fit: cover; border-radius: 12px;
+      width: 70px; height: 104px; object-fit: cover; border-radius: 12px;
       border: 1px solid rgba(0,0,0,0.06); background: #EFE6DC; flex-shrink: 0;
       box-shadow: 0 8px 16px rgba(0,0,0,0.12);
     }
     .book-info { flex: 1; min-width: 0; }
-    .book-title-text { font-family: 'Playfair Display', serif; font-size: 17px; font-weight: 700; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 2px; }
+    .book-title-text { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 700; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 2px; }
     .book-author-text { font-size: 13px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 8px; font-weight: 600; }
     
     .book-meta-row { display: flex; gap: 8px; align-items: center; margin-bottom: 12px; flex-wrap: wrap; }
     .genre-badge {
-      font-size: 10px; font-weight: 700; background: rgba(45, 27, 20, 0.05); color: var(--text-muted);
+      font-size: 10px; font-weight: 700; background: rgba(45, 27, 20, 0.04); color: var(--text-muted);
       padding: 4px 10px; border-radius: 10px; border: 1px solid var(--card-border);
     }
     .stars-display { font-size: 11px; color: var(--star-color); letter-spacing: 2px; }
 
     .progress-info { display: flex; justify-content: space-between; font-size: 11px; color: var(--text-muted); margin-bottom: 6px; font-weight: 700; }
     .mini-progress-bar { width: 100%; height: 8px; background: rgba(0,0,0,0.04); border-radius: 8px; overflow: hidden; border: 1px solid var(--card-border); margin-bottom: 12px; }
-    .mini-progress-fill { height: 100%; background: var(--accent); border-radius: 8px; transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+    .mini-progress-fill { height: 100%; background: var(--accent); border-radius: 8px; transition: width 0.4s ease; }
 
     .book-review-snippet {
       font-size: 12px; color: var(--text-muted); font-style: italic; background: rgba(194, 105, 61, 0.04);
@@ -203,8 +289,8 @@
 
     .btn-main {
       background: var(--btn-bg); color: var(--btn-text); border: none;
-      border-radius: 16px; padding: 14px 20px; font-weight: 700; font-size: 13px;
-      cursor: pointer; width: 100%; display: inline-flex; align-items: center;
+      border-radius: 16px; padding: 14px 22px; font-weight: 700; font-size: 13px;
+      cursor: pointer; display: inline-flex; align-items: center;
       justify-content: center; gap: 8px; transition: all 0.2s ease;
       box-shadow: 0 6px 20px rgba(45, 27, 20, 0.15);
     }
@@ -214,51 +300,40 @@
       background: var(--card-bg); color: var(--text-main); border: 1px solid var(--card-border);
       box-shadow: none;
     }
-    .btn-secondary:hover { background: rgba(255,255,255,0.95); transform: none; }
+    .btn-secondary:hover { background: rgba(255,255,255,1); transform: none; }
 
-    .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .stats-grid-dashboard { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; }
     .stat-card { 
-      background: rgba(255,255,255,0.6); border-radius: 20px; padding: 18px; 
-      border: 1px solid var(--card-border); text-align: center;
+      background: var(--card-bg); border-radius: 20px; padding: 24px; 
+      border: 1px solid var(--card-border); box-shadow: var(--shadow-card);
     }
-    .stat-card .val { font-size: 28px; font-weight: 700; color: var(--text-main); font-family: 'Playfair Display', serif; }
-    .stat-card .lbl { font-size: 10px; font-weight: 700; color: var(--text-muted); margin-top: 4px; text-transform: uppercase; letter-spacing: 0.8px; }
+    .stat-card .val { font-size: 36px; font-weight: 700; color: var(--text-main); font-family: 'Playfair Display', serif; }
+    .stat-card .lbl { font-size: 11px; font-weight: 700; color: var(--text-muted); margin-top: 6px; text-transform: uppercase; letter-spacing: 0.8px; }
     
-    .goal-box { display: flex; flex-direction: column; gap: 14px; }
-    .goal-bar-bg { width: 100%; background: rgba(0,0,0,0.04); border-radius: 10px; height: 10px; overflow: hidden; border: 1px solid var(--card-border); }
+    .goal-box { display: flex; flex-direction: column; gap: 16px; }
+    .goal-bar-bg { width: 100%; background: rgba(0,0,0,0.04); border-radius: 10px; height: 12px; overflow: hidden; border: 1px solid var(--card-border); }
     .goal-bar-fill { background: var(--accent); height: 100%; width: 0%; border-radius: 10px; transition: width 0.4s ease; }
 
-    .app-nav {
-      background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(12px);
-      border-top: 1px solid var(--card-border);
-      display: flex; justify-content: space-around; padding: 14px 12px 28px;
-      box-shadow: 0 -10px 30px rgba(45, 27, 20, 0.04);
-    }
-    .nav-item {
-      background: none; border: none; color: var(--text-muted); 
-      font-size: 11px; font-weight: 600; cursor: pointer; display: flex;
-      flex-direction: column; align-items: center; gap: 4px; flex: 1;
-      transition: color 0.2s ease;
-    }
-    .nav-item i { font-size: 18px; }
-    .nav-item.active { color: var(--accent); font-weight: 700; }
+    .tab-content { display: none; flex-direction: column; gap: 32px; }
+    .tab-content.active { display: flex; }
 
+    /* MODÁLNÍ OKNA */
     .modal-overlay {
-      position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
       background: rgba(26, 16, 12, 0.6); backdrop-filter: blur(8px); display: flex;
-      justify-content: center; align-items: flex-end; z-index: 100;
+      justify-content: center; align-items: center; z-index: 1000;
       opacity: 0; pointer-events: none; transition: opacity 0.25s ease;
     }
     .modal-overlay.open { opacity: 1; pointer-events: auto; }
-    .modal-sheet {
-      width: 100%; background: var(--app-bg); border-radius: 36px 36px 0 0; 
-      border-top: 1px solid var(--card-border); padding: 32px 24px 44px; 
-      max-height: 88vh; overflow-y: auto; box-shadow: 0 -20px 50px rgba(0,0,0,0.2);
-      transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.1, 0.9, 0.2, 1);
+    .modal-box {
+      width: 100%; max-width: 520px; background: var(--app-bg); border-radius: 28px; 
+      border: 1px solid var(--card-border); padding: 36px; 
+      max-height: 90vh; overflow-y: auto; box-shadow: 0 25px 60px rgba(0,0,0,0.25);
+      transform: scale(0.95); transition: transform 0.25s cubic-bezier(0.1, 0.9, 0.2, 1);
     }
-    .modal-overlay.open .modal-sheet { transform: translateY(0); }
+    .modal-overlay.open .modal-box { transform: scale(1); }
 
-    .form-group { margin-bottom: 16px; text-align: left; }
+    .form-group { margin-bottom: 18px; text-align: left; }
     .form-group label { display: block; font-size: 11px; font-weight: 700; margin-bottom: 6px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.8px; }
     .form-control {
       width: 100%; padding: 14px 16px; border: 1px solid var(--card-border);
@@ -266,23 +341,41 @@
       background: rgba(255,255,255,0.8); color: var(--text-main); outline: none; transition: border-color 0.2s;
     }
     .form-control:focus { border-color: var(--accent); background: #FFF; }
-    textarea.form-control { resize: vertical; min-height: 90px; line-height: 1.4; }
+    textarea.form-control { resize: vertical; min-height: 100px; line-height: 1.4; }
     
     .star-rating-input { display: flex; gap: 8px; font-size: 26px; color: var(--card-border); cursor: pointer; }
     .star-rating-input i.active { color: var(--star-color); }
 
-    .tab-content { display: none; flex-direction: column; gap: 18px; }
-    .tab-content.active { display: flex; }
-
     .search-results-box {
-      max-height: 220px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; margin-top: 10px;
+      max-height: 240px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; margin-top: 10px;
     }
     .search-result-item {
       display: flex; align-items: center; gap: 12px; padding: 10px; background: rgba(255,255,255,0.7);
       border: 1px solid var(--card-border); border-radius: 16px; cursor: pointer; transition: background 0.2s;
     }
     .search-result-item:hover { background: #FFF; }
-    .search-result-cover { width: 38px; height: 56px; object-fit: cover; border-radius: 8px; }
+    .search-result-cover { width: 40px; height: 58px; object-fit: cover; border-radius: 8px; }
+
+    /* RESPONZIVITA PRO MOBILNÍ ZAŘÍZENÍ (< 768px) */
+    @media (max-width: 767px) {
+      body { align-items: flex-end; }
+      .app-layout { flex-direction: column; height: 100vh; }
+      .sidebar {
+        position: fixed; bottom: 0; left: 0; width: 100%; height: auto;
+        flex-direction: row; padding: 12px 16px 28px; border-right: none;
+        border-top: 1px solid var(--card-border); z-index: 1000;
+        background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(12px);
+        justify-content: space-around;
+      }
+      .sidebar-brand, .sidebar-footer { display: none; }
+      .sidebar-nav { flex-direction: row; justify-content: space-around; width: 100%; gap: 0; }
+      .nav-btn { flex-direction: column; align-items: center; gap: 4px; padding: 8px; font-size: 10px; font-weight: 600; text-align: center; }
+      .nav-btn i { font-size: 20px; width: auto; }
+      .main-container { height: calc(100vh - 75px); }
+      .top-header { padding: 16px 20px; }
+      .content-body { padding: 20px; gap: 20px; margin-bottom: 60px; }
+      .books-grid { grid-template-columns: 1fr; }
+    }
   </style>
 </head>
 <body>
@@ -296,7 +389,7 @@
       <h1 id="auth-title">Knihomol</h1>
       <p id="auth-subtitle">Váš útulný čtenářský kabinet s vůní kávy.</p>
       
-      <button class="btn-main btn-secondary" onclick="handleGoogleLogin()" style="margin-bottom: 20px;">
+      <button class="btn-main btn-secondary" onclick="handleGoogleLogin()" style="margin-bottom: 20px; width: 100%;">
         <i class="fab fa-google" style="color: #DB4437;"></i> Pokračovat přes Google
       </button>
 
@@ -314,7 +407,7 @@
           <input type="password" id="auth-pass-confirm" class="form-control" placeholder="••••••••">
         </div>
 
-        <button class="btn-main" id="auth-submit-btn" onclick="handleAuthAction()" style="margin-top: 6px;">Pokračovat</button>
+        <button class="btn-main" id="auth-submit-btn" onclick="handleAuthAction()" style="margin-top: 6px; width: 100%;">Pokračovat</button>
         
         <div style="margin-top: 20px; font-size: 13px; color: var(--text-muted);">
           <span id="auth-switch-text">Nemáte ještě účet?</span> 
@@ -324,215 +417,226 @@
     </div>
   </div>
 
-  <!-- HLAVNÍ APLIKACE -->
-  <div class="app-frame" id="main-app-container" style="display: none;">
-    <header class="app-header">
-      <h1>Knihomol</h1>
-      <span class="header-badge" id="user-badge">Čtenář</span>
-    </header>
+  <!-- HLAVNÍ APLIKACE (DASHBOARD) -->
+  <div class="app-layout" id="main-app-container" style="display: none;">
+    
+    <!-- BOČNÍ PANEL (SIDEBAR) -->
+    <aside class="sidebar">
+      <div>
+        <div class="sidebar-brand">
+          <i class="fas fa-mug-hot"></i> Knihomol
+        </div>
+        <nav class="sidebar-nav">
+          <button class="nav-btn active" onclick="switchTab('prehled', this)"><i class="fas fa-house"></i> Přehled</button>
+          <button class="nav-btn" onclick="switchTab('knihovna', this)"><i class="fas fa-book-bookmark"></i> Knihovna</button>
+          <button class="nav-btn" onclick="switchTab('statistiky', this)"><i class="fas fa-chart-pie"></i> Statistiky</button>
+          <button class="nav-btn" onclick="switchTab('ucet', this)"><i class="fas fa-gear"></i> Nastavení</button>
+        </nav>
+      </div>
+      <div class="sidebar-footer">
+        <div class="user-pill"><i class="fas fa-circle-user" style="color: var(--accent); font-size: 18px;"></i> <span id="user-badge">Čtenář</span></div>
+      </div>
+    </aside>
 
-    <main class="app-content">
-      <!-- PŘEHLED -->
-      <div id="tab-prehled" class="tab-content active">
-        <div class="clean-card goal-box">
-          <div style="display: flex; justify-content: space-between; align-items: center;">
-            <div>
-              <span style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.8px;">Roční výzva</span>
-              <div style="font-size: 26px; font-weight: 700; color: var(--text-main); margin-top: 2px; font-family: 'Playfair Display', serif;">
-                <span id="goal-current-read">0</span> / <span id="goal-target-total">12</span> knih
+    <!-- HLAVNÍ OBSAHOVÁ OBLAST -->
+    <main class="main-container">
+      <header class="top-header">
+        <h2 id="page-heading">Přehled</h2>
+        <button class="btn-main" onclick="openAddBookModal()"><i class="fas fa-plus"></i> Přidat knihu</button>
+      </header>
+
+      <div class="content-body">
+        
+        <!-- PŘEHLED -->
+        <div id="tab-prehled" class="tab-content active">
+          <div class="clean-card goal-box">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <div>
+                <span style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.8px;">Roční výzva</span>
+                <div style="font-size: 32px; font-weight: 700; color: var(--text-main); margin-top: 2px; font-family: 'Playfair Display', serif;">
+                  <span id="goal-current-read">0</span> / <span id="goal-target-total">12</span> knih
+                </div>
               </div>
+              <button onclick="openGoalModal()" class="btn-main btn-secondary">Upravit cíl</button>
             </div>
-            <button onclick="openGoalModal()" class="btn-main btn-secondary" style="width: auto; padding: 8px 14px; font-size: 11px;">Upravit</button>
+            <div class="goal-bar-bg"><div class="goal-bar-fill" id="goal-bar-fill"></div></div>
+            <div style="font-size: 12px; color: var(--text-muted); text-align: right; font-weight: 700;" id="goal-percent-text">Splněno 0 %</div>
           </div>
-          <div class="goal-bar-bg"><div class="goal-bar-fill" id="goal-bar-fill"></div></div>
-          <div style="font-size: 11px; color: var(--text-muted); text-align: right; font-weight: 700;" id="goal-percent-text">Splněno 0 %</div>
-        </div>
 
-        <div>
-          <div class="section-title">Právě rozečteno</div>
-          <div id="home-reading-list" style="display: flex; flex-direction: column; gap: 12px;"></div>
-        </div>
+          <div>
+            <div class="section-title">Právě rozečteno</div>
+            <div id="home-reading-list" class="books-grid"></div>
+          </div>
 
-        <div>
-          <div class="section-title">Statistiky čtení</div>
-          <div class="clean-card" style="padding: 16px;">
-            <div class="stats-grid">
+          <div>
+            <div class="section-title">Statistiky čtení</div>
+            <div class="stats-grid-dashboard">
               <div class="stat-card"><div class="val" id="stat-pages">0</div><div class="lbl">Přečteno stran</div></div>
               <div class="stat-card"><div class="val" id="stat-books">0</div><div class="lbl">Přečtené knihy</div></div>
             </div>
           </div>
         </div>
-      </div>
 
-      <!-- KNIHOVNA -->
-      <div id="tab-knihovna" class="tab-content">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+        <!-- KNIHOVNA -->
+        <div id="tab-knihovna" class="tab-content">
           <div class="section-title" style="margin: 0;">Osobní knihovna</div>
+          <div id="library-books-list" class="books-grid"></div>
         </div>
-        <button class="btn-main" onclick="openAddBookModal()"><i class="fas fa-plus"></i> Přidat knihu (Open Library / Ručně)</button>
-        <div id="library-books-list" style="display: flex; flex-direction: column; gap: 14px; margin-top: 4px;"></div>
-      </div>
 
-      <!-- STATISTIKY -->
-      <div id="tab-statistiky" class="tab-content">
-        <div class="section-title">Aktivita</div>
-        <div class="clean-card" style="text-align: center; padding: 40px 20px; color: var(--text-muted); font-size: 14px; line-height: 1.6;">
-          <i class="fas fa-chart-line" style="font-size: 32px; color: var(--accent); margin-bottom: 12px; display: block;"></i>
-          Průběžné statistiky se automaticky plní podle zapsaných stránek v knihách.
-        </div>
-      </div>
-
-      <!-- NASTAVENÍ -->
-      <div id="tab-ucet" class="tab-content">
-        <div>
-          <div class="section-title">Účet</div>
-          <div class="clean-card">
-            <button class="btn-main btn-secondary" onclick="handleLogout()" style="color: #c94a4a; border-color: rgba(201, 74, 74, 0.3);">
-              <i class="fas fa-arrow-right-from-bracket"></i> Odhlásit se
-            </button>
+        <!-- STATISTIKY -->
+        <div id="tab-statistiky" class="tab-content">
+          <div class="section-title">Aktivita</div>
+          <div class="clean-card" style="text-align: center; padding: 60px 20px; color: var(--text-muted); font-size: 14px; line-height: 1.6;">
+            <i class="fas fa-chart-line" style="font-size: 40px; color: var(--accent); margin-bottom: 16px; display: block;">}</i>
+            Průběžné statistiky se automaticky plní podle zapsaného pokroku v knihách.
           </div>
         </div>
+
+        <!-- NASTAVENÍ -->
+        <div id="tab-ucet" class="tab-content">
+          <div>
+            <div class="section-title">Správa účtu</div>
+            <div class="clean-card" style="max-width: 400px;">
+              <button class="btn-main btn-secondary" onclick="handleLogout()" style="color: #c94a4a; border-color: rgba(201, 74, 74, 0.3); width: 100%;">
+                <i class="fas fa-arrow-right-from-bracket"></i> Odhlásit se ze systému
+              </button>
+            </div>
+          </div>
+        </div>
+
       </div>
     </main>
+  </div>
 
-    <!-- SPODNÍ NAVIGACE -->
-    <nav class="app-nav">
-      <button class="nav-item active" onclick="switchTab('prehled', this)"><i class="fas fa-house"></i>Přehled</button>
-      <button class="nav-item" onclick="switchTab('knihovna', this)"><i class="fas fa-book-bookmark"></i>Knihovna</button>
-      <button class="nav-item" onclick="switchTab('statistiky', this)"><i class="fas fa-chart-pie"></i>Statistiky</button>
-      <button class="nav-item" onclick="switchTab('ucet', this)"><i class="fas fa-gear"></i>Nastavení</button>
-    </nav>
-
-    <!-- MODAL: PŘIDÁNÍ / ÚPRAVA KNIHY -->
-    <div class="modal-overlay" id="modal-add-book">
-      <div class="modal-sheet">
-        <div class="section-title" id="modal-book-title-header" style="margin-bottom: 16px;">Přidat knihu</div>
+  <!-- MODÁL: PŘIDÁNÍ / ÚPRAVA KNIHY -->
+  <div class="modal-overlay" id="modal-add-book">
+    <div class="modal-box">
+      <div class="section-title" id="modal-book-title-header" style="margin-bottom: 20px;">Přidat knihu</div>
+      
+      <div id="search-step-container">
+        <div class="form-group">
+          <label>Hledat v Open Library</label>
+          <div style="display: flex; gap: 8px;">
+            <input type="text" id="api-search-input" class="form-control" placeholder="Název knihy nebo autor...">
+            <button class="btn-main" onclick="searchOpenLibrary()" style="width: auto; padding: 0 20px;"><i class="fas fa-search"></i></button>
+          </div>
+        </div>
+        <div id="search-results-container" class="search-results-box" style="display:none;"></div>
         
-        <div id="search-step-container">
-          <div class="form-group">
-            <label>Hledat v Open Library</label>
-            <div style="display: flex; gap: 8px;">
-              <input type="text" id="api-search-input" class="form-control" placeholder="Název knihy nebo autor...">
-              <button class="btn-main" onclick="searchOpenLibrary()" style="width: auto; padding: 0 18px;"><i class="fas fa-search"></i></button>
-            </div>
-          </div>
-          <div id="search-results-container" class="search-results-box" style="display:none;"></div>
-          
-          <div style="text-align: center; margin: 18px 0; color: var(--text-muted); font-size: 13px; font-weight: 600;">— nebo —</div>
-          <button class="btn-main btn-secondary" onclick="switchToManualForm()">Přidat knihu ručně</button>
+        <div style="text-align: center; margin: 20px 0; color: var(--text-muted); font-size: 13px; font-weight: 600;">— nebo —</div>
+        <button class="btn-main btn-secondary" onclick="switchToManualForm()" style="width: 100%;">Přidat knihu ručně</button>
+      </div>
+
+      <div id="manual-form-container" style="display: none;">
+        <input type="hidden" id="edit-book-index" value="-1">
+        <div class="form-group">
+          <label>Název knihy *</label>
+          <input type="text" id="book-title" class="form-control" placeholder="např. Hobit">
         </div>
-
-        <div id="manual-form-container" style="display: none;">
-          <input type="hidden" id="edit-book-index" value="-1">
+        <div class="form-group">
+          <label>Autor *</label>
+          <input type="text" id="book-author" class="form-control" placeholder="J. R. R. Tolkien">
+        </div>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
           <div class="form-group">
-            <label>Název knihy *</label>
-            <input type="text" id="book-title" class="form-control" placeholder="např. Hobit">
+            <label>Žánr</label>
+            <select id="book-genre" class="form-control">
+              <option value="Beletrie">Beletrie</option>
+              <option value="Fantasy / Sci-fi">Fantasy / Sci-fi</option>
+              <option value="Thriller / Krimi">Thriller / Krimi</option>
+              <option value="Literatura faktu">Literatura faktu</option>
+              <option value="Romantika">Romantika</option>
+              <option value="Poezie">Poezie</option>
+              <option value="Ostatní">Ostatní</option>
+            </select>
           </div>
           <div class="form-group">
-            <label>Autor *</label>
-            <input type="text" id="book-author" class="form-control" placeholder="J. R. R. Tolkien">
-          </div>
-          
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
-            <div class="form-group">
-              <label>Žánr</label>
-              <select id="book-genre" class="form-control">
-                <option value="Beletrie">Beletrie</option>
-                <option value="Fantasy / Sci-fi">Fantasy / Sci-fi</option>
-                <option value="Thriller / Krimi">Thriller / Krimi</option>
-                <option value="Literatura faktu">Literatura faktu</option>
-                <option value="Romantika">Romantika</option>
-                <option value="Poezie">Poezie</option>
-                <option value="Ostatní">Ostatní</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label>Stav</label>
-              <select id="book-status" class="form-control">
-                <option value="reading">Právě čtu</option>
-                <option value="tbr">Chci číst</option>
-                <option value="read">Přečteno</option>
-              </select>
-            </div>
-          </div>
-
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
-            <div class="form-group">
-              <label>Celkem stran</label>
-              <input type="number" id="book-total-pages" class="form-control" value="300" min="1">
-            </div>
-            <div class="form-group">
-              <label>Přečteno stran</label>
-              <input type="number" id="book-current-pages" class="form-control" value="0" min="0">
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label>Hodnocení</label>
-            <div class="star-rating-input" id="star-input-container">
-              <i class="fas fa-star" onclick="setRating(1)"></i>
-              <i class="fas fa-star" onclick="setRating(2)"></i>
-              <i class="fas fa-star" onclick="setRating(3)"></i>
-              <i class="fas fa-star" onclick="setRating(4)"></i>
-              <i class="fas fa-star" onclick="setRating(5)"></i>
-            </div>
-            <input type="hidden" id="book-rating" value="0">
-          </div>
-
-          <div class="form-group">
-            <label>Recenze / Poznámky</label>
-            <textarea id="book-review" class="form-control" placeholder="Jak se vám kniha líbila? Jaké myšlenky stojí za zapamatování..."></textarea>
-          </div>
-
-          <input type="hidden" id="book-selected-cover" value="">
-          
-          <div style="display: flex; gap: 10px; margin-top: 24px;">
-            <button class="btn-main" onclick="saveBookFromModal()">Uložit knihu</button>
-            <button class="btn-main btn-secondary" onclick="resetAddBookModal()">Zpět</button>
+            <label>Stav</label>
+            <select id="book-status" class="form-control">
+              <option value="reading">Právě čtu</option>
+              <option value="tbr">Chci číst</option>
+              <option value="read">Přečteno</option>
+            </select>
           </div>
         </div>
 
-        <div style="margin-top: 16px; text-align: right;" id="modal-close-container">
-          <button class="btn-main btn-secondary" onclick="closeModal('modal-add-book')" style="font-size: 12px; padding: 6px 14px; width: auto;">Zavřít</button>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+          <div class="form-group">
+            <label>Celkem stran</label>
+            <input type="number" id="book-total-pages" class="form-control" value="300" min="1">
+          </div>
+          <div class="form-group">
+            <label>Přečteno stran</label>
+            <input type="number" id="book-current-pages" class="form-control" value="0" min="0">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Hodnocení</label>
+          <div class="star-rating-input" id="star-input-container">
+            <i class="fas fa-star" onclick="setRating(1)"></i>
+            <i class="fas fa-star" onclick="setRating(2)"></i>
+            <i class="fas fa-star" onclick="setRating(3)"></i>
+            <i class="fas fa-star" onclick="setRating(4)"></i>
+            <i class="fas fa-star" onclick="setRating(5)"></i>
+          </div>
+          <input type="hidden" id="book-rating" value="0">
+        </div>
+
+        <div class="form-group">
+          <label>Recenze / Poznámky</label>
+          <textarea id="book-review" class="form-control" placeholder="Jak se vám kniha líbila? Jaké myšlenky stojí za zapamatování..."></textarea>
+        </div>
+
+        <input type="hidden" id="book-selected-cover" value="">
+        
+        <div style="display: flex; gap: 12px; margin-top: 24px;">
+          <button class="btn-main" onclick="saveBookFromModal()" style="flex:1;">Uložit knihu</button>
+          <button class="btn-main btn-secondary" onclick="resetAddBookModal()">Zpět</button>
         </div>
       </div>
-    </div>
 
-    <!-- MODAL: PROGRES -->
-    <div class="modal-overlay" id="modal-progress">
-      <div class="modal-sheet">
-        <div class="section-title" style="margin-bottom: 16px;">Aktualizovat progres</div>
-        <input type="hidden" id="prog-book-index">
-        <div class="form-group">
-          <label id="prog-book-label">Přečteno stran</label>
-          <input type="number" id="prog-input-pages" class="form-control" min="0">
-        </div>
-        <div style="display: flex; gap: 10px; margin-top: 24px;">
-          <button class="btn-main" onclick="saveProgressModal()">Uložit progres</button>
-          <button class="btn-main btn-secondary" onclick="closeModal('modal-progress')">Zrušit</button>
-        </div>
+      <div style="margin-top: 20px; text-align: right;" id="modal-close-container">
+        <button class="btn-main btn-secondary" onclick="closeModal('modal-add-book')" style="font-size: 12px; padding: 8px 16px;">Zavřít</button>
       </div>
     </div>
+  </div>
 
-    <!-- MODAL: CÍL -->
-    <div class="modal-overlay" id="modal-goal">
-      <div class="modal-sheet">
-        <div class="section-title" style="margin-bottom: 16px;">Roční čtenářský cíl</div>
-        <div class="form-group">
-          <label>Počet knih za rok</label>
-          <input type="number" id="goal-input-val" class="form-control" min="1" max="365" value="12">
-        </div>
-        <div style="display: flex; gap: 10px; margin-top: 24px;">
-          <button class="btn-main" onclick="saveGoal()">Uložit cíl</button>
-          <button class="btn-main btn-secondary" onclick="closeModal('modal-goal')">Zrušit</button>
-        </div>
+  <!-- MODÁL: PROGRES -->
+  <div class="modal-overlay" id="modal-progress">
+    <div class="modal-box" style="max-width: 400px;">
+      <div class="section-title" style="margin-bottom: 16px;">Aktualizovat progres</div>
+      <input type="hidden" id="prog-book-index">
+      <div class="form-group">
+        <label id="prog-book-label">Přečteno stran</label>
+        <input type="number" id="prog-input-pages" class="form-control" min="0">
+      </div>
+      <div style="display: flex; gap: 10px; margin-top: 24px;">
+        <button class="btn-main" onclick="saveProgressModal()" style="flex:1;">Uložit</button>
+        <button class="btn-main btn-secondary" onclick="closeModal('modal-progress')">Zrušit</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODÁL: CÍL -->
+  <div class="modal-overlay" id="modal-goal">
+    <div class="modal-box" style="max-width: 400px;">
+      <div class="section-title" style="margin-bottom: 16px;">Roční čtenářský cíl</div>
+      <div class="form-group">
+        <label>Počet knih za rok</label>
+        <input type="number" id="goal-input-val" class="form-control" min="1" max="365" value="12">
+      </div>
+      <div style="display: flex; gap: 10px; margin-top: 24px;">
+        <button class="btn-main" onclick="saveGoal()" style="flex:1;">Uložit cíl</button>
+        <button class="btn-main btn-secondary" onclick="closeModal('modal-goal')">Zrušit</button>
       </div>
     </div>
   </div>
 
   <script>
-    let userBooks = JSON.parse(localStorage.getItem('knihomol_books_coffee_v4')) || [];
-    let annualGoal = parseInt(localStorage.getItem('knihomol_goal_coffee_v4')) || 12;
+    let userBooks = JSON.parse(localStorage.getItem('knihomol_books_dashboard_v1')) || [];
+    let annualGoal = parseInt(localStorage.getItem('knihomol_goal_dashboard_v1')) || 12;
     window.isRegisterMode = false;
 
     function renderAll() {
@@ -574,8 +678,8 @@
 
       if(readingBooks.length === 0) {
         container.innerHTML = `
-          <div class="clean-card" style="text-align: center; padding: 24px; color: var(--text-muted); font-size: 13px; line-height: 1.5;">
-            Momentálně nečteš žádnou knihu.<br>V knihovně ji přepni do stavu „Právě čtu“.
+          <div class="clean-card" style="grid-column: 1 / -1; text-align: center; padding: 32px; color: var(--text-muted); font-size: 14px;">
+            Momentálně nečteš žádnou knihu. V knihovně ji přepni do stavu „Právě čtu“.
           </div>`;
         return;
       }
@@ -587,7 +691,7 @@
 
         return `
           <div class="book-item-card">
-            <img src="${book.coverUrl || 'https://via.placeholder.com/62x92?text=Kniha'}" class="book-cover" alt="Obálka">
+            <img src="${book.coverUrl || 'https://via.placeholder.com/70x104?text=Kniha'}" class="book-cover" alt="Obálka">
             <div class="book-info">
               <div class="book-title-text">${escapeHtml(book.title)}</div>
               <div class="book-author-text">${escapeHtml(book.author)}</div>
@@ -607,8 +711,8 @@
 
               <div class="book-actions-row">
                 <span class="book-status-badge">Právě čtu</span>
-                <button onclick="openProgressModal(${book.originalIndex})" class="btn-main btn-secondary" style="padding: 6px 12px; font-size: 11px; width: auto;" title="Aktualizovat stránky">
-                  <i class="fas fa-bookmark"></i> Aktualizovat
+                <button onclick="openProgressModal(${book.originalIndex})" class="btn-main btn-secondary" style="padding: 6px 12px; font-size: 11px;" title="Aktualizovat stránky">
+                  <i class="fas fa-bookmark"></i> Stránky
                 </button>
               </div>
             </div>
@@ -621,8 +725,8 @@
       const listContainer = document.getElementById('library-books-list');
       if(userBooks.length === 0) {
         listContainer.innerHTML = `
-          <div class="clean-card" style="text-align: center; padding: 32px 20px; color: var(--text-muted); font-size: 14px; line-height: 1.5;">
-            Vaše knihovna je zatím prázdná.<br>Přidejte svou první knihu.
+          <div class="clean-card" style="grid-column: 1 / -1; text-align: center; padding: 40px 20px; color: var(--text-muted); font-size: 14px;">
+            Vaše knihovna je zatím prázdná. Klikněte nahoře na „Přidat knihu“.
           </div>`;
         return;
       }
@@ -635,7 +739,7 @@
 
         return `
           <div class="book-item-card">
-            <img src="${book.coverUrl || 'https://via.placeholder.com/62x92?text=Kniha'}" class="book-cover" alt="Obálka">
+            <img src="${book.coverUrl || 'https://via.placeholder.com/70x104?text=Kniha'}" class="book-cover" alt="Obálka">
             <div class="book-info">
               <div class="book-title-text">${escapeHtml(book.title)}</div>
               <div class="book-author-text">${escapeHtml(book.author)}</div>
@@ -658,13 +762,13 @@
               <div class="book-actions-row">
                 <span class="book-status-badge">${statusLabels[book.status] || book.status}</span>
                 <div style="display: flex; gap: 6px;">
-                  <button onclick="openEditBookModal(${index})" class="btn-main btn-secondary" style="padding: 6px 10px; font-size: 11px; width: auto;" title="Upravit / Recenze">
+                  <button onclick="openEditBookModal(${index})" class="btn-main btn-secondary" style="padding: 6px 10px; font-size: 11px;" title="Upravit">
                     <i class="fas fa-pen"></i>
                   </button>
-                  <button onclick="openProgressModal(${index})" class="btn-main btn-secondary" style="padding: 6px 10px; font-size: 11px; width: auto;" title="Upravit stránky">
+                  <button onclick="openProgressModal(${index})" class="btn-main btn-secondary" style="padding: 6px 10px; font-size: 11px;" title="Stránky">
                     <i class="fas fa-bookmark"></i>
                   </button>
-                  <button onclick="deleteBook(${index})" class="btn-main btn-secondary" style="padding: 6px 10px; font-size: 11px; width: auto; color: #c94a4a;" title="Smazat">
+                  <button onclick="deleteBook(${index})" class="btn-main btn-secondary" style="padding: 6px 10px; font-size: 11px; color: #c94a4a;" title="Smazat">
                     <i class="fas fa-trash-can"></i>
                   </button>
                 </div>
@@ -705,7 +809,7 @@
           
           return `
             <div class="search-result-item" onclick="selectBookFromApi('${escapeHtml(title)}', '${escapeHtml(author)}', ${pages}, '${coverUrl}')">
-              <img src="${coverUrl || 'https://via.placeholder.com/38x56?text=?'}" class="search-result-cover">
+              <img src="${coverUrl || 'https://via.placeholder.com/40x58?text=?'}" class="search-result-cover">
               <div style="flex:1; min-width:0;">
                 <div style="font-size:13px; font-weight:700; color:var(--text-main); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; font-family:'Playfair Display',serif;">${escapeHtml(title)}</div>
                 <div style="font-size:11px; color:var(--text-muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; font-weight:600;">${escapeHtml(author)}</div>
@@ -813,7 +917,7 @@
         userBooks.push({ title, author, genre, totalPages, currentPage, status, rating, review, coverUrl });
       }
 
-      localStorage.setItem('knihomol_books_coffee_v4', JSON.stringify(userBooks));
+      localStorage.setItem('knihomol_books_dashboard_v1', JSON.stringify(userBooks));
 
       closeModal('modal-add-book');
       resetAddBookModal();
@@ -835,7 +939,7 @@
       if(userBooks[index]) {
         userBooks[index].currentPage = Math.min(newPages, userBooks[index].totalPages);
         if(userBooks[index].currentPage >= userBooks[index].totalPages) userBooks[index].status = 'read';
-        localStorage.setItem('knihomol_books_coffee_v4', JSON.stringify(userBooks));
+        localStorage.setItem('knihomol_books_dashboard_v1', JSON.stringify(userBooks));
       }
       closeModal('modal-progress');
       renderAll();
@@ -844,7 +948,7 @@
     function deleteBook(index) {
       if(confirm("Opravdu smazat knihu?")) {
         userBooks.splice(index, 1);
-        localStorage.setItem('knihomol_books_coffee_v4', JSON.stringify(userBooks));
+        localStorage.setItem('knihomol_books_dashboard_v1', JSON.stringify(userBooks));
         renderAll();
       }
     }
@@ -878,9 +982,12 @@
 
     function switchTab(tabId, btn) {
       document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-      document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
       document.getElementById('tab-' + tabId).classList.add('active');
       if(btn) btn.classList.add('active');
+
+      const headings = { prehled: 'Přehled', knihovna: 'Osobní knihovna', statistiky: 'Statistiky', ucet: 'Nastavení' };
+      document.getElementById('page-heading').textContent = headings[tabId] || 'Knihomol';
     }
 
     function openAddBookModal() { resetAddBookModal(); document.getElementById('modal-add-book').classList.add('open'); }
@@ -889,7 +996,7 @@
 
     function saveGoal() {
       const val = parseInt(document.getElementById('goal-input-val').value);
-      if(val > 0) { annualGoal = val; localStorage.setItem('knihomol_goal_coffee_v4', annualGoal); renderGoal(); }
+      if(val > 0) { annualGoal = val; localStorage.setItem('knihomol_goal_dashboard_v1', annualGoal); renderGoal(); }
       closeModal('modal-goal');
     }
   </script>
