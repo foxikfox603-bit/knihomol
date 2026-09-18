@@ -4,6 +4,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>KNIHOMOL 📚</title>
+    
+    <!-- PWA Manifest pro instalaci na plochu -->
+    <link rel="manifest" href='data:application/manifest+json,{
+        "name": "Knihomol",
+        "short_name": "Knihomol",
+        "start_url": ".",
+        "display": "standalone",
+        "background_color": "#f5f7fa",
+        "theme_color": "#FF6B6B",
+        "icons": [
+            {
+                "src": "https://raw.githubusercontent.com/fortawesome/Font-Awesome/6.x/svgs/solid/book-open.svg",
+                "sizes": "192x192 512x512",
+                "type": "image/svg+xml"
+            }
+        ]
+    }'>
+
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <!-- FontAwesome Icons -->
