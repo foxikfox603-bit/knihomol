@@ -233,38 +233,23 @@
         .admin-table th { color: #888; font-weight: 600; background: #f8f9fa; }
     </style>
 
-    <!-- FIREBASE MODULES -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import {  
-            getAuth,  
-            createUserWithEmailAndPassword,  
-            signInWithEmailAndPassword,  
-            signOut,  
-            onAuthStateChanged  
-        } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyAskaujKDExzAVlb_1luskQDXm7LEMlrtcU",
-            authDomain: "knihomol-c559a.firebaseapp.com",
-            projectId: "knihomol-c559a",
-            storageBucket: "knihomol-c559a.firebasestorage.app",
-            messagingSenderId: "341475099358",
-            appId: "1:341475099358:web:d748b9f1f3dbe2e0d7f84f",
-            measurementId: "G-1LWDHMEQXW"
-        };
-
-        let app, auth;
+    <!-- SUPABASE SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        // Zde vlož své reálné Supabase údaje, pokud se liší
+        const SUPABASE_URL = 'https://tvuj-supabase-projekt.supabase.co';
+        const SUPABASE_ANON_KEY = 'tvuj-supabase-anon-key';
+        
+        let supabaseClient = null;
         try {
-            app = initializeApp(firebaseConfig);
-            auth = getAuth(app);
-        } catch (e) {
-            console.error("Firebase init error:", e);
+            supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        } catch(e) {
+            console.error("Supabase init error:", e);
         }
 
         const ADMIN_EMAIL = "foxikfox603@gmail.com";
         let isRegister = false;
-        
+
         window.toggleAuthMode = function() {
             isRegister = !isRegister;
             const confField = document.getElementById('auth-confirm-pass');
@@ -279,6 +264,11 @@
         };
 
         window.handleAuth = async function() {
+            if (!supabaseClient) {
+                alert("Supabase není správně inicializovaný. Zkontroluj URL a klíč.");
+                return;
+            }
+
             const email = document.getElementById('auth-email').value.trim();
             const pass = document.getElementById('auth-pass').value.trim();
             const confPass = document.getElementById('auth-confirm-pass').value.trim();
@@ -296,9 +286,12 @@
 
             try {
                 if(isRegister) {
-                    await createUserWithEmailAndPassword(auth, email, pass);
+                    const { data, error } = await supabaseClient.auth.signUp({ email, password: pass });
+                    if (error) throw error;
+                    alert("Registrace proběhla úspěšně! Pokud je zapnuté potvrzování e-mailů v Supabase, zkontroluj schránku.");
                 } else {
-                    await signInWithEmailAndPassword(auth, email, pass);
+                    const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password: pass });
+                    if (error) throw error;
                 }
             } catch (err) {
                 errBox.textContent = "Chyba: " + err.message;
@@ -308,48 +301,60 @@
 
         window.logout = async function() {
             if(confirm("Opravdu se chceš odhlásit?")) {
-                await signOut(auth);
+                if(supabaseClient) await supabaseClient.auth.signOut();
+                location.reload();
             }
         };
 
-        if (auth) {
-            onAuthStateChanged(auth, (user) => {
-                const overlay = document.getElementById('auth-overlay');
-                if (user) {
-                    overlay.style.display = 'none';
-                    const email = user.email || "";
-                    const defaultName = email.split('@')[0];
-                    
-                    let profile = JSON.parse(localStorage.getItem('knihomol_user_profile')) || { name: defaultName, bio: "Vášnivý čtenář a milovník knih.", avatar: "" };
-                    
-                    document.getElementById('welcome-msg').textContent = `Ahoj, ${profile.name}! ✨`;
-                    document.getElementById('prof-email').value = email;
-                    document.getElementById('prof-name').value = profile.name;
-                    document.getElementById('prof-bio').value = profile.bio;
-                    
-                    updateAvatarDisplay(profile.avatar, profile.name);
+        // Ověření stavu přihlášení při načtení
+        window.addEventListener('DOMContentLoaded', async () => {
+            if (!supabaseClient) return;
 
-                    const adminBtn = document.getElementById('admin-nav-btn');
-                    if(email.toLowerCase() === ADMIN_EMAIL.toLowerCase()) {
-                        adminBtn.style.display = 'flex';
-                        document.getElementById('admin-email-display').textContent = ADMIN_EMAIL;
-                    } else {
-                        adminBtn.style.display = 'none';
-                    }
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            handleSessionUser(session?.user);
 
-                    let stats = JSON.parse(localStorage.getItem('knihomol_stats')) || { visits: 0, logs: [] };
-                    stats.visits += 1;
-                    stats.logs.unshift({ time: new Date().toLocaleString('cs-CZ'), user: email });
-                    if(stats.logs.length > 20) stats.logs.pop();
-                    localStorage.setItem('knihomol_stats', JSON.stringify(stats));
-                } else {
-                    overlay.style.display = 'flex';
-                }
+            supabaseClient.auth.onAuthStateChange((event, session) => {
+                handleSessionUser(session?.user);
             });
+        });
+
+        function handleSessionUser(user) {
+            const overlay = document.getElementById('auth-overlay');
+            if (user) {
+                overlay.style.display = 'none';
+                const email = user.email || "";
+                const defaultName = email.split('@')[0];
+                
+                let profile = JSON.parse(localStorage.getItem('knihomol_user_profile')) || { name: defaultName, bio: "Vášnivý čtenář a milovník knih.", avatar: "" };
+                
+                document.getElementById('welcome-msg').textContent = `Ahoj, ${profile.name}! ✨`;
+                document.getElementById('prof-email').value = email;
+                document.getElementById('prof-name').value = profile.name;
+                document.getElementById('prof-bio').value = profile.bio;
+                
+                updateAvatarDisplay(profile.avatar, profile.name);
+
+                const adminBtn = document.getElementById('admin-nav-btn');
+                if(email.toLowerCase() === ADMIN_EMAIL.toLowerCase()) {
+                    adminBtn.style.display = 'flex';
+                    document.getElementById('admin-email-display').textContent = ADMIN_EMAIL;
+                } else {
+                    adminBtn.style.display = 'none';
+                }
+
+                let stats = JSON.parse(localStorage.getItem('knihomol_stats')) || { visits: 0, logs: [] };
+                stats.visits += 1;
+                stats.logs.unshift({ time: new Date().toLocaleString('cs-CZ'), user: email });
+                if(stats.logs.length > 20) stats.logs.pop();
+                localStorage.setItem('knihomol_stats', JSON.stringify(stats));
+            } else {
+                overlay.style.display = 'flex';
+            }
         }
 
         function updateAvatarDisplay(avatarUrl, name) {
             const container = document.getElementById('profile-avatar-wrapper');
+            if(!container) return;
             if(avatarUrl) {
                 container.innerHTML = `<img src="${avatarUrl}" class="profile-avatar" id="avatar-img-el"><label class="avatar-upload-label" title="Změnit profilovku"><i class="fas fa-camera"></i><input type="file" id="avatar-file-input" accept="image/*" style="display:none;" onchange="handleImageUpload(event)"></label>`;
             } else {
@@ -550,6 +555,7 @@
         </main>
     </div>
 
+    <!-- LOGIKA APLIKACE -->
     <script>
         let books = JSON.parse(localStorage.getItem('knihomol_books')) || [
             { title: "Hobit", author: "J. R. R. Tolkien", totalPages: 320, currentPage: 120, status: "reading", genre: "Fantasy", rating: 5, cover: "https://covers.openlibrary.org/b/id/8431969-M.jpg" }
