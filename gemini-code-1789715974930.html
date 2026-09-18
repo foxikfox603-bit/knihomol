@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Knihomol - Čtenářská síť</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,700;9..144,800;9..144,900&family=Plus+Jakarta+Sans:wght@500;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-cream: #F9F6F0;
+      --card-bg: #FFFFFF;
+      --text-main: #2C2623;
+      --text-muted: #7A726A;
+      --terracotta: #C86D51;
+      --terracotta-light: #F4E8E3;
+      --sage: #7A8B7B;
+      --sage-light: #EBF0EC;
+      --wood-shelf: #D0B8A2;
+      --border-subtle: #E8E2D9;
+      --font-heading: 'Fraunces', serif;
+      --font-body: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-tap-highlight-color: transparent; }
+    body { background-color: #1A1817; font-family: var(--font-body); color: var(--text-main); display: flex; justify-content: center; align-items: center; min-height: 100vh; font-weight: 500; }
+
+    .app-frame { width: 100%; max-width: 414px; height: 100vh; max-height: 896px; background-color: var(--bg-cream); display: flex; flex-direction: column; position: relative; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
+    .app-header { padding: 24px 20px 16px; background: var(--bg-cream); border-bottom: 1px solid var(--border-subtle); display: flex; justify-content: space-between; align-items: center; }
+    .app-header h1 { font-family: var(--font-heading); font-size: 28px; font-weight: 800; color: var(--text-main); }
+    .header-badge { font-size: 12px; background: var(--terracotta-light); color: var(--terracotta); padding: 5px 12px; border-radius: 20px; font-weight: 800; }
+
+    .app-content { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 20px; }
+    .section-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 12px; }
+    .section-title { font-family: var(--font-heading); font-size: 22px; font-weight: 800; }
+    .artsy-card { background: var(--card-bg); border-radius: 16px; padding: 18px; border: 1px solid var(--border-subtle); }
+    
+    .empty-state { text-align: center; padding: 24px 16px; color: var(--text-muted); }
+    .empty-state-icon { font-size: 34px; margin-bottom: 8px; }
+
+    .btn-artsy { background-color: var(--terracotta); color: white; border: none; border-radius: 12px; padding: 14px 18px; font-family: var(--font-body); font-weight: 800; font-size: 14px; cursor: pointer; width: 100%; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
+    .btn-secondary { background-color: var(--sage-light); color: var(--sage); }
+
+    .shelf-group { margin-bottom: 18px; }
+    .shelf-label { font-family: var(--font-heading); font-size: 18px; font-weight: 800; margin-bottom: 8px; display: flex; justify-content: space-between; }
+    .wooden-shelf { background: var(--card-bg); border-bottom: 5px solid var(--wood-shelf); border-radius: 8px 8px 0 0; min-height: 70px; padding: 8px 12px; display: flex; gap: 10px; align-items: flex-end; overflow-x: auto; }
+    
+    .shelf-book-cover { width: 38px; height: 56px; border-radius: 4px; object-fit: cover; cursor: pointer; box-shadow: -2px 0 5px rgba(0,0,0,0.2); }
+    .shelf-book-spine { width: 32px; height: 56px; background: var(--terracotta); border-radius: 3px; color: white; font-size: 10px; writing-mode: vertical-rl; text-align: center; padding: 3px; font-weight: 800; cursor: pointer; }
+
+    .app-nav { background: var(--card-bg); border-top: 1px solid var(--border-subtle); display: flex; justify-content: space-around; padding: 10px 4px 18px; }
+    .nav-item { background: none; border: none; color: var(--text-muted); font-family: var(--font-body); font-size: 11px; font-weight: 700; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px; flex: 1; }
+    .nav-item.active { color: var(--terracotta); font-weight: 800; }
+
+    .modal-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(44, 38, 35, 0.5); backdrop-filter: blur(4px); display: flex; justify-content: center; align-items: flex-end; z-index: 100; opacity: 0; pointer-events: none; transition: opacity 0.2s ease; }
+    .modal-overlay.open { opacity: 1; pointer-events: auto; }
+    .modal-sheet { width: 100%; background: var(--bg-cream); border-radius: 24px 24px 0 0; padding: 24px 20px 32px; max-height: 85vh; overflow-y: auto; }
+
+    .form-group { margin-bottom: 14px; position: relative; }
+    .form-group label { display: block; font-size: 13px; font-weight: 800; margin-bottom: 6px; }
+    .form-control { width: 100%; padding: 12px; border: 1px solid var(--border-subtle); border-radius: 10px; font-family: var(--font-body); font-size: 14px; font-weight: 700; background: var(--card-bg); outline: none; }
+    
+    .search-results { position: absolute; top: 100%; left: 0; right: 0; background: white; border: 1px solid var(--border-subtle); border-radius: 10px; max-height: 200px; overflow-y: auto; z-index: 50; display: none; }
+    .search-item { padding: 10px; display: flex; gap: 10px; align-items: center; border-bottom: 1px solid var(--border-subtle); cursor: pointer; }
+    .search-item img { width: 30px; height: 45px; object-fit: cover; border-radius: 3px; }
+
+    .tab-content { display: none; }
+    .tab-content.active { display: flex; flex-direction: column; gap: 20px; }
+  </style>
+</head>
+<body>
+
+  <div class="app-frame">
+    <header class="app-header">
+      <h1>Knihomol</h1>
+      <span class="header-badge" id="user-badge">Profil</span>
+    </header>
+
+    <main class="app-content">
+      <!-- TAB 1: PŘEHLED -->
+      <div id="tab-prehled" class="tab-content active">
+        <div class="section-header"><div class="section-title">Právě čtu</div></div>
+        <div class="artsy-card" id="currently-reading-box">
+          <div class="empty-state">
+            <div class="empty-state-icon">📖</div>
+            <p>Zatím nemáš rozečtenou žádnou knihu.</p>
+            <button class="btn-artsy" onclick="switchTab('knihovna', document.querySelectorAll('.nav-item')[1])">Vybrat z knihovny</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 2: KNIHOVNA -->
+      <div id="tab-knihovna" class="tab-content">
+        <div class="section-header">
+          <div class="section-title">Moje Poličky</div>
+          <span style="font-size: 12px; color: var(--text-muted); font-weight: 700;" id="total-books-count">0 knih</span>
+        </div>
+        <button class="btn-artsy" onclick="openAddBookModal()">+ Přidat knihu do databáze</button>
+        <div id="shelves-container"></div>
+      </div>
+
+      <!-- TAB 5: ÚČET -->
+      <div id="tab-ucet" class="tab-content">
+        <div class="section-header"><div class="section-title">Můj Profil</div></div>
+        <div class="artsy-card">
+          <div style="display: flex; gap: 16px; align-items: center; margin-bottom: 16px;">
+            <img id="avatar-preview" src="https://via.placeholder.com/70" style="width: 70px; height: 70px; border-radius: 50%; object-fit: cover;">
+            <div>
+              <h3 id="profile-name" style="font-family: var(--font-heading); font-size: 18px;">Čtenář</h3>
+              <p id="profile-bio" style="font-size: 12px; color: var(--text-muted);">Knihomolská duše</p>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Nahrát profilovku</label>
+            <input type="file" id="avatar-input" accept="image/*" class="form-control" onchange="loadAvatar(event)">
+          </div>
+          <div class="form-group">
+            <label>Jméno / Nickname</label>
+            <input type="text" id="username-input" class="form-control" placeholder="Tvoje jméno">
+          </div>
+          <div class="form-group">
+            <label>Bio (O mně)</label>
+            <input type="text" id="bio-input" class="form-control" placeholder="Co nejraději čteš?">
+          </div>
+          <button class="btn-artsy" onclick="saveProfile()">Uložit profil</button>
+        </div>
+      </div>
+    </main>
+
+    <nav class="app-nav">
+      <button class="nav-item active" onclick="switchTab('prehled', this)"><span class="nav-icon">📜</span>Přehled</button>
+      <button class="nav-item" onclick="switchTab('knihovna', this)"><span class="nav-icon">📚</span>Knihovna</button>
+      <button class="nav-item" onclick="switchTab('ucet', this)"><span class="nav-icon">👤</span>Profil</button>
+    </nav>
+
+    <!-- Modal: Add Book -->
+    <div class="modal-overlay" id="modal-add-book">
+      <div class="modal-sheet">
+        <div class="section-title" style="margin-bottom: 16px;">Přidat knihu</div>
+        <div class="form-group">
+          <label>Vyhledat v databázi *</label>
+          <input type="text" id="book-search" class="form-control" placeholder="Zadej název knihy..." oninput="searchGoogleBooks(this.value)">
+          <div class="search-results" id="search-results"></div>
+        </div>
+        <div class="form-group">
+          <label>Název knihy</label>
+          <input type="text" id="book-title" class="form-control">
+        </div>
+        <div class="form-group">
+          <label>Autor</label>
+          <input type="text" id="book-author" class="form-control">
+        </div>
+        <div class="form-group">
+          <label>Nahrát obálku (dobrovolné)</label>
+          <input type="file" id="book-cover-input" accept="image/*" class="form-control" onchange="previewCover(event)">
+        </div>
+        <div class="form-group">
+          <label>Žánrová polička</label>
+          <select id="book-genre" class="form-control"></select>
+        </div>
+        <div style="display: flex; gap: 10px; margin-top: 20px;">
+          <button class="btn-artsy" onclick="submitNewBook()">Uložit</button>
+          <button class="btn-artsy btn-secondary" onclick="closeModal('modal-add-book')">Zrušit</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const GENRES = ["Biografie", "Dark Romance", "Detektivní", "Fantasy", "Horor", "Klasika", "Komiks", "Poezie", "Romance", "Romantasy", "Sci-fi", "Thriller", "Young Adult"];
+    let userBooks = [];
+    let customCoverBase64 = '';
+
+    function initShelves() {
+      const container = document.getElementById('shelves-container');
+      const select = document.getElementById('book-genre');
+      container.innerHTML = ''; select.innerHTML = '';
+      GENRES.forEach(genre => {
+        const opt = document.createElement('option'); opt.value = genre; opt.textContent = genre; select.appendChild(opt);
+        const div = document.createElement('div'); div.className = 'shelf-group';
+        div.innerHTML = `<div class="shelf-label"><span>${genre}</span></div><div class="wooden-shelf" id="shelf-${slugify(genre)}"></div>`;
+        container.appendChild(div);
+      });
+    }
+
+    function slugify(text) { return text.toLowerCase().replace(/[^a-z0-9]/g, '-'); }
+    function switchTab(tabId, btn) {
+      document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+      document.getElementById('tab-' + tabId).classList.add('active');
+      if(btn) btn.classList.add('active');
+    }
+
+    function openAddBookModal() { document.getElementById('modal-add-book').classList.add('open'); }
+    function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+    function searchGoogleBooks(q) {
+      if(q.length < 3) return;
+      fetch(`https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(q)}&maxResults=3`)
+        .then(r => r.json()).then(data => {
+          const res = document.getElementById('search-results'); res.innerHTML = '';
+          if(!data.items) return;
+          data.items.forEach(item => {
+            const info = item.volumeInfo;
+            const img = info.imageLinks ? info.imageLinks.thumbnail : '';
+            const div = document.createElement('div'); div.className = 'search-item';
+            div.innerHTML = `<img src="${img}"><div><strong>${info.title}</strong><span>${info.authors ? info.authors.join(', ') : ''}</span></div>`;
+            div.onclick = () => {
+              document.getElementById('book-title').value = info.title;
+              document.getElementById('book-author').value = info.authors ? info.authors[0] : '';
+              customCoverBase64 = img;
+              res.style.display = 'none';
+            };
+            res.appendChild(div);
+          });
+          res.style.display = 'block';
+        });
+    }
+
+    function previewCover(e) {
+      const file = e.target.files[0];
+      if(!file) return;
+      const reader = new FileReader();
+      reader.onload = (event) => customCoverBase64 = event.target.result;
+      reader.readAsDataURL(file);
+    }
+
+    function submitNewBook() {
+      const title = document.getElementById('book-title').value;
+      const author = document.getElementById('book-author').value;
+      const genre = document.getElementById('book-genre').value;
+      if(!title) return;
+
+      const book = { title, author, genre, cover: customCoverBase64 };
+      userBooks.push(book);
+      
+      const shelf = document.getElementById(`shelf-${slugify(genre)}`);
+      if(book.cover) {
+        shelf.innerHTML += `<img src="${book.cover}" class="shelf-book-cover">`;
+      } else {
+        shelf.innerHTML += `<div class="shelf-book-spine">${book.title}</div>`;
+      }
+      closeModal('modal-add-book');
+    }
+
+    function loadAvatar(e) {
+      const reader = new FileReader();
+      reader.onload = (event) => document.getElementById('avatar-preview').src = event.target.result;
+      reader.readAsDataURL(e.target.files[0]);
+    }
+
+    function saveProfile() {
+      const name = document.getElementById('username-input').value;
+      const bio = document.getElementById('bio-input').value;
+      if(name) {
+        document.getElementById('profile-name').textContent = name;
+        document.getElementById('user-badge').textContent = name;
+      }
+      if(bio) document.getElementById('profile-bio').textContent = bio;
+      alert('Profil uložen!');
+    }
+
+    initShelves();
+  </script>
+</body>
+</html>
