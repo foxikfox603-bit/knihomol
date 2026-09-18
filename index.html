@@ -9,7 +9,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,800&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   
-  <!-- Firebase SDK (Version 9) -->
+  <!-- Firebase SDK (Version 9) - Opravený kompletní import -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
     import { 
@@ -20,7 +20,7 @@
       signInWithEmailAndPassword, 
       signOut, 
       onAuthStateChanged 
-    } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+    } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
 
     // ==========================================
     // TVÉ FIREBASE ÚDAJE
@@ -261,7 +261,6 @@
           <input type="password" id="auth-pass" class="form-control" placeholder="••••••••">
         </div>
         
-        <!-- Pole pro potvrzení hesla (objeví se pouze v režimu registrace) -->
         <div class="form-group" id="confirm-pass-group" style="display: none;">
           <label>Potvrzení hesla</label>
           <input type="password" id="auth-pass-confirm" class="form-control" placeholder="••••••••">
@@ -393,7 +392,7 @@
         <input type="hidden" id="edit-book-id">
         
         <div class="form-group">
-          <label>Název * (Zadej a stiskněte Enter pro vyhledání)</label>
+          <label>Název * (Napiš a stiskněte Enter)</label>
           <div style="display: flex; gap: 6px;">
             <input type="text" id="book-title" class="form-control" placeholder="např. Malý princ" onkeydown="checkBookEnter(event)">
             <button type="button" class="btn-artsy btn-secondary" onclick="searchGoogleBooks()" style="margin: 0; width: auto; padding: 0 12px;"><i class="fas fa-search"></i></button>
@@ -475,7 +474,7 @@
       }
     }
 
-    // Google Books API propojení
+    // Google Books API propojení po stisknutí Enteru
     function checkBookEnter(e) {
       if (e.key === 'Enter') {
         e.preventDefault();
@@ -497,7 +496,6 @@
         if (data.items && data.items.length > 0) {
           const bookInfo = data.items[0].volumeInfo;
           
-          // Předvyplnění polí
           if (bookInfo.title) document.getElementById('book-title').value = bookInfo.title;
           if (bookInfo.authors && bookInfo.authors.length > 0) {
             document.getElementById('book-author').value = bookInfo.authors.join(', ');
