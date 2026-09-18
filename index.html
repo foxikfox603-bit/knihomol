@@ -232,6 +232,18 @@
     .form-control:focus { border-color: var(--accent); }
     .tab-content { display: none; flex-direction: column; gap: 16px; }
     .tab-content.active { display: flex; }
+
+    /* Styly pro výběr vydání */
+    .search-results-dropdown {
+      background: rgba(0,0,0,0.5); border: 1px solid var(--card-border);
+      border-radius: 8px; margin-top: 6px; max-height: 160px; overflow-y: auto; display: none;
+    }
+    .search-result-item {
+      padding: 8px 10px; font-size: 11px; border-bottom: 1px solid var(--card-border);
+      cursor: pointer; text-align: left; transition: background 0.15s;
+    }
+    .search-result-item:last-child { border-bottom: none; }
+    .search-result-item:hover { background: var(--accent-glow); color: var(--accent); }
   </style>
 </head>
 <body>
@@ -386,8 +398,10 @@
           <label>Název * (Zadej a stiskněte Hledat / Enter)</label>
           <div style="display: flex; gap: 6px;">
             <input type="text" id="book-title" class="form-control" placeholder="např. Hobit" onkeydown="checkBookEnter(event)">
-            <button type="button" class="btn-artsy btn-secondary" onclick="searchGoogleBooks()" style="margin: 0; width: auto; padding: 0 12px;"><i class="fas fa-search"></i></button>
+            <button type="button" class="btn-artsy btn-secondary" onclick="searchOpenLibrary()" style="margin: 0; width: auto; padding: 0 12px;"><i class="fas fa-search"></i></button>
           </div>
+          <!-- Dropdown pro výběr nalezených vydání/knih -->
+          <div id="search-results-dropdown" class="search-results-dropdown"></div>
         </div>
 
         <div class="form-group">
@@ -475,43 +489,63 @@
     function checkBookEnter(e) {
       if (e.key === 'Enter') {
         e.preventDefault();
-        searchGoogleBooks();
+        searchOpenLibrary();
       }
     }
 
-    // Pomocná funkce na odstranění diakritiky pro spolehlivější vyhledávání
-    function removeDiacritics(str) {
-      return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-    }
+    // Vyhledávání a nabídka vydání přes Open Library API
+    async function searchOpenLibrary() {
+      const query = document.getElementById('book-title').value.trim();
+      const dropdown = document.getElementById('search-results-dropdown');
+      
+      if (!query) { 
+        alert("Nejprve zadej název knihy."); 
+        return; 
+      }
 
-    async function searchGoogleBooks() {
-      const rawQuery = document.getElementById('book-title').value.trim();
-      if (!rawQuery) { alert("Nejprve zadej název knihy."); return; }
-
-      // Zkusíme nejprve vyhledat přímo zadaný výraz, případně bez diakritiky, pokud by API zazlobilo
       try {
-        let response = await fetch(`https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(rawQuery)}`);
-        let data = await response.json();
+        const response = `https://openlibrary.org/search.json?q=${encodeURIComponent(query)}`;
+        const res = await fetch(response);
+        const data = await res.json();
 
-        if (!data.items || data.items.length === 0) {
-          // Druhý pokus bez diakritiky
-          const cleanQuery = removeDiacritics(rawQuery);
-          response = await fetch(`https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(cleanQuery)}`);
-          data = await response.json();
-        }
+        if (data.docs && data.docs.length > 0) {
+          // Ořízneme na prvních 6 výsledků pro přehlednost
+          const items = data.docs.slice(0, 6);
+          
+          dropdown.innerHTML = items.map(book => {
+            const title = book.title || 'Neznámý název';
+            const author = book.author_name ? book.author_name.join(', ') : 'Neznámý autor';
+            const pages = book.number_of_pages_median || 300;
+            const year = book.first_publish_year || '';
 
-        if (data.items && data.items.length > 0) {
-          const bookInfo = data.items[0].volumeInfo;
-          if (bookInfo.title) document.getElementById('book-title').value = bookInfo.title;
-          if (bookInfo.authors) document.getElementById('book-author').value = bookInfo.authors.join(', ');
-          if (bookInfo.pageCount) document.getElementById('book-pages').value = bookInfo.pageCount;
+            // Bezpečné zakódování dat pro vložení do onclick
+            const safeTitle = title.replace(/'/g, "\\'");
+            const safeAuthor = author.replace(/'/g, "\\'");
+
+            return `
+              <div class="search-result-item" onclick="selectBookEdition('${safeTitle}', '${safeAuthor}', ${pages})">
+                <strong>${title}</strong> (${year})<br>
+                <span style="color: var(--text-muted);">${author} • ${pages} str.</span>
+              </div>
+            `;
+          }).join('');
+
+          dropdown.style.display = 'block';
         } else {
-          // Ticho po pluši – už žádné rušivé alerty, uživatel prostě vyplní údaje ručně
-          document.getElementById('book-author').focus();
+          dropdown.innerHTML = `<div class="search-result-item" style="color: var(--text-muted); cursor: default;">Žádné výsledky nenalezeny</div>`;
+          dropdown.style.display = 'block';
         }
       } catch (err) {
-        document.getElementById('book-author').focus();
+        alert("Chyba při komunikaci s Open Library.");
       }
+    }
+
+    // Výběr konkrétní knihy / vydání z nabídky
+    function selectBookEdition(title, author, pages) {
+      document.getElementById('book-title').value = title;
+      document.getElementById('book-author').value = author;
+      document.getElementById('book-pages').value = pages;
+      document.getElementById('search-results-dropdown').style.display = 'none';
     }
 
     function setTheme(themeName, btn) {
@@ -546,6 +580,7 @@
       document.getElementById('book-author').value = '';
       document.getElementById('book-status').value = 'reading';
       document.getElementById('book-pages').value = '';
+      document.getElementById('search-results-dropdown').style.display = 'none';
       document.getElementById('modal-add-book').classList.add('open');
     }
 
@@ -558,6 +593,7 @@
       document.getElementById('book-author').value = book.author;
       document.getElementById('book-status').value = book.status;
       document.getElementById('book-pages').value = book.pages || '';
+      document.getElementById('search-results-dropdown').style.display = 'none';
       document.getElementById('modal-add-book').classList.add('open');
     }
 
