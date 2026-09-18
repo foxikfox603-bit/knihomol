@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="cs" data-theme="academic">
 <head>
@@ -52,7 +51,7 @@
       if(isReg) {
         const passConfirm = document.getElementById('auth-pass-confirm').value.trim();
         if(pass !== passConfirm) {
-          alert("Hesla se neshodují! Napiš je prosím obě stejně.");
+          alert("Hesla se neshodují!");
           return;
         }
         createUserWithEmailAndPassword(auth, email, pass)
@@ -63,9 +62,7 @@
       }
     };
 
-    window.handleLogout = function() {
-      signOut(auth);
-    };
+    window.handleLogout = function() { signOut(auth); };
 
     onAuthStateChanged(auth, (user) => {
       const authScreen = document.getElementById('auth-screen');
@@ -239,7 +236,7 @@
 </head>
 <body>
 
-  <!-- PŘIHLAŠOVACÍ / REGISTRAČNÍ OBRAZOVKA -->
+  <!-- PŘIHLAŠOVACÍ OBRAZOVKA -->
   <div id="auth-screen">
     <div class="auth-card">
       <h1 id="auth-title">Přihlášení</h1>
@@ -299,7 +296,7 @@
         </div>
 
         <div>
-          <div class="section-title">Právě čtu</div>
+          <div class="section-title">Právě čtu & Progres</div>
           <div class="artsy-card" id="dashboard-reading-box"></div>
         </div>
 
@@ -342,10 +339,6 @@
             <div class="stat-card"><div class="val" id="stat-full-tbr">0</div><div class="lbl">Knih v TBR</div></div>
             <div class="stat-card"><div class="val" id="stat-avg-pages">0</div><div class="lbl">Průměr str./kniha</div></div>
           </div>
-          <div style="background: rgba(0,0,0,0.2); padding: 12px; border-radius: 8px; border: 1px solid var(--card-border);">
-            <span style="font-size: 11px; font-weight: 700; color: var(--accent); text-transform: uppercase; display: block; margin-bottom: 4px;">Čtenářská disciplína</span>
-            <p style="font-size: 12px; color: var(--text-muted);">Skvělá práce! Pokračuj v pravidelném čtení a plnění svého ročního cíle.</p>
-          </div>
         </div>
       </div>
 
@@ -383,19 +376,18 @@
       <button class="nav-item" onclick="switchTab('ucet', this)"><i class="fas fa-user" style="font-size: 14px;"></i>Účet</button>
     </nav>
 
-    <!-- MODAL: KNIHA S GOOGLE BOOKS & RUČNÍM ZADÁNÍM -->
+    <!-- MODAL: KNIHA -->
     <div class="modal-overlay" id="modal-add-book">
       <div class="modal-sheet">
         <div class="section-title" id="modal-book-title-header" style="margin-bottom: 14px;">Přidat knihu</div>
         <input type="hidden" id="edit-book-id">
         
         <div class="form-group">
-          <label>Název * (Napiš a stiskněte Enter)</label>
+          <label>Název * (Zadej a stiskněte Hledat / Enter)</label>
           <div style="display: flex; gap: 6px;">
-            <input type="text" id="book-title" class="form-control" placeholder="např. Malý princ" onkeydown="checkBookEnter(event)">
+            <input type="text" id="book-title" class="form-control" placeholder="např. Hobit" onkeydown="checkBookEnter(event)">
             <button type="button" class="btn-artsy btn-secondary" onclick="searchGoogleBooks()" style="margin: 0; width: auto; padding: 0 12px;"><i class="fas fa-search"></i></button>
           </div>
-          <span style="font-size: 10px; color: var(--text-muted); display: block; margin-top: 4px;">Knihu vyhledáme v online zdrojích. Pokud ji nenajdeš, můžeš si ji dole dopsat ručně.</span>
         </div>
 
         <div class="form-group">
@@ -411,7 +403,7 @@
           </select>
         </div>
         <div class="form-group">
-          <label>Počet stran</label>
+          <label>Celkem stran</label>
           <input type="number" id="book-pages" class="form-control" placeholder="např. 320">
         </div>
         <div style="display: flex; gap: 10px; margin-top: 18px;">
@@ -439,8 +431,8 @@
 
   <script>
     let userBooks = JSON.parse(localStorage.getItem('knihomol_books')) || [
-      { id: '1', title: 'Jméno růže', author: 'Umberto Eco', status: 'read', pages: 512 },
-      { id: '2', title: 'Sto roků samoty', author: 'G. G. Márquez', status: 'reading', pages: 360 }
+      { id: '1', title: 'Jméno růže', author: 'Umberto Eco', status: 'read', pages: 512, currentPage: 512 },
+      { id: '2', title: 'Sto roků samoty', author: 'G. G. Márquez', status: 'reading', pages: 360, currentPage: 120 }
     ];
     let annualGoal = parseInt(localStorage.getItem('knihomol_goal')) || 12;
     let currentFilter = 'all';
@@ -482,35 +474,25 @@
 
     async function searchGoogleBooks() {
       const query = document.getElementById('book-title').value.trim();
-      if (!query) {
-        alert("Nejprve zadej název knihy.");
-        return;
-      }
+      if (!query) { alert("Nejprve zadej název knihy."); return; }
 
       try {
-        const response = await fetch(`https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}&maxResults=5`);
+        const response = await fetch(`https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}`);
         const data = await response.json();
 
         if (data.items && data.items.length > 0) {
           const bookInfo = data.items[0].volumeInfo;
-          
           if (bookInfo.title) document.getElementById('book-title').value = bookInfo.title;
-          if (bookInfo.authors && bookInfo.authors.length > 0) {
-            document.getElementById('book-author').value = bookInfo.authors.join(', ');
-          }
-          if (bookInfo.pageCount) {
-            document.getElementById('book-pages').value = bookInfo.pageCount;
-          }
+          if (bookInfo.authors) document.getElementById('book-author').value = bookInfo.authors.join(', ');
+          if (bookInfo.pageCount) document.getElementById('book-pages').value = bookInfo.pageCount;
+          alert("Kniha byla úspěšně nalezena a předvyplněna!");
         } else {
-          // Pokud knihu nenajde, elegantně nabídne ruční zadání bez rozbíjení aplikace
-          if (confirm("Nenašli jsme Tvoji knihu v online databázi. Chceš si ji zadat ručně?")) {
-            // Necháme název, který uživatel napsal, a fokusneme pole pro autora
+          if (confirm("Nenašli jsme knihu v databázi. Chceš pokračovat v ručním zadání?")) {
             document.getElementById('book-author').focus();
           }
         }
       } catch (err) {
-        console.error("Chyba při komunikaci s Google Books:", err);
-        if (confirm("Chyba připojení k vyhledávání. Chceš pokračovat v ručním zadání?")) {
+        if (confirm("Chyba při vyhledávání. Chceš vyplnit údaje ručně?")) {
           document.getElementById('book-author').focus();
         }
       }
@@ -596,14 +578,35 @@
 
       if(editId) {
         const book = userBooks.find(b => b.id === editId);
-        if(book) { book.title = title; book.author = author; book.status = status; book.pages = pages; }
+        if(book) { 
+          book.title = title; book.author = author; book.status = status; book.pages = pages; 
+          if(status === 'read') book.currentPage = pages;
+        }
       } else {
-        userBooks.push({ id: Date.now().toString(), title, author, status, pages });
+        userBooks.push({ 
+          id: Date.now().toString(), 
+          title, 
+          author, 
+          status, 
+          pages, 
+          currentPage: status === 'read' ? pages : 0 
+        });
       }
 
       localStorage.setItem('knihomol_books', JSON.stringify(userBooks));
       closeModal('modal-add-book');
       renderAll();
+    }
+
+    function updateProgress(id, val) {
+      const book = userBooks.find(b => b.id === id);
+      if(book) {
+        let p = parseInt(val) || 0;
+        if(book.pages && p > book.pages) p = book.pages;
+        book.currentPage = p;
+        localStorage.setItem('knihomol_books', JSON.stringify(userBooks));
+        renderAll();
+      }
     }
 
     function deleteBook(id) {
@@ -614,7 +617,12 @@
 
     function updateStatus(id, newStatus) {
       const book = userBooks.find(b => b.id === id);
-      if(book) { book.status = newStatus; localStorage.setItem('knihomol_books', JSON.stringify(userBooks)); renderAll(); }
+      if(book) { 
+        book.status = newStatus; 
+        if(newStatus === 'read' && book.pages) book.currentPage = book.pages;
+        localStorage.setItem('knihomol_books', JSON.stringify(userBooks)); 
+        renderAll(); 
+      }
     }
 
     function setLibraryFilter(filter, btn) {
@@ -630,7 +638,7 @@
       const readingBooks = userBooks.filter(b => b.status === 'reading');
       const tbrBooks = userBooks.filter(b => b.status === 'tbr');
       
-      const totalPages = userBooks.reduce((acc, b) => acc + (b.status === 'read' ? (b.pages || 0) : 0), 0);
+      const totalPages = userBooks.reduce((acc, b) => acc + (b.currentPage || 0), 0);
 
       document.getElementById('stat-books').textContent = readBooks.length;
       document.getElementById('stat-pages').textContent = totalPages;
@@ -638,7 +646,6 @@
       document.getElementById('stat-full-pages').textContent = totalPages;
       document.getElementById('stat-full-books').textContent = readBooks.length;
       document.getElementById('stat-full-tbr').textContent = tbrBooks.length;
-      document.getElementById('stat-avg-pages').textContent = readBooks.length > 0 ? Math.round(totalPages / readBooks.length) : 0;
 
       document.getElementById('total-books-count').textContent = `${userBooks.length} knih`;
 
@@ -646,15 +653,27 @@
       if(readingBooks.length === 0) {
         dashBox.innerHTML = `<div class="empty-state"><p>Žádná rozečtená kniha.</p><button class="btn-artsy" onclick="openAddBookModal()">+ Přidat knihu</button></div>`;
       } else {
-        dashBox.innerHTML = readingBooks.map(b => `
-          <div style="display: flex; justify-content: space-between; align-items: center; gap: 10px;">
-            <div>
-              <strong style="font-size: 14px; display: block; margin-bottom: 2px;">${b.title}</strong>
-              <span style="font-size: 11px; color: var(--text-muted);">${b.author}</span>
+        dashBox.innerHTML = readingBooks.map(b => {
+          const cur = b.currentPage || 0;
+          const tot = b.pages || 0;
+          const pct = tot > 0 ? Math.min(100, Math.round((cur / tot) * 100)) : 0;
+          return `
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                  <strong style="font-size: 14px; display: block; margin-bottom: 2px;">${b.title}</strong>
+                  <span style="font-size: 11px; color: var(--text-muted);">${b.author}</span>
+                </div>
+                <button onclick="updateStatus('${b.id}', 'read')" class="btn-artsy" style="padding: 6px 10px; font-size: 10px; width: auto;">Dočteno</button>
+              </div>
+              <div style="display: flex; align-items: center; gap: 8px; font-size: 11px; color: var(--text-muted);">
+                <span>Strana:</span>
+                <input type="number" value="${cur}" onchange="updateProgress('${b.id}', this.value)" class="form-control" style="width: 70px; padding: 4px 6px; font-size: 11px; text-align: center;">
+                <span>z ${tot > 0 ? tot : '?'} (${pct} %)</span>
+              </div>
             </div>
-            <button onclick="updateStatus('${b.id}', 'read')" class="btn-artsy" style="padding: 6px 10px; font-size: 10px; width: auto;">Dočteno</button>
-          </div>
-        `).join('<hr style="border:0; border-top: 1px solid var(--card-border); margin: 10px 0;">');
+          `;
+        }).join('<hr style="border:0; border-top: 1px solid var(--card-border); margin: 12px 0;">');
       }
       renderLibrary();
     }
@@ -679,7 +698,7 @@
               <div>
                 <span class="book-status-badge ${badge.cls}">${badge.text}</span>
                 <h4 style="font-size: 14px; font-weight: 700; margin-top: 4px;">${b.title}</h4>
-                <p style="font-size: 11px; color: var(--text-muted);">${b.author} ${b.pages ? '• ' + b.pages + ' str.' : ''}</p>
+                <p style="font-size: 11px; color: var(--text-muted);">${b.author} ${b.pages ? '• Celkem ' + b.pages + ' str.' : ''}</p>
               </div>
               <div style="display: flex; gap: 6px;">
                 <button onclick="openEditBookModal('${b.id}')" style="background: none; border: none; color: var(--text-muted); cursor: pointer; padding: 4px;"><i class="fas fa-edit"></i></button>
