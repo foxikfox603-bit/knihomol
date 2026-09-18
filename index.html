@@ -34,7 +34,6 @@
       appId: "1:341475099358:web:18154411f4456035bd7f84f"
     };
 
-    // Inicializace Firebase
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const googleProvider = new GoogleAuthProvider();
@@ -45,20 +44,24 @@
       });
     };
 
-    window.handleEmailAuth = function(isRegister) {
+    window.handleAuthAction = function() {
       const email = document.getElementById('auth-email').value.trim();
       const pass = document.getElementById('auth-pass').value.trim();
+      const isReg = window.isRegisterMode;
+
       if(!email || !pass) { alert("Vyplň e-mail i heslo."); return; }
 
-      if(isRegister) {
+      if(isReg) {
+        const passConfirm = document.getElementById('auth-pass-confirm').value.trim();
+        if(pass !== passConfirm) {
+          alert("Hesla se neshodují!");
+          return;
+        }
         createUserWithEmailAndPassword(auth, email, pass)
-          .then(() => {
-            // Úspěšná registrace
-          })
-          .catch(err => alert("Chyba při registraci (zkus silnější heslo nebo platný e-mail): " + err.message));
+          .catch(err => alert("Chyba při registraci: " + err.message));
       } else {
         signInWithEmailAndPassword(auth, email, pass)
-          .catch(err => alert("Chyba přihlášení (zkontroluj e-mail a heslo): " + err.message));
+          .catch(err => alert("Chyba přihlášení: " + err.message));
       }
     };
 
@@ -83,7 +86,6 @@
   </script>
 
   <style>
-    /* TEMATA / MOODY */
     :root[data-theme="academic"] {
       --bg-main: #0A0D0B; --bg-dark: #121614; --card-bg: #1B221E;
       --card-border: rgba(212, 175, 55, 0.2); --text-main: #E8E3D9;
@@ -111,7 +113,6 @@
       background-color: var(--bg-main); font-family: var(--font-body);
       color: var(--text-main); display: flex; justify-content: center;
       align-items: center; min-height: 100vh; font-weight: 500;
-      transition: background-color 0.3s ease, color 0.3s ease;
     }
     .app-frame {
       width: 100%; max-width: 414px; height: 100vh; max-height: 896px;
@@ -130,7 +131,7 @@
       flex-direction: column; justify-content: center; align-items: center; padding: 24px; text-align: center;
     }
     #auth-screen h1 { font-family: var(--font-heading); color: var(--accent); font-size: 28px; margin-bottom: 8px; }
-    #auth-screen p { color: var(--text-muted); font-size: 13px; margin-bottom: 24px; }
+    #auth-screen p { color: var(--text-muted); font-size: 13px; margin-bottom: 20px; }
     .auth-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 16px; padding: 20px; width: 100%; max-width: 320px; }
 
     .app-header {
@@ -226,11 +227,11 @@
       width: 100%; background: var(--card-bg); border-radius: 20px 20px 0 0;
       border-top: 1px solid var(--accent); padding: 22px 18px 28px; max-height: 85vh; overflow-y: auto;
     }
-    .form-group { margin-bottom: 14px; text-align: left; }
-    .form-group label { display: block; font-size: 11px; font-weight: 800; margin-bottom: 6px; color: var(--accent); text-transform: uppercase; }
+    .form-group { margin-bottom: 12px; text-align: left; }
+    .form-group label { display: block; font-size: 10px; font-weight: 800; margin-bottom: 4px; color: var(--accent); text-transform: uppercase; }
     .form-control {
-      width: 100%; padding: 11px 14px; border: 1px solid var(--card-border);
-      border-radius: 8px; font-family: var(--font-body); font-size: 13px; font-weight: 600;
+      width: 100%; padding: 10px 12px; border: 1px solid var(--card-border);
+      border-radius: 8px; font-family: var(--font-body); font-size: 12px; font-weight: 600;
       background: rgba(0,0,0,0.4); color: var(--text-main); outline: none;
     }
     .form-control:focus { border-color: var(--accent); }
@@ -240,17 +241,17 @@
 </head>
 <body>
 
-  <!-- PŘIHLAŠOVACÍ OBRAZOVKA -->
+  <!-- PŘIHLAŠOVACÍ / REGISTRAČNÍ OBRAZOVKA -->
   <div id="auth-screen">
     <div class="auth-card">
-      <h1>Knihomol</h1>
-      <p>Pro vstup do aplikace se prosím přihlaš nebo zaregistruj.</p>
+      <h1 id="auth-title">Přihlášení</h1>
+      <p id="auth-subtitle">Vítej zpět v aplikaci Knihomol.</p>
       
-      <button class="btn-artsy" onclick="handleGoogleLogin()" style="background: white; color: #333; margin-bottom: 14px;">
+      <button class="btn-artsy" onclick="handleGoogleLogin()" style="background: white; color: #333; margin-bottom: 12px;">
         <i class="fab fa-google" style="color: #4285F4;"></i> Pokračovat s Googlem
       </button>
 
-      <div style="border-top: 1px solid var(--card-border); margin: 14px 0; padding-top: 14px;">
+      <div style="border-top: 1px solid var(--card-border); margin: 12px 0; padding-top: 12px;">
         <div class="form-group">
           <label>E-mail</label>
           <input type="email" id="auth-email" class="form-control" placeholder="vas@email.cz">
@@ -259,9 +260,17 @@
           <label>Heslo</label>
           <input type="password" id="auth-pass" class="form-control" placeholder="••••••••">
         </div>
-        <div style="display: flex; gap: 8px;">
-          <button class="btn-artsy btn-secondary" onclick="handleEmailAuth(false)">Přihlásit se</button>
-          <button class="btn-artsy" onclick="handleEmailAuth(true)">Registrovat</button>
+        <!-- Pole pro potvrzení hesla (zobrazí se jen při registraci) -->
+        <div class="form-group" id="confirm-pass-group" style="display: none;">
+          <label>Potvrdit heslo</label>
+          <input type="password" id="auth-pass-confirm" class="form-control" placeholder="••••••••">
+        </div>
+
+        <button class="btn-artsy" id="auth-submit-btn" onclick="handleAuthAction()">Přihlásit se</button>
+        
+        <div style="margin-top: 14px; font-size: 11px; color: var(--text-muted);">
+          <span id="auth-switch-text">Nemáš ještě účet?</span> 
+          <a href="#" onclick="toggleAuthMode(event)" style="color: var(--accent); font-weight: 700; text-decoration: underline;" id="auth-switch-link">Zaregistrovat se</a>
         </div>
       </div>
     </div>
@@ -297,13 +306,11 @@
         </div>
 
         <div>
-          <div class="section-title">Zápisník</div>
+          <div class="section-title">Rychlý přehled</div>
           <div class="artsy-card">
             <div class="stats-grid">
               <div class="stat-card"><div class="val" id="stat-pages">0</div><div class="lbl">Přečteno stran</div></div>
               <div class="stat-card"><div class="val" id="stat-books">0</div><div class="lbl">Dočtené knihy</div></div>
-              <div class="stat-card"><div class="val" id="stat-tbr">0</div><div class="lbl">V seznamu TBR</div></div>
-              <div class="stat-card"><div class="val">12 dní</div><div class="lbl">Série čtení</div></div>
             </div>
           </div>
         </div>
@@ -327,12 +334,20 @@
         <div id="library-books-list" style="display: flex; flex-direction: column; gap: 10px;"></div>
       </div>
 
-      <!-- KOMUNITA -->
-      <div id="tab-komunita" class="tab-content">
-        <div class="section-title">Čtenářská komunitní síť</div>
-        <div class="artsy-card">
-          <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 14px;">Sdílej tipy na knížky a sleduj, co čtou ostatní knihomolové.</p>
-          <div class="empty-state" style="padding: 10px 0;"><p>Tady se brzy objeví příspěvky přátel.</p></div>
+      <!-- STATISTIKY -->
+      <div id="tab-statistiky" class="tab-content">
+        <div class="section-title">Detailní statistiky</div>
+        <div class="artsy-card" style="display: flex; flex-direction: column; gap: 14px;">
+          <div class="stats-grid">
+            <div class="stat-card"><div class="val" id="stat-full-pages">0</div><div class="lbl">Celkem stran</div></div>
+            <div class="stat-card"><div class="val" id="stat-full-books">0</div><div class="lbl">Přečtených knih</div></div>
+            <div class="stat-card"><div class="val" id="stat-full-tbr">0</div><div class="lbl">Knih v TBR</div></div>
+            <div class="stat-card"><div class="val" id="stat-avg-pages">0</div><div class="lbl">Průměr str./kniha</div></div>
+          </div>
+          <div style="background: rgba(0,0,0,0.2); padding: 12px; border-radius: 8px; border: 1px solid var(--card-border);">
+            <span style="font-size: 11px; font-weight: 700; color: var(--accent); text-transform: uppercase; display: block; margin-bottom: 4px;">Čtenářská disciplína</span>
+            <p style="font-size: 12px; color: var(--text-muted);">Skvělá práce! Pokračuj v pravidelném čtení a plnění svého ročního cíle.</p>
+          </div>
         </div>
       </div>
 
@@ -362,11 +377,11 @@
       </div>
     </main>
 
-    <!-- PLNÁ SPODNÍ LIŠTA -->
+    <!-- SPODNÍ LIŠTA SE STATISTIKAMI -->
     <nav class="app-nav">
       <button class="nav-item active" onclick="switchTab('prehled', this)"><i class="fas fa-home" style="font-size: 14px;"></i>Přehled</button>
       <button class="nav-item" onclick="switchTab('knihovna', this)"><i class="fas fa-book" style="font-size: 14px;"></i>Knihovna</button>
-      <button class="nav-item" onclick="switchTab('komunita', this)"><i class="fas fa-users" style="font-size: 14px;"></i>Komunita</button>
+      <button class="nav-item" onclick="switchTab('statistiky', this)"><i class="fas fa-chart-pie" style="font-size: 14px;"></i>Statistiky</button>
       <button class="nav-item" onclick="switchTab('ucet', this)"><i class="fas fa-user" style="font-size: 14px;"></i>Účet</button>
     </nav>
 
@@ -425,6 +440,34 @@
     ];
     let annualGoal = parseInt(localStorage.getItem('knihomol_goal')) || 12;
     let currentFilter = 'all';
+    window.isRegisterMode = false;
+
+    function toggleAuthMode(e) {
+      e.preventDefault();
+      window.isRegisterMode = !window.isRegisterMode;
+      const title = document.getElementById('auth-title');
+      const subtitle = document.getElementById('auth-subtitle');
+      const submitBtn = document.getElementById('auth-submit-btn');
+      const confirmGroup = document.getElementById('confirm-pass-group');
+      const switchText = document.getElementById('auth-switch-text');
+      const switchLink = document.getElementById('auth-switch-link');
+
+      if (window.isRegisterMode) {
+        title.textContent = 'Registrace';
+        subtitle.textContent = 'Vytvoř si nový čtenářský účet.';
+        submitBtn.textContent = 'Zaregistrovat se';
+        confirmGroup.style.display = 'block';
+        switchText.textContent = 'Už máš účet?';
+        switchLink.textContent = 'Přihlásit se';
+      } else {
+        title.textContent = 'Přihlášení';
+        subtitle.textContent = 'Vítej zpět v aplikaci Knihomol.';
+        submitBtn.textContent = 'Přihlásit se';
+        confirmGroup.style.display = 'none';
+        switchText.textContent = 'Nemáš ještě účet?';
+        switchLink.textContent = 'Zaregistrovat se';
+      }
+    }
 
     function setTheme(themeName, btn) {
       document.documentElement.setAttribute('data-theme', themeName);
@@ -540,9 +583,18 @@
       const readingBooks = userBooks.filter(b => b.status === 'reading');
       const tbrBooks = userBooks.filter(b => b.status === 'tbr');
       
+      const totalPages = userBooks.reduce((acc, b) => acc + (b.status === 'read' ? (b.pages || 0) : 0), 0);
+
+      // Statistiky malé
       document.getElementById('stat-books').textContent = readBooks.length;
-      document.getElementById('stat-tbr').textContent = tbrBooks.length;
-      document.getElementById('stat-pages').textContent = userBooks.reduce((acc, b) => acc + (b.status === 'read' ? (b.pages || 0) : 0), 0);
+      document.getElementById('stat-pages').textContent = totalPages;
+
+      // Statistiky detailní tab
+      document.getElementById('stat-full-pages').textContent = totalPages;
+      document.getElementById('stat-full-books').textContent = readBooks.length;
+      document.getElementById('stat-full-tbr').textContent = tbrBooks.length;
+      document.getElementById('stat-avg-pages').textContent = readBooks.length > 0 ? Math.round(totalPages / readBooks.length) : 0;
+
       document.getElementById('total-books-count').textContent = `${userBooks.length} knih`;
 
       const dashBox = document.getElementById('dashboard-reading-box');
