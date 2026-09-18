@@ -430,7 +430,6 @@
   </div>
 
   <script>
-    // Načtení a oprava starých dat z úložiště, aby nikdy nechyběly stránky
     let rawBooks = JSON.parse(localStorage.getItem('knihomol_books')) || [
       { id: '1', title: 'Jméno růže', author: 'Umberto Eco', status: 'read', pages: 512, currentPage: 512 },
       { id: '2', title: 'Sto roků samoty', author: 'G. G. Márquez', status: 'reading', pages: 360, currentPage: 120 }
@@ -480,26 +479,37 @@
       }
     }
 
-    async function searchGoogleBooks() {
-      const query = document.getElementById('book-title').value.trim();
-      if (!query) { alert("Nejprve zadej název knihy."); return; }
+    // Pomocná funkce na odstranění diakritiky pro spolehlivější vyhledávání
+    function removeDiacritics(str) {
+      return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    }
 
+    async function searchGoogleBooks() {
+      const rawQuery = document.getElementById('book-title').value.trim();
+      if (!rawQuery) { alert("Nejprve zadej název knihy."); return; }
+
+      // Zkusíme nejprve vyhledat přímo zadaný výraz, případně bez diakritiky, pokud by API zazlobilo
       try {
-        const response = await fetch(`https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}`);
-        const data = await response.json();
+        let response = await fetch(`https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(rawQuery)}`);
+        let data = await response.json();
+
+        if (!data.items || data.items.length === 0) {
+          // Druhý pokus bez diakritiky
+          const cleanQuery = removeDiacritics(rawQuery);
+          response = await fetch(`https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(cleanQuery)}`);
+          data = await response.json();
+        }
 
         if (data.items && data.items.length > 0) {
           const bookInfo = data.items[0].volumeInfo;
           if (bookInfo.title) document.getElementById('book-title').value = bookInfo.title;
           if (bookInfo.authors) document.getElementById('book-author').value = bookInfo.authors.join(', ');
           if (bookInfo.pageCount) document.getElementById('book-pages').value = bookInfo.pageCount;
-          alert("Kniha byla úspěšně nalezena a předvyplněna!");
         } else {
-          alert("Kniha nebyla v online databázi nalezena. Můžeš vyplnit název i autora ručně.");
+          // Ticho po pluši – už žádné rušivé alerty, uživatel prostě vyplní údaje ručně
           document.getElementById('book-author').focus();
         }
       } catch (err) {
-        alert("Vyhledávání selhalo (možná blokace sítě). Vyplň prosím údaje ručně.");
         document.getElementById('book-author').focus();
       }
     }
