@@ -233,17 +233,20 @@
     .tab-content { display: none; flex-direction: column; gap: 16px; }
     .tab-content.active { display: flex; }
 
-    /* Styly pro výběr vydání */
+    /* Styly pro výběr vydání s obálkami */
     .search-results-dropdown {
-      background: rgba(0,0,0,0.5); border: 1px solid var(--card-border);
-      border-radius: 8px; margin-top: 6px; max-height: 160px; overflow-y: auto; display: none;
+      background: rgba(0,0,0,0.6); border: 1px solid var(--card-border);
+      border-radius: 8px; margin-top: 6px; max-height: 200px; overflow-y: auto; display: none;
     }
     .search-result-item {
       padding: 8px 10px; font-size: 11px; border-bottom: 1px solid var(--card-border);
-      cursor: pointer; text-align: left; transition: background 0.15s;
+      cursor: pointer; text-align: left; display: flex; align-items: center; gap: 10px; transition: background 0.15s;
     }
     .search-result-item:last-child { border-bottom: none; }
     .search-result-item:hover { background: var(--accent-glow); color: var(--accent); }
+    .search-result-item img {
+      width: 32px; height: 48px; object-fit: cover; border-radius: 4px; border: 1px solid var(--card-border); background: #000; flex-shrink: 0;
+    }
   </style>
 </head>
 <body>
@@ -400,7 +403,7 @@
             <input type="text" id="book-title" class="form-control" placeholder="např. Hobit" onkeydown="checkBookEnter(event)">
             <button type="button" class="btn-artsy btn-secondary" onclick="searchOpenLibrary()" style="margin: 0; width: auto; padding: 0 12px;"><i class="fas fa-search"></i></button>
           </div>
-          <!-- Dropdown pro výběr nalezených vydání/knih -->
+          <!-- Dropdown s obálkami a detaily vydání -->
           <div id="search-results-dropdown" class="search-results-dropdown"></div>
         </div>
 
@@ -493,7 +496,7 @@
       }
     }
 
-    // Vyhledávání a nabídka vydání přes Open Library API
+    // Vyhledávání s podporou náhledových obálek z Open Library
     async function searchOpenLibrary() {
       const query = document.getElementById('book-title').value.trim();
       const dropdown = document.getElementById('search-results-dropdown');
@@ -509,7 +512,6 @@
         const data = await res.json();
 
         if (data.docs && data.docs.length > 0) {
-          // Ořízneme na prvních 6 výsledků pro přehlednost
           const items = data.docs.slice(0, 6);
           
           dropdown.innerHTML = items.map(book => {
@@ -517,22 +519,32 @@
             const author = book.author_name ? book.author_name.join(', ') : 'Neznámý autor';
             const pages = book.number_of_pages_median || 300;
             const year = book.first_publish_year || '';
+            
+            // Získání URL obálky pomocí cover_i nebo ISBN
+            let coverImg = 'https://via.placeholder.com/32x48?text=?';
+            if (book.cover_i) {
+              coverImg = `https://covers.openlibrary.org/b/id/${book.cover_i}-S.jpg`;
+            } else if (book.isbn && book.isbn.length > 0) {
+              coverImg = `https://covers.openlibrary.org/b/isbn/${book.isbn[0]}-S.jpg`;
+            }
 
-            // Bezpečné zakódování dat pro vložení do onclick
             const safeTitle = title.replace(/'/g, "\\'");
             const safeAuthor = author.replace(/'/g, "\\'");
 
             return `
               <div class="search-result-item" onclick="selectBookEdition('${safeTitle}', '${safeAuthor}', ${pages})">
-                <strong>${title}</strong> (${year})<br>
-                <span style="color: var(--text-muted);">${author} • ${pages} str.</span>
+                <img src="${coverImg}" alt="Obálka" onerror="this.src='https://via.placeholder.com/32x48?text=X'">
+                <div>
+                  <strong>${title}</strong> (${year})<br>
+                  <span style="color: var(--text-muted);">${author} • ${pages} str.</span>
+                </div>
               </div>
             `;
           }).join('');
 
           dropdown.style.display = 'block';
         } else {
-          dropdown.innerHTML = `<div class="search-result-item" style="color: var(--text-muted); cursor: default;">Žádné výsledky nenalezeny</div>`;
+          dropdown.innerHTML = `<div class="search-result-item" style="color: var(--text-muted); cursor: default; justify-content: center;">Žádné výsledky nenalezeny</div>`;
           dropdown.style.display = 'block';
         }
       } catch (err) {
@@ -540,7 +552,6 @@
       }
     }
 
-    // Výběr konkrétní knihy / vydání z nabídky
     function selectBookEdition(title, author, pages) {
       document.getElementById('book-title').value = title;
       document.getElementById('book-author').value = author;
