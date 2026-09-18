@@ -137,159 +137,24 @@
         .search-result-item { display: flex; align-items: center; gap: 12px; padding: 10px; background: #fafafa; border: 1px solid #eee; border-radius: 10px; cursor: pointer; transition: 0.2s; }
         .search-result-item:hover { border-color: var(--primary); background: white; }
     </style>
-
-    <!-- FIREBASE MODULY -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { 
-            getAuth, 
-            createUserWithEmailAndPassword, 
-            signInWithEmailAndPassword, 
-            signOut, 
-            onAuthStateChanged 
-        } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { 
-            getFirestore, 
-            doc, 
-            getDoc, 
-            setDoc, 
-            updatedoc 
-        } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-
-        // TVŮJ FIREBASE CONFIG (uprav si klidně podle svého projektu, pokud ho máš jiný)
-        const firebaseConfig = {
-            apiKey: "AIzaSyAskaujKDExzAVlb_1luskQDXm7LEMlrtcU",
-            authDomain: "knihomol-c559a.firebaseapp.com",
-            projectId: "knihomol-c559a",
-            storageBucket: "knihomol-c559a.firebasestorage.app",
-            messagingSenderId: "341475099358",
-            appId: "1:341475099358:web:d748b9f1f3dbe2e0d7f84f"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-
-        let isRegister = false;
-        let currentUser = null;
-
-        // Globální data aplikace
-        window.appData = {
-            books: [],
-            goal: 12,
-            profile: { name: "", bio: "Vášnivý čtenář." }
-        };
-
-        window.toggleAuthMode = function() {
-            isRegister = !isRegister;
-            const confField = document.getElementById('auth-confirm-pass');
-            document.getElementById('auth-title').textContent = isRegister ? "Registrace do Knihomola" : "Vítej zpět v Knihomolu!";
-            document.getElementById('auth-btn').textContent = isRegister ? "Zaregistrovat se" : "Přihlásit se";
-            confField.style.display = isRegister ? 'block' : 'none';
-            if(!isRegister) confField.value = '';
-
-            document.getElementById('auth-toggle-text').innerHTML = isRegister 
-                ? 'Už máš účet? <span onclick="toggleAuthMode()">Přihlas se</span>' 
-                : 'Ještě nemáš účet? <span onclick="toggleAuthMode()">Zaregistruj se</span>';
-        };
-
-        window.handleAuth = async function() {
-            const email = document.getElementById('auth-email').value.trim();
-            const pass = document.getElementById('auth-pass').value.trim();
-            const confPass = document.getElementById('auth-confirm-pass').value.trim();
-            const errBox = document.getElementById('auth-error');
-            errBox.textContent = "";
-
-            if(!email || !pass) { errBox.textContent = "Vyplň e-mail i heslo."; return; }
-            if(isRegister && pass !== confPass) { errBox.textContent = "Hesla se neshodují!"; return; }
-
-            try {
-                if(isRegister) {
-                    await createUserWithEmailAndPassword(auth, email, pass);
-                } else {
-                    await signInWithEmailAndPassword(auth, email, pass);
-                }
-            } catch (err) {
-                errBox.textContent = "Chyba: " + err.message;
-            }
-        };
-
-        window.logout = async function() {
-            if(confirm("Opravdu se chceš odhlásit?")) {
-                await signOut(auth);
-            }
-        };
-
-        // Sledování stavu přihlášení
-        onAuthStateChanged(auth, async (user) => {
-            const overlay = document.getElementById('auth-overlay');
-            if (user) {
-                currentUser = user;
-                overlay.style.display = 'none';
-                
-                // Načteme data uživatele z Firestore cloudu
-                await loadUserDataFromCloud(user.uid, user.email);
-                renderEverything();
-            } else {
-                currentUser = null;
-                overlay.style.display = 'flex';
-            }
-        });
-
-        async function loadUserDataFromCloud(uid, email) {
-            const docRef = doc(db, "users", uid);
-            const docSnap = await getDoc(docRef);
-
-            if (docSnap.exists()) {
-                const data = docSnap.data();
-                window.appData.books = data.books || [];
-                window.appData.goal = data.goal || 12;
-                window.appData.profile = data.profile || { name: email.split('@')[0], bio: "Vášnivý čtenář." };
-            } else {
-                // První přihlášení – vytvoříme výchozí data na cloudu
-                window.appData.books = [
-                    { title: "Hobit", author: "J. R. R. Tolkien", totalPages: 320, currentPage: 120, status: "reading", genre: "Fantasy", rating: 5, cover: "https://covers.openlibrary.org/b/id/8431969-M.jpg" }
-                ];
-                window.appData.goal = 12;
-                window.appData.profile = { name: email.split('@')[0], bio: "Vášnivý čtenář." };
-                await saveUserDataToCloud();
-            }
-
-            document.getElementById('welcome-msg').textContent = `Ahoj, ${window.appData.profile.name}! ✨`;
-            document.getElementById('prof-email').value = email;
-            document.getElementById('prof-name').value = window.appData.profile.name;
-            document.getElementById('prof-bio').value = window.appData.profile.bio;
-        }
-
-        window.saveUserDataToCloud = async function() {
-            if (!currentUser) return;
-            const docRef = doc(db, "users", currentUser.uid);
-            await setDoc(docRef, {
-                books: window.appData.books,
-                goal: window.appData.goal,
-                profile: window.appData.profile
-            });
-        }
-    </script>
 </head>
 <body>
 
-    <!-- PŘIHLAŠOVACÍ OKNO -->
+    <!-- PŘIHLAŠOVACÍ / REGISTRAČNÍ OKNO -->
     <div id="auth-overlay">
         <div class="auth-card">
             <div class="auth-logo"><i class="fas fa-book-open"></i> Knihomol</div>
-            <div id="auth-title" style="font-weight: 600; font-size: 16px;">Vítej zpět v Knihomolu!</div>
+            <div id="auth-title" style="font-weight: 600; font-size: 16px;">Vítej v Knihomolu!</div>
 
             <div class="auth-form">
-                <input type="email" id="auth-email" class="input-field" placeholder="E-mail">
-                <input type="password" id="auth-pass" class="input-field" placeholder="Heslo (min. 6 znaků)">
-                <input type="password" id="auth-confirm-pass" class="input-field" placeholder="Potvrzení hesla" style="display:none;">
+                <input type="text" id="auth-username" class="input-field" placeholder="Uživatelské jméno nebo e-mail">
+                <input type="password" id="auth-pass" class="input-field" placeholder="Heslo">
                 <div id="auth-error"></div>
-                <button id="auth-btn" class="btn-main" onclick="handleAuth()">Přihlásit se</button>
+                <button id="auth-btn" class="btn-main" onclick="handleAuthSubmit()">Pokračovat</button>
             </div>
 
             <div class="auth-toggle" id="auth-toggle-text">
-                Ještě nemáš účet? <span onclick="toggleAuthMode()">Zaregistruj se</span>
+                Nemáš účet? <span onclick="toggleAuthMode()">Zaregistruj se</span>
             </div>
         </div>
     </div>
@@ -312,8 +177,8 @@
                 <div class="card" style="background: var(--gradient); color: white;">
                     <div style="display: flex; justify-content: space-between; align-items: center;">
                         <div>
-                            <h2 id="welcome-msg" style="font-size: 22px; font-weight: 700; margin-bottom: 5px;">Ahoj, Knihomole!</h2>
-                            <p style="font-size: 13px; opacity: 0.9;">Data se ukládají bezpečně do cloudu.</p>
+                            <h2 id="welcome-msg" style="font-size: 22px; font-weight: 700; margin-bottom: 5px;">Ahoj!</h2>
+                            <p style="font-size: 13px; opacity: 0.9;">Příjemné čtení a spousta nových příběhů.</p>
                         </div>
                         <button class="btn-main" style="background: white; color: var(--primary); box-shadow: none;" onclick="switchTab('pridat', document.querySelectorAll('nav button')[2])"><i class="fas fa-plus"></i> Přidat</button>
                     </div>
@@ -395,7 +260,7 @@
                                 <option value="1">⭐ (1/5)</option>
                             </select>
                         </div>
-                        <button class="btn-main" onclick="saveManual()"><i class="fas fa-check"></i> Uložit knihu do cloudu</button>
+                        <button class="btn-main" onclick="saveManual()"><i class="fas fa-check"></i> Uložit knihu</button>
                     </div>
                 </div>
             </div>
@@ -406,8 +271,8 @@
                 <div class="card" style="max-width: 450px; margin: 0 auto; width: 100%;">
                     <div style="display: flex; flex-direction: column; gap: 12px;">
                         <div>
-                            <label style="font-size: 10px; font-weight: 700; color: #888; display: block; margin-bottom: 3px;">E-MAIL</label>
-                            <input type="text" id="prof-email" class="input-field" readonly style="background:#eee; color:#666;">
+                            <label style="font-size: 10px; font-weight: 700; color: #888; display: block; margin-bottom: 3px;">UŽIVATEL</label>
+                            <input type="text" id="prof-user" class="input-field" readonly style="background:#eee; color:#666;">
                         </div>
                         <div>
                             <label style="font-size: 10px; font-weight: 700; color: #888; display: block; margin-bottom: 3px;">JMÉNO</label>
@@ -426,6 +291,103 @@
     </div>
 
     <script>
+        let isRegisterMode = false;
+        let currentUser = null;
+        let appData = { books: [], goal: 12, profile: { name: "", bio: "Vášnivý čtenář." } };
+
+        // Zkontroluj, jestli už byl někdo přihlášený dřív
+        window.onload = function() {
+            const savedUser = localStorage.getItem('knihomol_logged_user');
+            if (savedUser) {
+                currentUser = savedUser;
+                document.getElementById('auth-overlay').style.display = 'none';
+                loadUserData();
+                renderEverything();
+            }
+        };
+
+        function toggleAuthMode() {
+            isRegisterMode = !isRegisterMode;
+            document.getElementById('auth-title').textContent = isRegisterMode ? "Registrace nového účtu" : "Vítej v Knihomolu!";
+            document.getElementById('auth-btn').textContent = isRegisterMode ? "Zaregistrovat se" : "Přihlásit se";
+            document.getElementById('auth-toggle-text').innerHTML = isRegisterMode 
+                ? 'Už máš účet? <span onclick="toggleAuthMode()">Přihlas se</span>' 
+                : 'Nemáš účet? <span onclick="toggleAuthMode()">Zaregistruj se</span>';
+            document.getElementById('auth-error').textContent = "";
+        }
+
+        function handleAuthSubmit() {
+            const userField = document.getElementById('auth-username').value.trim();
+            const passField = document.getElementById('auth-pass').value.trim();
+            const errBox = document.getElementById('auth-error');
+            errBox.textContent = "";
+
+            if (!userField || !passField) {
+                errBox.textContent = "Vyplň jméno i heslo.";
+                return;
+            }
+
+            const usersDb = JSON.parse(localStorage.getItem('knihomol_users_db') || '{}');
+
+            if (isRegisterMode) {
+                if (usersDb[userField]) {
+                    errBox.textContent = "Tento uživatel už existuje!";
+                    return;
+                }
+                // Vytvoříme nového uživatele
+                usersDb[userField] = {
+                    password: passField,
+                    data: {
+                        books: [
+                            { title: "Hobit", author: "J. R. R. Tolkien", totalPages: 320, currentPage: 120, status: "reading", genre: "Fantasy", rating: 5, cover: "https://covers.openlibrary.org/b/id/8431969-M.jpg" }
+                        ],
+                        goal: 12,
+                        profile: { name: userField, bio: "Vášnivý čtenář." }
+                    }
+                };
+                localStorage.setItem('knihomol_users_db', JSON.stringify(usersDb));
+                alert("Registrace proběhla úspěšně! Jsi přihlášen.");
+            } else {
+                if (!usersDb[userField] || usersDb[userField].password !== passField) {
+                    errBox.textContent = "Nesprávné jméno nebo heslo!";
+                    return;
+                }
+            }
+
+            // Přihlášení úspěšné
+            currentUser = userField;
+            localStorage.setItem('knihomol_logged_user', currentUser);
+            document.getElementById('auth-overlay').style.display = 'none';
+            loadUserData();
+            renderEverything();
+        }
+
+        function logout() {
+            if(confirm("Opravdu se chceš odhlásit?")) {
+                localStorage.removeItem('knihomol_logged_user');
+                location.reload();
+            }
+        }
+
+        function loadUserData() {
+            const usersDb = JSON.parse(localStorage.getItem('knihomol_users_db') || '{}');
+            if (usersDb[currentUser]) {
+                appData = usersDb[currentUser].data;
+            }
+            document.getElementById('welcome-msg').textContent = `Ahoj, ${appData.profile.name || currentUser}! ✨`;
+            document.getElementById('prof-user').value = currentUser;
+            document.getElementById('prof-name').value = appData.profile.name || currentUser;
+            document.getElementById('prof-bio').value = appData.profile.bio || "";
+        }
+
+        function saveUserData() {
+            const usersDb = JSON.parse(localStorage.getItem('knihomol_users_db') || '{}');
+            if (usersDb[currentUser]) {
+                usersDb[currentUser].data = appData;
+                localStorage.setItem('knihomol_users_db', JSON.stringify(usersDb));
+            }
+        }
+
         function switchTab(id, btn) {
             document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
             document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
@@ -440,8 +402,8 @@
         }
 
         function renderGoalProgress() {
-            const books = window.appData.books;
-            const targetGoal = window.appData.goal;
+            const books = appData.books;
+            const targetGoal = appData.goal;
             const finished = books.filter(b => b.status === 'read' || (b.totalPages > 0 && b.currentPage >= b.totalPages)).length;
             
             document.getElementById('goal-current').textContent = finished;
@@ -451,11 +413,11 @@
             document.getElementById('goal-pct').textContent = `Splněno ${pct} %`;
         }
 
-        async function editGoal() {
-            const val = prompt("Zadej nový roční cíl (počet knih):", window.appData.goal);
+        function editGoal() {
+            const val = prompt("Zadej nový roční cíl (počet knih):", appData.goal);
             if(val && !isNaN(val) && parseInt(val) > 0) {
-                window.appData.goal = parseInt(val);
-                await saveUserDataToCloud();
+                appData.goal = parseInt(val);
+                saveUserData();
                 renderGoalProgress();
             }
         }
@@ -464,7 +426,7 @@
             const homeGrid = document.getElementById('home-grid');
             const libGrid = document.getElementById('library-grid');
             const filter = document.getElementById('filter-status').value;
-            const books = window.appData.books;
+            const books = appData.books;
 
             const readingBooks = books.map((b, i) => ({ ...b, idx: i })).filter(b => b.status === 'reading');
             homeGrid.innerHTML = readingBooks.map(b => buildBookCard(b)).join('') || '<p style="color:#888; font-size:13px;">Momentálně nemáš rozečtenou žádnou knihu.</p>';
@@ -554,15 +516,15 @@
             }
         }
 
-        async function addFoundBook(title, author, pages, cover) {
-            window.appData.books.push({ title, author, totalPages: pages, currentPage: 0, status: 'reading', genre: 'Beletrie', rating: 0, cover });
-            await saveUserDataToCloud();
+        function addFoundBook(title, author, pages, cover) {
+            appData.books.push({ title, author, totalPages: pages, currentPage: 0, status: 'reading', genre: 'Beletrie', rating: 0, cover });
+            saveUserData();
             document.getElementById('search-input').value = '';
             document.getElementById('search-results').style.display = 'none';
             switchTab('domu', document.querySelectorAll('nav button')[0]);
         }
 
-        async function saveManual() {
+        function saveManual() {
             const title = document.getElementById('m-title').value.trim();
             const author = document.getElementById('m-author').value.trim();
             const genre = document.getElementById('m-genre').value;
@@ -572,33 +534,33 @@
 
             if(!title || !author) { alert("Vyplň název i autora!"); return; }
 
-            window.appData.books.push({ title, author, totalPages, currentPage: status === 'read' ? totalPages : 0, status, genre, rating, cover: "" });
-            await saveUserDataToCloud();
+            appData.books.push({ title, author, totalPages, currentPage: status === 'read' ? totalPages : 0, status, genre, rating, cover: "" });
+            saveUserData();
 
             document.getElementById('m-title').value = '';
             document.getElementById('m-author').value = '';
             switchTab('domu', document.querySelectorAll('nav button')[0]);
         }
 
-        async function updatePages(idx) {
-            const b = window.appData.books[idx];
+        function updatePages(idx) {
+            const b = appData.books[idx];
             const val = prompt(`Kolik stran z knihy „${b.title}“ jsi už přečetl? (celkem: ${b.totalPages})`, b.currentPage || 0);
             if(val !== null && !isNaN(val)) {
                 b.currentPage = Math.min(parseInt(val), b.totalPages);
                 if(b.currentPage >= b.totalPages) b.status = 'read';
-                await saveUserDataToCloud();
+                saveUserData();
                 renderEverything();
             }
         }
 
-        async function updateRating(idx) {
-            const b = window.appData.books[idx];
+        function updateRating(idx) {
+            const b = appData.books[idx];
             const val = prompt(`Ohodnoť knihu „${b.title}“ hvězdičkami (0 až 5):`, b.rating || 5);
             if(val !== null && !isNaN(val)) {
                 const num = parseInt(val);
                 if(num >= 0 && num <= 5) {
                     b.rating = num;
-                    await saveUserDataToCloud();
+                    saveUserData();
                     renderEverything();
                 } else {
                     alert("Zadej číslo od 0 do 5.");
@@ -606,26 +568,26 @@
             }
         }
 
-        async function deleteBook(idx) {
+        function deleteBook(idx) {
             if(confirm("Opravdu smazat knihu?")) {
-                window.appData.books.splice(idx, 1);
-                await saveUserDataToCloud();
+                appData.books.splice(idx, 1);
+                saveUserData();
                 renderEverything();
             }
         }
 
-        async function saveProfile() {
+        function saveProfile() {
             const name = document.getElementById('prof-name').value.trim();
             const bio = document.getElementById('prof-bio').value.trim();
 
             if(!name) { alert("Jméno nemůže být prázdné!"); return; }
 
-            window.appData.profile.name = name;
-            window.appData.profile.bio = bio;
-            await saveUserDataToCloud();
+            appData.profile.name = name;
+            appData.profile.bio = bio;
+            saveUserData();
 
             document.getElementById('welcome-msg').textContent = `Ahoj, ${name}! ✨`;
-            alert("Profil byl úspěšně uložen do cloudu!");
+            alert("Profil byl úspěšně uložen!");
         }
 
         function escapeHtml(str) {
