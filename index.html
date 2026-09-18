@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="cs" data-theme="academic">
 <head>
@@ -54,7 +55,7 @@
       if(isReg) {
         const passConfirm = document.getElementById('auth-pass-confirm').value.trim();
         if(pass !== passConfirm) {
-          alert("Hesla se neshodují!");
+          alert("Hesla se neshodují! Napiš je prosím obě stejně.");
           return;
         }
         createUserWithEmailAndPassword(auth, email, pass)
@@ -130,8 +131,8 @@
       background: var(--bg-dark); z-index: 1000; display: flex;
       flex-direction: column; justify-content: center; align-items: center; padding: 24px; text-align: center;
     }
-    #auth-screen h1 { font-family: var(--font-heading); color: var(--accent); font-size: 28px; margin-bottom: 8px; }
-    #auth-screen p { color: var(--text-muted); font-size: 13px; margin-bottom: 20px; }
+    #auth-screen h1 { font-family: var(--font-heading); color: var(--accent); font-size: 26px; margin-bottom: 6px; }
+    #auth-screen p { color: var(--text-muted); font-size: 13px; margin-bottom: 16px; }
     .auth-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 16px; padding: 20px; width: 100%; max-width: 320px; }
 
     .app-header {
@@ -251,7 +252,7 @@
         <i class="fab fa-google" style="color: #4285F4;"></i> Pokračovat s Googlem
       </button>
 
-      <div style="border-top: 1px solid var(--card-border); margin: 12px 0; padding-top: 12px;">
+      <div style="border-top: 1px solid var(--card-border); margin: 10px 0; padding-top: 10px;">
         <div class="form-group">
           <label>E-mail</label>
           <input type="email" id="auth-email" class="form-control" placeholder="vas@email.cz">
@@ -260,9 +261,10 @@
           <label>Heslo</label>
           <input type="password" id="auth-pass" class="form-control" placeholder="••••••••">
         </div>
-        <!-- Pole pro potvrzení hesla (zobrazí se jen při registraci) -->
+        
+        <!-- Pole pro potvrzení hesla (objeví se pouze v režimu registrace) -->
         <div class="form-group" id="confirm-pass-group" style="display: none;">
-          <label>Potvrdit heslo</label>
+          <label>Potvrzení hesla</label>
           <input type="password" id="auth-pass-confirm" class="form-control" placeholder="••••••••">
         </div>
 
@@ -351,7 +353,7 @@
         </div>
       </div>
 
-      <!-- PROFIL & ODHLÁŠENÍ -->
+      <!-- ÚČET & ATMOSFÉRA -->
       <div id="tab-ucet" class="tab-content">
         <div>
           <div class="section-title">Atmosféra aplikace</div>
@@ -377,7 +379,7 @@
       </div>
     </main>
 
-    <!-- SPODNÍ LIŠTA SE STATISTIKAMI -->
+    <!-- SPODNÍ NAVIGACE -->
     <nav class="app-nav">
       <button class="nav-item active" onclick="switchTab('prehled', this)"><i class="fas fa-home" style="font-size: 14px;"></i>Přehled</button>
       <button class="nav-item" onclick="switchTab('knihovna', this)"><i class="fas fa-book" style="font-size: 14px;"></i>Knihovna</button>
@@ -440,7 +442,7 @@
     ];
     let annualGoal = parseInt(localStorage.getItem('knihomol_goal')) || 12;
     let currentFilter = 'all';
-    window.isRegisterMode = false;
+    window.isRegisterMode = false; // Výchozí je přihlášení
 
     function toggleAuthMode(e) {
       e.preventDefault();
@@ -454,7 +456,7 @@
 
       if (window.isRegisterMode) {
         title.textContent = 'Registrace';
-        subtitle.textContent = 'Vytvoř si nový čtenářský účet.';
+        subtitle.textContent = 'Vytvoř si nový účet v aplikaci.';
         submitBtn.textContent = 'Zaregistrovat se';
         confirmGroup.style.display = 'block';
         switchText.textContent = 'Už máš účet?';
@@ -585,11 +587,9 @@
       
       const totalPages = userBooks.reduce((acc, b) => acc + (b.status === 'read' ? (b.pages || 0) : 0), 0);
 
-      // Statistiky malé
       document.getElementById('stat-books').textContent = readBooks.length;
       document.getElementById('stat-pages').textContent = totalPages;
 
-      // Statistiky detailní tab
       document.getElementById('stat-full-pages').textContent = totalPages;
       document.getElementById('stat-full-books').textContent = readBooks.length;
       document.getElementById('stat-full-tbr').textContent = tbrBooks.length;
