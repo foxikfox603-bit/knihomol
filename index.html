@@ -109,14 +109,26 @@
       color: var(--text-main); display: flex; justify-content: center;
       align-items: center; min-height: 100vh; font-weight: 500;
     }
+
+    /* Responzivní kontejner aplikace: na mobilu jako appka, na PC krásně široký dashboard */
     .app-frame {
       width: 100%; max-width: 414px; height: 100vh; max-height: 896px;
       background-color: var(--bg-dark); display: flex; flex-direction: column;
       position: relative; overflow: hidden; border-radius: 20px;
       border: 1px solid var(--card-border);
       box-shadow: 0 0 50px rgba(0,0,0,0.8), 0 0 15px var(--accent-glow);
+      transition: all 0.3s ease;
     }
-    @media (max-width: 450px) {
+
+    @media (min-width: 768px) {
+      .app-frame {
+        max-width: 900px;
+        max-height: 90vh;
+        border-radius: 24px;
+      }
+    }
+
+    @media (max-width: 767px) {
       .app-frame { max-height: 100vh; border-radius: 0; border: none; }
     }
 
@@ -191,9 +203,13 @@
       padding: 6px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; cursor: pointer; white-space: nowrap;
     }
     .pill-btn.active { background: var(--accent-glow); border-color: var(--accent); color: var(--accent); }
+    
     .book-card-item {
       background: rgba(0,0,0,0.2); border: 1px solid var(--card-border);
-      border-radius: 10px; padding: 12px; display: flex; flex-direction: column; gap: 8px;
+      border-radius: 10px; padding: 12px; display: flex; gap: 12px; align-items: center;
+    }
+    .book-cover-thumb {
+      width: 48px; height: 72px; object-fit: cover; border-radius: 6px; border: 1px solid var(--card-border); background: #000; flex-shrink: 0;
     }
     .book-status-badge { font-size: 9px; padding: 3px 8px; border-radius: 10px; font-weight: 800; text-transform: uppercase; display: inline-block; }
     .status-reading { background: rgba(59, 130, 246, 0.2); color: #60A5FA; border: 1px solid rgba(59, 130, 246, 0.4); }
@@ -396,6 +412,7 @@
       <div class="modal-sheet">
         <div class="section-title" id="modal-book-title-header" style="margin-bottom: 14px;">Přidat knihu</div>
         <input type="hidden" id="edit-book-id">
+        <input type="hidden" id="book-cover-url" value="">
         
         <div class="form-group">
           <label>Název * (Zadej a stiskněte Hledat / Enter)</label>
@@ -448,13 +465,14 @@
 
   <script>
     let rawBooks = JSON.parse(localStorage.getItem('knihomol_books')) || [
-      { id: '1', title: 'Jméno růže', author: 'Umberto Eco', status: 'read', pages: 512, currentPage: 512 },
-      { id: '2', title: 'Sto roků samoty', author: 'G. G. Márquez', status: 'reading', pages: 360, currentPage: 120 }
+      { id: '1', title: 'Jméno růže', author: 'Umberto Eco', status: 'read', pages: 512, currentPage: 512, cover: 'https://covers.openlibrary.org/b/id/8241481-S.jpg' },
+      { id: '2', title: 'Sto roků samoty', author: 'G. G. Márquez', status: 'reading', pages: 360, currentPage: 120, cover: 'https://covers.openlibrary.org/b/id/8230186-S.jpg' }
     ];
 
     let userBooks = rawBooks.map(b => ({
       ...b,
       pages: b.pages || 300,
+      cover: b.cover || '',
       currentPage: b.currentPage !== undefined ? b.currentPage : (b.status === 'read' ? (b.pages || 300) : 0)
     }));
 
@@ -496,7 +514,6 @@
       }
     }
 
-    // Vyhledávání s podporou náhledových obálek z Open Library
     async function searchOpenLibrary() {
       const query = document.getElementById('book-title').value.trim();
       const dropdown = document.getElementById('search-results-dropdown');
@@ -520,8 +537,7 @@
             const pages = book.number_of_pages_median || 300;
             const year = book.first_publish_year || '';
             
-            // Získání URL obálky pomocí cover_i nebo ISBN
-            let coverImg = 'https://via.placeholder.com/32x48?text=?';
+            let coverImg = '';
             if (book.cover_i) {
               coverImg = `https://covers.openlibrary.org/b/id/${book.cover_i}-S.jpg`;
             } else if (book.isbn && book.isbn.length > 0) {
@@ -530,10 +546,11 @@
 
             const safeTitle = title.replace(/'/g, "\\'");
             const safeAuthor = author.replace(/'/g, "\\'");
+            const safeCover = coverImg.replace(/'/g, "\\'");
 
             return `
-              <div class="search-result-item" onclick="selectBookEdition('${safeTitle}', '${safeAuthor}', ${pages})">
-                <img src="${coverImg}" alt="Obálka" onerror="this.src='https://via.placeholder.com/32x48?text=X'">
+              <div class="search-result-item" onclick="selectBookEdition('${safeTitle}', '${safeAuthor}', ${pages}, '${safeCover}')">
+                <img src="${coverImg || 'https://via.placeholder.com/32x48?text=?'}" alt="Obálka" onerror="this.src='https://via.placeholder.com/32x48?text=X'">
                 <div>
                   <strong>${title}</strong> (${year})<br>
                   <span style="color: var(--text-muted);">${author} • ${pages} str.</span>
@@ -552,10 +569,11 @@
       }
     }
 
-    function selectBookEdition(title, author, pages) {
+    function selectBookEdition(title, author, pages, cover) {
       document.getElementById('book-title').value = title;
       document.getElementById('book-author').value = author;
       document.getElementById('book-pages').value = pages;
+      document.getElementById('book-cover-url').value = cover;
       document.getElementById('search-results-dropdown').style.display = 'none';
     }
 
@@ -591,6 +609,7 @@
       document.getElementById('book-author').value = '';
       document.getElementById('book-status').value = 'reading';
       document.getElementById('book-pages').value = '';
+      document.getElementById('book-cover-url').value = '';
       document.getElementById('search-results-dropdown').style.display = 'none';
       document.getElementById('modal-add-book').classList.add('open');
     }
@@ -604,6 +623,7 @@
       document.getElementById('book-author').value = book.author;
       document.getElementById('book-status').value = book.status;
       document.getElementById('book-pages').value = book.pages || '';
+      document.getElementById('book-cover-url').value = book.cover || '';
       document.getElementById('search-results-dropdown').style.display = 'none';
       document.getElementById('modal-add-book').classList.add('open');
     }
@@ -636,6 +656,7 @@
       const author = document.getElementById('book-author').value.trim();
       const status = document.getElementById('book-status').value;
       const pages = parseInt(document.getElementById('book-pages').value) || 300;
+      const cover = document.getElementById('book-cover-url').value.trim();
 
       if(!title || !author) { alert('Vyplň název i autora.'); return; }
 
@@ -643,6 +664,7 @@
         const book = userBooks.find(b => b.id === editId);
         if(book) { 
           book.title = title; book.author = author; book.status = status; book.pages = pages; 
+          if(cover) book.cover = cover;
           if(status === 'read') book.currentPage = pages;
         }
       } else {
@@ -652,6 +674,7 @@
           author, 
           status, 
           pages, 
+          cover,
           currentPage: status === 'read' ? pages : 0 
         });
       }
@@ -720,19 +743,23 @@
           const cur = b.currentPage || 0;
           const tot = b.pages || 300;
           const pct = tot > 0 ? Math.min(100, Math.round((cur / tot) * 100)) : 0;
+          const coverHtml = b.cover ? `<img src="${b.cover}" class="book-cover-thumb" alt="Obálka">` : '';
           return `
-            <div style="display: flex; flex-direction: column; gap: 8px;">
-              <div style="display: flex; justify-content: space-between; align-items: center;">
-                <div>
-                  <strong style="font-size: 14px; display: block; margin-bottom: 2px;">${b.title}</strong>
-                  <span style="font-size: 11px; color: var(--text-muted);">${b.author}</span>
+            <div style="display: flex; gap: 12px; align-items: center;">
+              ${coverHtml}
+              <div style="flex: 1; display: flex; flex-direction: column; gap: 8px;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                  <div>
+                    <strong style="font-size: 14px; display: block; margin-bottom: 2px;">${b.title}</strong>
+                    <span style="font-size: 11px; color: var(--text-muted);">${b.author}</span>
+                  </div>
+                  <button onclick="updateStatus('${b.id}', 'read')" class="btn-artsy" style="padding: 6px 10px; font-size: 10px; width: auto; margin:0;">Dočteno</button>
                 </div>
-                <button onclick="updateStatus('${b.id}', 'read')" class="btn-artsy" style="padding: 6px 10px; font-size: 10px; width: auto;">Dočteno</button>
-              </div>
-              <div style="display: flex; align-items: center; gap: 8px; font-size: 11px; color: var(--text-muted);">
-                <span>Strana:</span>
-                <input type="number" value="${cur}" onchange="updateProgress('${b.id}', this.value)" class="form-control" style="width: 70px; padding: 4px 6px; font-size: 11px; text-align: center;">
-                <span>z ${tot} (${pct} %)</span>
+                <div style="display: flex; align-items: center; gap: 8px; font-size: 11px; color: var(--text-muted);">
+                  <span>Strana:</span>
+                  <input type="number" value="${cur}" onchange="updateProgress('${b.id}', this.value)" class="form-control" style="width: 70px; padding: 4px 6px; font-size: 11px; text-align: center;">
+                  <span>z ${tot} (${pct} %)</span>
+                </div>
               </div>
             </div>
           `;
@@ -755,23 +782,28 @@
         if(b.status === 'read') badge = { text: 'Přečteno', cls: 'status-read' };
         if(b.status === 'tbr') badge = { text: 'TBR', cls: 'status-tbr' };
 
+        const coverHtml = b.cover ? `<img src="${b.cover}" class="book-cover-thumb" alt="Obálka">` : '';
+
         return `
           <div class="book-card-item">
-            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-              <div>
-                <span class="book-status-badge ${badge.cls}">${badge.text}</span>
-                <h4 style="font-size: 14px; font-weight: 700; margin-top: 4px;">${b.title}</h4>
-                <p style="font-size: 11px; color: var(--text-muted);">${b.author} ${b.pages ? '• Celkem ' + b.pages + ' str.' : ''}</p>
+            ${coverHtml}
+            <div style="flex: 1; display: flex; flex-direction: column; gap: 8px;">
+              <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                <div>
+                  <span class="book-status-badge ${badge.cls}">${badge.text}</span>
+                  <h4 style="font-size: 14px; font-weight: 700; margin-top: 4px;">${b.title}</h4>
+                  <p style="font-size: 11px; color: var(--text-muted);">${b.author} ${b.pages ? '• Celkem ' + b.pages + ' str.' : ''}</p>
+                </div>
+                <div style="display: flex; gap: 6px;">
+                  <button onclick="openEditBookModal('${b.id}')" style="background: none; border: none; color: var(--text-muted); cursor: pointer; padding: 4px;"><i class="fas fa-edit"></i></button>
+                  <button onclick="deleteBook('${b.id}')" style="background: none; border: none; color: #ef4444; cursor: pointer; padding: 4px;"><i class="fas fa-trash"></i></button>
+                </div>
               </div>
-              <div style="display: flex; gap: 6px;">
-                <button onclick="openEditBookModal('${b.id}')" style="background: none; border: none; color: var(--text-muted); cursor: pointer; padding: 4px;"><i class="fas fa-edit"></i></button>
-                <button onclick="deleteBook('${b.id}')" style="background: none; border: none; color: #ef4444; cursor: pointer; padding: 4px;"><i class="fas fa-trash"></i></button>
+              <div style="display: flex; gap: 6px; justify-content: flex-end;">
+                ${b.status !== 'reading' ? `<button onclick="updateStatus('${b.id}', 'reading')" class="btn-artsy btn-secondary" style="padding: 4px 8px; font-size: 9px; width: auto; margin:0;">Právě čtu</button>` : ''}
+                ${b.status !== 'tbr' ? `<button onclick="updateStatus('${b.id}', 'tbr')" class="btn-artsy btn-secondary" style="padding: 4px 8px; font-size: 9px; width: auto; margin:0;">TBR</button>` : ''}
+                ${b.status !== 'read' ? `<button onclick="updateStatus('${b.id}', 'read')" class="btn-artsy" style="padding: 4px 8px; font-size: 9px; width: auto; margin:0;">Přečteno</button>` : ''}
               </div>
-            </div>
-            <div style="display: flex; gap: 6px; justify-content: flex-end;">
-              ${b.status !== 'reading' ? `<button onclick="updateStatus('${b.id}', 'reading')" class="btn-artsy btn-secondary" style="padding: 4px 8px; font-size: 9px; width: auto;">Právě čtu</button>` : ''}
-              ${b.status !== 'tbr' ? `<button onclick="updateStatus('${b.id}', 'tbr')" class="btn-artsy btn-secondary" style="padding: 4px 8px; font-size: 9px; width: auto;">TBR</button>` : ''}
-              ${b.status !== 'read' ? `<button onclick="updateStatus('${b.id}', 'read')" class="btn-artsy" style="padding: 4px 8px; font-size: 9px; width: auto;">Přečteno</button>` : ''}
             </div>
           </div>
         `;
