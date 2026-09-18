@@ -7,7 +7,7 @@
   <link rel="manifest" href="manifest.json">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@600;700;800&family=Plus+Jakarta+Sans:ital,wght@0,400;0,600;0,700;0,800;1,400&family=Playfair+Display:ital,wght@0,600;0,800;1,600&family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   
   <!-- Firebase SDK (Version 9) -->
@@ -82,299 +82,235 @@
   </script>
 
   <style>
-    /* SYTĚJŠÍ EMOJI A LUXUSNÍ MAXIMALISTICKÝ DESIGN */
+    /* ELEGANTNÍ, ČISTÝ DESIGN (BEZ PŘEHNANÝCH EFEKTŮ) */
     
     :root[data-theme="academic"] {
-      --bg-main: #050706; 
-      --bg-dark: #0A0F0C; 
-      --card-bg: rgba(18, 26, 21, 0.94);
-      --card-border: #D4AF37; 
-      --card-border-subtle: rgba(212, 175, 55, 0.4);
-      --text-main: #F4EEDB;
-      --text-muted: #A3B1A8; 
-      --accent: #E5C158; 
-      --accent-glow: rgba(212, 175, 55, 0.35);
-      --btn-grad: linear-gradient(135deg, #F3D373 0%, #B89325 50%, #7A5F12 100%); 
-      --btn-text: #0E120F;
-      --font-heading: 'Cinzel Decorative', serif; 
-      --font-subheading: 'Cinzel', serif;
-      --font-body: 'Cormorant Garamond', serif;
-      /* Výraznější, větší emoji s vyšší krycí schopností */
-      --bg-pattern: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140' viewBox='0 0 140 140'%3E%3Ctext x='10' y='40' font-size='28' opacity='0.22'%3E📖%3C/text%3E%3Ctext x='80' y='105' font-size='26' opacity='0.2'%3E🕯️%3C/text%3E%3Ctext x='95' y='35' font-size='24' opacity='0.18'%3E✒️%3C/text%3E%3Ctext x='25' y='115' font-size='26' opacity='0.2'%3E📜%3C/text%3E%3Ctext x='55' y='70' font-size='22' opacity='0.18'%3E🗝️%3C/text%3E%3C/svg%3E");
+      --bg-main: #121417; 
+      --bg-dark: #191C21; 
+      --card-bg: #21262D;
+      --card-border: #30363D; 
+      --text-main: #F0F6FC;
+      --text-muted: #8B949E; 
+      --accent: #58A6FF; 
+      --accent-glow: rgba(88, 166, 255, 0.15);
+      --btn-bg: #238636;
+      --btn-hover: #2ea043;
+      --btn-text: #FFFFFF;
     }
 
     :root[data-theme="coffee"] {
-      --bg-main: #0F0906; 
-      --bg-dark: #19100B; 
-      --card-bg: rgba(36, 25, 18, 0.94);
-      --card-border: #D2996A; 
-      --card-border-subtle: rgba(210, 153, 106, 0.4);
-      --text-main: #FAF2E8;
-      --text-muted: #C4A896; 
-      --accent: #E5B083; 
-      --accent-glow: rgba(210, 153, 106, 0.35);
-      --btn-grad: linear-gradient(135deg, #F3C297 0%, #B27541 50%, #6E421E 100%); 
-      --btn-text: #140C07;
-      --font-heading: 'Playfair Display', serif; 
-      --font-subheading: 'Playfair Display', serif;
-      --font-body: 'Plus Jakarta Sans', sans-serif;
-      --bg-pattern: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140' viewBox='0 0 140 140'%3E%3Ctext x='15' y='45' font-size='28' opacity='0.23'%3E☕%3C/text%3E%3Ctext x='85' y='110' font-size='26' opacity='0.21'%3E🥐%3C/text%3E%3Ctext x='95' y='35' font-size='24' opacity='0.19'%3E🍂%3C/text%3E%3Ctext x='25' y='110' font-size='26' opacity='0.21'%3E🤎%3C/text%3E%3Ctext x='55' y='75' font-size='22' opacity='0.19'%3E🍩%3C/text%3E%3C/svg%3E");
+      --bg-main: #16120F; 
+      --bg-dark: #1F1A16; 
+      --card-bg: #2A231E;
+      --card-border: #3E342C; 
+      --text-main: #F4EBE1;
+      --text-muted: #A39385; 
+      --accent: #D99B6B; 
+      --accent-glow: rgba(217, 155, 107, 0.15);
+      --btn-bg: #8C533E;
+      --btn-hover: #A6634A;
+      --btn-text: #FFFFFF;
     }
 
     :root[data-theme="fairy"] {
-      --bg-main: #070411; 
-      --bg-dark: #100824; 
-      --card-bg: rgba(26, 17, 46, 0.94);
-      --card-border: #D880FF; 
-      --card-border-subtle: rgba(216, 128, 255, 0.4);
-      --text-main: #FDF9FF;
-      --text-muted: #D1B8E8; 
-      --accent: #F0A6FF; 
-      --accent-glow: rgba(216, 128, 255, 0.4);
-      --btn-grad: linear-gradient(135deg, #F8BFFF 0%, #BA49EC 50%, #611899 100%); 
-      --btn-text: #150824;
-      --font-heading: 'Cinzel Decorative', serif; 
-      --font-subheading: 'Cinzel', serif;
-      --font-body: 'Plus Jakarta Sans', sans-serif;
-      --bg-pattern: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140' viewBox='0 0 140 140'%3E%3Ctext x='15' y='40' font-size='28' opacity='0.24'%3E✨%3C/text%3E%3Ctext x='85' y='110' font-size='28' opacity='0.23'%3E🌙%3C/text%3E%3Ctext x='95' y='35' font-size='24' opacity='0.2'%3E🔮%3C/text%3E%3Ctext x='20' y='115' font-size='26' opacity='0.23'%3E🧚%3C/text%3E%3Ctext x='60' y='75' font-size='22' opacity='0.2'%3E🦋%3C/text%3E%3C/svg%3E");
+      --bg-main: #0F0B1A; 
+      --bg-dark: #171226; 
+      --card-bg: #221B33;
+      --card-border: #382D54; 
+      --text-main: #F3EEFF;
+      --text-muted: #A89CC4; 
+      --accent: #B088F9; 
+      --accent-glow: rgba(176, 136, 249, 0.15);
+      --btn-bg: #6E40C9;
+      --btn-hover: #8052E6;
+      --btn-text: #FFFFFF;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-tap-highlight-color: transparent; }
     
     body {
       background-color: var(--bg-main);
-      background-image: var(--bg-pattern);
-      background-size: 140px 140px;
-      font-family: var(--font-body);
+      font-family: 'Plus Jakarta Sans', sans-serif;
       color: var(--text-main); 
       display: flex; justify-content: center;
       align-items: center; min-height: 100vh; 
-      font-size: 16px;
+      font-size: 15px;
     }
 
     .app-frame {
-      width: 100%; max-width: 430px; height: 100vh; max-height: 920px;
+      width: 100%; max-width: 420px; height: 100vh; max-height: 880px;
       background-color: var(--bg-dark);
-      background-image: var(--bg-pattern);
-      background-size: 140px 140px;
       display: flex; flex-direction: column;
       position: relative; overflow: hidden; 
-      border-radius: 32px;
-      border: 3px solid var(--card-border);
-      box-shadow: 0 0 0 6px rgba(0,0,0,0.8), 
-                  0 25px 60px rgba(0,0,0,0.9), 
-                  inset 0 0 35px var(--accent-glow);
-      transition: all 0.5s ease;
+      border-radius: 24px;
+      border: 1px solid var(--card-border);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.4);
     }
 
     @media (min-width: 768px) {
-      .app-frame { max-width: 430px; max-height: 90vh; }
+      .app-frame { max-width: 420px; max-height: 88vh; }
     }
     @media (max-width: 767px) {
-      .app-frame { max-height: 100vh; border-radius: 0; border: none; box-shadow: none; border-top: 3px solid var(--card-border); }
+      .app-frame { max-height: 100vh; border-radius: 0; border: none; }
     }
 
     /* Autentizace */
     #auth-screen {
       position: absolute; top: 0; left: 0; width: 100%; height: 100%;
       background: var(--bg-dark);
-      background-image: var(--bg-pattern);
       z-index: 1000; display: flex;
       flex-direction: column; justify-content: center; align-items: center; padding: 24px; text-align: center;
     }
     .auth-card { 
       background: var(--card-bg); 
-      backdrop-filter: blur(14px);
-      border: 2px solid var(--card-border); 
-      border-radius: 24px; padding: 32px 24px; width: 100%; max-width: 360px;
-      box-shadow: 0 15px 40px rgba(0,0,0,0.7), inset 0 0 25px var(--accent-glow);
-      position: relative;
+      border: 1px solid var(--card-border); 
+      border-radius: 20px; padding: 32px 24px; width: 100%; max-width: 360px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
     }
-    .auth-card::before {
-      content: '❧';
-      position: absolute; top: 8px; left: 50%; transform: translateX(-50%);
-      color: var(--accent); font-size: 20px;
-    }
-    .auth-card h1 { font-family: var(--font-heading); color: var(--accent); font-size: 26px; margin-bottom: 6px; margin-top: 10px; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
-    .auth-card p { color: var(--text-muted); font-size: 15px; margin-bottom: 24px; font-style: italic; }
+    .auth-card h1 { font-family: 'Playfair Display', serif; color: var(--text-main); font-size: 24px; margin-bottom: 6px; font-weight: 700; }
+    .auth-card p { color: var(--text-muted); font-size: 14px; margin-bottom: 24px; }
 
     /* Hlavička */
     .app-header {
-      padding: 22px 20px 16px; 
-      background: rgba(10, 15, 12, 0.92);
-      backdrop-filter: blur(14px); 
-      border-bottom: 2px solid var(--card-border-subtle);
+      padding: 20px; 
+      background: var(--bg-dark); 
+      border-bottom: 1px solid var(--card-border);
       display: flex; justify-content: space-between; align-items: center;
       z-index: 10;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.5);
     }
     .app-header h1 {
-      font-family: var(--font-heading); font-size: 22px; font-weight: 900;
-      color: var(--accent); letter-spacing: 1.5px; text-shadow: 0 2px 5px var(--accent-glow);
+      font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 700;
+      color: var(--text-main); letter-spacing: -0.3px;
     }
     .header-badge {
-      font-family: var(--font-subheading);
-      font-size: 11px; background: var(--accent-glow); color: var(--accent);
-      border: 1px solid var(--card-border); padding: 6px 14px; border-radius: 20px; font-weight: 700;
-      box-shadow: inset 0 0 10px var(--accent-glow);
+      font-size: 12px; background: var(--card-bg); color: var(--accent);
+      border: 1px solid var(--card-border); padding: 4px 12px; border-radius: 20px; font-weight: 600;
     }
     
     .app-content {
-      flex: 1; overflow-y: auto; padding: 22px; display: flex; flex-direction: column; gap: 20px;
+      flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 16px;
       scroll-behavior: smooth;
     }
-    .app-content::-webkit-scrollbar { width: 6px; }
-    .app-content::-webkit-scrollbar-thumb { background: var(--card-border); border-radius: 6px; }
+    .app-content::-webkit-scrollbar { width: 4px; }
+    .app-content::-webkit-scrollbar-thumb { background: var(--card-border); border-radius: 4px; }
 
     .section-title {
-      font-family: var(--font-subheading); font-size: 16px; font-weight: 700;
-      color: var(--accent); letter-spacing: 1px; margin-bottom: 12px;
-      display: flex; align-items: center; gap: 8px;
+      font-size: 13px; font-weight: 700;
+      color: var(--text-muted); letter-spacing: 0.5px; margin-bottom: 10px;
       text-transform: uppercase;
     }
-    .section-title::after {
-      content: ''; flex: 1; height: 1px; background: linear-gradient(90deg, var(--card-border), transparent);
-    }
 
-    /* Bohaté karty */
-    .artsy-card {
+    /* Karty */
+    .clean-card {
       background: var(--card-bg); 
-      backdrop-filter: blur(12px);
-      border-radius: 20px; padding: 22px;
-      border: 2px solid var(--card-border); 
-      box-shadow: 0 10px 30px rgba(0,0,0,0.6), inset 0 0 18px rgba(255,255,255,0.02);
-      position: relative;
-      transition: transform 0.25s ease, box-shadow 0.25s ease;
-    }
-    .artsy-card:hover { 
-      box-shadow: 0 14px 35px rgba(0,0,0,0.8), 0 0 18px var(--accent-glow);
+      border-radius: 16px; padding: 20px;
+      border: 1px solid var(--card-border); 
     }
 
-    /* Luxusní tlačítka */
-    .btn-artsy {
-      background: var(--btn-grad); color: var(--btn-text); border: 1px solid var(--card-border);
-      border-radius: 14px; padding: 14px 20px; font-family: var(--font-subheading);
-      font-weight: 800; font-size: 12px; letter-spacing: 1px; text-transform: uppercase;
-      cursor: pointer; width: 100%; display: inline-flex; align-items: center;
-      justify-content: center; gap: 10px; 
-      box-shadow: 0 6px 20px rgba(0,0,0,0.4), inset 0 1px 2px rgba(255,255,255,0.4); 
-      transition: transform 0.15s ease, filter 0.15s ease, box-shadow 0.15s ease;
-      text-shadow: 0 1px 1px rgba(255,255,255,0.2);
+    /* Karta knihy */
+    .book-item-card {
+      display: flex; gap: 14px; align-items: center;
+      background: var(--card-bg); border: 1px solid var(--card-border);
+      border-radius: 14px; padding: 12px; position: relative;
     }
-    .btn-artsy:active { transform: scale(0.97); filter: brightness(0.9); }
+    .book-cover {
+      width: 50px; height: 75px; object-fit: cover; border-radius: 6px;
+      border: 1px solid var(--card-border); background: var(--bg-main); flex-shrink: 0;
+    }
+    .book-info { flex: 1; min-width: 0; }
+    .book-title-text { font-size: 14px; font-weight: 600; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 3px; }
+    .book-author-text { font-size: 13px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 6px; }
+    .book-status-badge {
+      display: inline-block; font-size: 11px; font-weight: 600;
+      padding: 2px 8px; border-radius: 6px; 
+      background: var(--accent-glow); color: var(--accent);
+    }
+
+    /* Tlačítka */
+    .btn-main {
+      background: var(--btn-bg); color: var(--btn-text); border: none;
+      border-radius: 10px; padding: 12px 18px; 
+      font-weight: 600; font-size: 13px;
+      cursor: pointer; width: 100%; display: inline-flex; align-items: center;
+      justify-content: center; gap: 8px; 
+      transition: background 0.2s ease;
+    }
+    .btn-main:hover { background: var(--btn-hover); }
 
     .btn-secondary {
-      background: rgba(0, 0, 0, 0.4); color: var(--text-main);
-      border: 1px solid var(--card-border); box-shadow: inset 0 0 10px rgba(255,255,255,0.03);
+      background: transparent; color: var(--text-main);
+      border: 1px solid var(--card-border);
     }
-    .btn-secondary:hover { background: rgba(0, 0, 0, 0.6); border-color: var(--accent); }
+    .btn-secondary:hover { background: rgba(255,255,255,0.03); }
 
     /* Volba moodů */
-    .theme-selector { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 10px; }
+    .theme-selector { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-top: 8px; }
     .theme-btn {
-      padding: 14px 8px; border-radius: 14px; border: 2px solid var(--card-border-subtle);
-      background: rgba(0,0,0,0.4); color: var(--text-muted); font-size: 12px;
-      font-family: var(--font-subheading);
-      font-weight: 700; cursor: pointer; text-align: center; display: flex;
-      flex-direction: column; align-items: center; gap: 6px; transition: all 0.25s ease;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+      padding: 10px 6px; border-radius: 10px; border: 1px solid var(--card-border);
+      background: var(--bg-main); color: var(--text-muted); font-size: 12px;
+      font-weight: 600; cursor: pointer; text-align: center; display: flex;
+      flex-direction: column; align-items: center; gap: 4px; transition: all 0.2s ease;
     }
-    .theme-btn span { font-size: 26px; filter: drop-shadow(0 2px 5px rgba(0,0,0,0.6)); }
     .theme-btn.active { 
       border-color: var(--accent); 
       background: var(--accent-glow); 
-      color: var(--accent); 
-      transform: translateY(-3px);
-      box-shadow: 0 8px 20px rgba(0,0,0,0.5), 0 0 15px var(--accent-glow);
+      color: var(--text-main); 
     }
 
     /* Statistiky grid */
-    .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
     .stat-card { 
-      background: rgba(0,0,0,0.35); border-radius: 14px; padding: 16px; 
-      border: 1px solid var(--card-border-subtle); 
-      box-shadow: inset 0 0 12px rgba(0,0,0,0.5);
-      text-align: center;
+      background: var(--bg-main); border-radius: 12px; padding: 14px; 
+      border: 1px solid var(--card-border); text-align: center;
     }
-    .stat-card .val { font-family: var(--font-heading); font-size: 26px; font-weight: 800; color: var(--accent); text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
-    .stat-card .lbl { font-family: var(--font-subheading); font-size: 10px; font-weight: 700; color: var(--text-muted); margin-top: 6px; text-transform: uppercase; letter-spacing: 0.8px; }
+    .stat-card .val { font-size: 22px; font-weight: 700; color: var(--text-main); }
+    .stat-card .lbl { font-size: 11px; font-weight: 500; color: var(--text-muted); margin-top: 4px; }
     
-    .goal-box { display: flex; flex-direction: column; gap: 14px; }
-    .goal-bar-bg { width: 100%; background: rgba(0,0,0,0.6); border-radius: 10px; height: 14px; overflow: hidden; border: 1px solid var(--card-border); box-shadow: inset 0 2px 5px rgba(0,0,0,0.8); }
-    .goal-bar-fill { background: var(--btn-grad); height: 100%; width: 0%; border-radius: 8px; transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1); box-shadow: 0 0 12px var(--accent); }
-
-    /* Položky knih v knihovně */
-    .book-item-card {
-      display: flex; gap: 14px; align-items: center; background: rgba(0,0,0,0.4);
-      border: 1px solid var(--card-border-subtle); border-radius: 14px; padding: 12px;
-      box-shadow: inset 0 0 10px rgba(0,0,0,0.4);
-    }
-    .book-cover-thumb {
-      width: 50px; height: 72px; object-fit: cover; border-radius: 6px; border: 1px solid var(--card-border);
-      background: #111; display: flex; align-items: center; justify-content: center; font-size: 20px;
-    }
-
-    /* Open Library autocomplete dropdown */
-    .autocomplete-list {
-      position: absolute; top: 100%; left: 0; right: 0; background: var(--bg-dark);
-      border: 2px solid var(--card-border); border-radius: 0 0 14px 14px; max-height: 200px;
-      overflow-y: auto; z-index: 50; display: none; box-shadow: 0 10px 25px rgba(0,0,0,0.8);
-    }
-    .autocomplete-item {
-      padding: 10px 14px; border-bottom: 1px solid var(--card-border-subtle); cursor: pointer;
-      font-size: 14px; color: var(--text-main); display: flex; justify-content: space-between; align-items: center;
-    }
-    .autocomplete-item:hover { background: var(--accent-glow); color: var(--accent); }
+    .goal-box { display: flex; flex-direction: column; gap: 12px; }
+    .goal-bar-bg { width: 100%; background: var(--bg-main); border-radius: 6px; height: 8px; overflow: hidden; border: 1px solid var(--card-border); }
+    .goal-bar-fill { background: var(--accent); height: 100%; width: 0%; border-radius: 6px; transition: width 0.4s ease; }
 
     /* Spodní navigace */
     .app-nav {
-      background: rgba(10, 15, 12, 0.94); backdrop-filter: blur(14px);
-      border-top: 2px solid var(--card-border);
-      display: flex; justify-content: space-around; padding: 12px 8px 22px;
-      box-shadow: 0 -10px 30px rgba(0,0,0,0.8);
+      background: var(--bg-dark); 
+      border-top: 1px solid var(--card-border);
+      display: flex; justify-content: space-around; padding: 10px 8px 16px;
     }
     .nav-item {
-      background: none; border: none; color: var(--text-muted); font-family: var(--font-subheading);
-      font-size: 10px; font-weight: 700; cursor: pointer; display: flex;
-      flex-direction: column; align-items: center; gap: 6px; flex: 1; text-transform: uppercase;
-      letter-spacing: 0.5px;
-      transition: color 0.25s ease, transform 0.25s ease;
+      background: none; border: none; color: var(--text-muted); 
+      font-size: 11px; font-weight: 500; cursor: pointer; display: flex;
+      flex-direction: column; align-items: center; gap: 4px; flex: 1;
+      transition: color 0.2s ease;
     }
-    .nav-item i { font-size: 18px; transition: transform 0.25s ease; }
-    .nav-item.active { color: var(--accent); font-weight: 800; text-shadow: 0 0 10px var(--accent-glow); }
-    .nav-item.active i { transform: translateY(-3px) scale(1.1); }
+    .nav-item i { font-size: 16px; }
+    .nav-item.active { color: var(--accent); font-weight: 600; }
 
     /* Modální okna */
     .modal-overlay {
       position: absolute; top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0,0,0,0.85); backdrop-filter: blur(10px); display: flex;
+      background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); display: flex;
       justify-content: center; align-items: flex-end; z-index: 100;
-      opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
+      opacity: 0; pointer-events: none; transition: opacity 0.2s ease;
     }
     .modal-overlay.open { opacity: 1; pointer-events: auto; }
     .modal-sheet {
-      width: 100%; background: var(--card-bg); backdrop-filter: blur(20px);
-      border-radius: 28px 28px 0 0; border-top: 3px solid var(--accent); 
-      padding: 28px 24px 38px; max-height: 88vh; overflow-y: auto;
-      box-shadow: 0 -20px 50px rgba(0,0,0,0.9), inset 0 0 25px var(--accent-glow);
-      animation: slideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-    @keyframes slideUp {
-      from { transform: translateY(100%); }
-      to { transform: translateY(0); }
+      width: 100%; background: var(--card-bg); 
+      border-radius: 20px 20px 0 0; border-top: 1px solid var(--card-border); 
+      padding: 24px 20px 32px; max-height: 85vh; overflow-y: auto;
+      box-shadow: 0 -10px 30px rgba(0,0,0,0.3);
     }
 
-    .form-group { margin-bottom: 16px; text-align: left; position: relative; }
-    .form-group label { display: block; font-family: var(--font-subheading); font-size: 11px; font-weight: 800; margin-bottom: 6px; color: var(--accent); text-transform: uppercase; letter-spacing: 0.8px; }
+    .form-group { margin-bottom: 14px; text-align: left; }
+    .form-group label { display: block; font-size: 12px; font-weight: 600; margin-bottom: 6px; color: var(--text-muted); }
     .form-control {
-      width: 100%; padding: 14px 16px; border: 2px solid var(--card-border-subtle);
-      border-radius: 14px; font-family: var(--font-body); font-size: 16px; font-weight: 600;
-      background: rgba(0,0,0,0.5); color: var(--text-main); outline: none;
-      transition: border-color 0.25s ease, box-shadow 0.25s ease;
+      width: 100%; padding: 12px 14px; border: 1px solid var(--card-border);
+      border-radius: 10px; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 14px;
+      background: var(--bg-main); color: var(--text-main); outline: none;
+      transition: border-color 0.2s ease;
     }
-    .form-control:focus { border-color: var(--accent); box-shadow: 0 0 15px var(--accent-glow); }
+    .form-control:focus { border-color: var(--accent); }
     
-    .tab-content { display: none; flex-direction: column; gap: 20px; }
+    .tab-content { display: none; flex-direction: column; gap: 16px; }
     .tab-content.active { display: flex; }
   </style>
 </head>
@@ -383,17 +319,17 @@
   <!-- PŘIHLAŠOVACÍ OBRAZOVKA -->
   <div id="auth-screen">
     <div class="auth-card">
-      <h1 id="auth-title">Vstup do kabinetu</h1>
-      <p id="auth-subtitle">Přenes se do světa svých příběhů.</p>
+      <h1 id="auth-title">Vítejte zpět</h1>
+      <p id="auth-subtitle">Přihlaste se do svého čtenářského kabinetu.</p>
       
-      <button class="btn-artsy" onclick="handleGoogleLogin()" style="background: #FAF2E8; color: #1a1a1a; margin-bottom: 16px; border-color: var(--card-border);">
-        <i class="fab fa-google" style="color: #DB4437; font-size: 16px;"></i> Pokračovat s Googlem
+      <button class="btn-main btn-secondary" onclick="handleGoogleLogin()" style="margin-bottom: 16px;">
+        <i class="fab fa-google" style="color: #DB4437;"></i> Pokračovat přes Google
       </button>
 
-      <div style="border-top: 1px dashed var(--card-border); margin: 16px 0; padding-top: 16px;">
+      <div style="border-top: 1px solid var(--card-border); margin: 16px 0; padding-top: 16px;">
         <div class="form-group">
-          <label>E-mail</label>
-          <input type="email" id="auth-email" class="form-control" placeholder="knihomol@stranky.cz">
+          <label>E-mailová adresa</label>
+          <input type="email" id="auth-email" class="form-control" placeholder="vas@email.cz">
         </div>
         <div class="form-group">
           <label>Heslo</label>
@@ -405,11 +341,11 @@
           <input type="password" id="auth-pass-confirm" class="form-control" placeholder="••••••••">
         </div>
 
-        <button class="btn-artsy" id="auth-submit-btn" onclick="handleAuthAction()" style="margin-top: 6px;">Otevřít bránu</button>
+        <button class="btn-main" id="auth-submit-btn" onclick="handleAuthAction()" style="margin-top: 4px;">Pokračovat</button>
         
-        <div style="margin-top: 18px; font-size: 13px; color: var(--text-muted);">
-          <span id="auth-switch-text">Nemáš dosud svůj klíč?</span> 
-          <a href="#" onclick="toggleAuthMode(event)" style="color: var(--accent); font-weight: 700; text-decoration: underline;" id="auth-switch-link">Zaregistrovat se</a>
+        <div style="margin-top: 16px; font-size: 13px; color: var(--text-muted);">
+          <span id="auth-switch-text">Nemáte ještě účet?</span> 
+          <a href="#" onclick="toggleAuthMode(event)" style="color: var(--accent); font-weight: 600; text-decoration: none;" id="auth-switch-link">Zaregistrovat se</a>
         </div>
       </div>
     </div>
@@ -425,26 +361,26 @@
     <main class="app-content">
       <!-- PŘEHLED -->
       <div id="tab-prehled" class="tab-content active">
-        <div class="artsy-card goal-box">
+        <div class="clean-card goal-box">
           <div style="display: flex; justify-content: space-between; align-items: center;">
             <div>
-              <span style="font-family: var(--font-subheading); font-size: 11px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.8px;">Roční čtenářská výzva</span>
-              <div style="font-family: var(--font-heading); font-size: 24px; font-weight: 800; color: var(--accent); margin-top: 4px; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">
+              <span style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;">Roční výzva</span>
+              <div style="font-size: 20px; font-weight: 700; color: var(--text-main); margin-top: 2px;">
                 <span id="goal-current-read">0</span> / <span id="goal-target-total">12</span> knih
               </div>
             </div>
-            <button onclick="openGoalModal()" class="btn-artsy btn-secondary" style="width: auto; padding: 8px 14px; font-size: 10px;">Upravit cíl</button>
+            <button onclick="openGoalModal()" class="btn-main btn-secondary" style="width: auto; padding: 6px 12px; font-size: 11px;">Upravit</button>
           </div>
           <div class="goal-bar-bg"><div class="goal-bar-fill" id="goal-bar-fill"></div></div>
-          <div style="font-size: 13px; color: var(--text-muted); text-align: right; font-weight: 700; font-style: italic;" id="goal-percent-text">Splněno na 0 %</div>
+          <div style="font-size: 12px; color: var(--text-muted); text-align: right;" id="goal-percent-text">Splněno 0 %</div>
         </div>
 
         <div>
-          <div class="section-title">Kronika statistik</div>
-          <div class="artsy-card">
+          <div class="section-title">Statistiky</div>
+          <div class="clean-card" style="padding: 16px;">
             <div class="stats-grid">
               <div class="stat-card"><div class="val" id="stat-pages">0</div><div class="lbl">Přečteno stran</div></div>
-              <div class="stat-card"><div class="val" id="stat-books">0</div><div class="lbl">Dočtené svazky</div></div>
+              <div class="stat-card"><div class="val" id="stat-books">0</div><div class="lbl">Přečtené knihy</div></div>
             </div>
           </div>
         </div>
@@ -452,40 +388,38 @@
 
       <!-- KNIHOVNA -->
       <div id="tab-knihovna" class="tab-content">
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-          <div class="section-title" style="margin: 0; border: none; flex: unset;">Osobní knihovna</div>
-        </div>
-        <button class="btn-artsy" onclick="openAddBookModal()"><i class="fas fa-feather-pointed"></i> Přidat nový svazek</button>
-        <div id="library-books-list" style="display: flex; flex-direction: column; gap: 14px; margin-top: 6px;"></div>
+        <div class="section-title" style="margin: 0;">Osobní knihovna</div>
+        <button class="btn-main" onclick="openAddBookModal()"><i class="fas fa-plus"></i> Přidat knihu</button>
+        <div id="library-books-list" style="display: flex; flex-direction: column; gap: 10px; margin-top: 4px;"></div>
       </div>
 
       <!-- STATISTIKY -->
       <div id="tab-statistiky" class="tab-content">
-        <div class="section-title">Detailní přehledy</div>
-        <div class="artsy-card" style="text-align: center; padding: 36px 20px; color: var(--text-muted); font-style: italic;">
-          <i class="fas fa-scroll" style="font-size: 36px; color: var(--accent); margin-bottom: 12px; display: block; filter: drop-shadow(0 2px 6px var(--accent-glow));"></i>
-          Grafy a detailní rozbory se rozepíší, jakmile do své knihovny přidáš první příběhy.
+        <div class="section-title">Přehledy</div>
+        <div class="clean-card" style="text-align: center; padding: 32px 16px; color: var(--text-muted); font-size: 14px;">
+          <i class="fas fa-chart-line" style="font-size: 24px; color: var(--accent); margin-bottom: 8px; display: block;"></i>
+          Grafy se zobrazí po přidání prvních knih.
         </div>
       </div>
 
-      <!-- ÚČET & ATMOSFÉRA -->
+      <!-- ÚČET & NASTAVENÍ -->
       <div id="tab-ucet" class="tab-content">
         <div>
-          <div class="section-title">Atmosféra kabinetu</div>
-          <div class="artsy-card">
-            <label style="font-family: var(--font-subheading); font-size: 11px; font-weight: 800; color: var(--accent); text-transform: uppercase; letter-spacing: 0.8px; display: block; margin-bottom: 10px;">Zvol si svůj Mood & Tapetu</label>
+          <div class="section-title">Vzhled aplikace</div>
+          <div class="clean-card">
+            <label style="font-size: 12px; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 8px;">Barevný motív</label>
             <div class="theme-selector">
-              <div class="theme-btn active" onclick="setTheme('academic', this)"><span>🏰</span>Dark Ac.</div>
-              <div class="theme-btn" onclick="setTheme('coffee', this)"><span>☕</span>Coffee</div>
-              <div class="theme-btn" onclick="setTheme('fairy', this)"><span>✨</span>Fantasy</div>
+              <div class="theme-btn active" onclick="setTheme('academic', this)"><i class="fas fa-moon"></i>Modern</div>
+              <div class="theme-btn" onclick="setTheme('coffee', this)"><i class="fas fa-mug-hot"></i>Coffee</div>
+              <div class="theme-btn" onclick="setTheme('fairy', this)"><i class="fas fa-wand-magic-sparkles"></i>Purple</div>
             </div>
           </div>
         </div>
         <div>
-          <div class="section-title">Správa účtu</div>
-          <div class="artsy-card">
-            <button class="btn-artsy btn-secondary" onclick="handleLogout()" style="color: #ff8080; border-color: rgba(255,128,128,0.4);">
-              <i class="fas fa-door-open"></i> Opustit kabinet (Odhlásit)
+          <div class="section-title">Účet</div>
+          <div class="clean-card">
+            <button class="btn-main btn-secondary" onclick="handleLogout()" style="color: #f85149; border-color: rgba(248,81,73,0.4);">
+              <i class="fas fa-arrow-right-from-bracket"></i> Odhlásit se
             </button>
           </div>
         </div>
@@ -494,39 +428,35 @@
 
     <!-- SPODNÍ NAVIGACE -->
     <nav class="app-nav">
-      <button class="nav-item active" onclick="switchTab('prehled', this)"><i class="fas fa-landmark"></i>Přehled</button>
-      <button class="nav-item" onclick="switchTab('knihovna', this)"><i class="fas fa-book-bookmark"></i>Knihovna</button>
+      <button class="nav-item active" onclick="switchTab('prehled', this)"><i class="fas fa-house"></i>Přehled</button>
+      <button class="nav-item" onclick="switchTab('knihovna', this)"><i class="fas fa-book"></i>Knihovna</button>
       <button class="nav-item" onclick="switchTab('statistiky', this)"><i class="fas fa-chart-pie"></i>Statistiky</button>
-      <button class="nav-item" onclick="switchTab('ucet', this)"><i class="fas fa-key"></i>Účet</button>
+      <button class="nav-item" onclick="switchTab('ucet', this)"><i class="fas fa-gear"></i>Nastavení</button>
     </nav>
 
-    <!-- MODAL: KNIHA S OPEN LIBRARY -->
+    <!-- MODAL: KNIHA -->
     <div class="modal-overlay" id="modal-add-book">
       <div class="modal-sheet">
-        <div class="section-title" id="modal-book-title-header" style="margin-bottom: 18px;">Nový svazek</div>
-        <input type="hidden" id="edit-book-id">
-        <input type="hidden" id="book-cover-url" value="">
-        
+        <div class="section-title" style="margin-bottom: 14px;">Přidat knihu</div>
         <div class="form-group">
-          <label>Název díla * (Hledá v Open Library)</label>
-          <input type="text" id="book-title" class="form-control" placeholder="např. Jméno větru" oninput="searchOpenLibrary(this.value)">
-          <div id="book-autocomplete" class="autocomplete-list"></div>
+          <label>Název knihy *</label>
+          <input type="text" id="book-title" class="form-control" placeholder="např. Malý princ">
         </div>
         <div class="form-group">
           <label>Autor *</label>
-          <input type="text" id="book-author" class="form-control" placeholder="Jméno spisovatele...">
+          <input type="text" id="book-author" class="form-control" placeholder="Antoine de Saint-Exupéry">
         </div>
         <div class="form-group">
-          <label>Stav v knihovně</label>
+          <label>Stav</label>
           <select id="book-status" class="form-control">
             <option value="reading">Právě čtu</option>
-            <option value="tbr">TBR (Chci číst)</option>
+            <option value="tbr">Chci číst</option>
             <option value="read">Přečteno</option>
           </select>
         </div>
-        <div style="display: flex; gap: 12px; margin-top: 24px;">
-          <button class="btn-artsy" onclick="saveBookItem()">Uložit do knihovny</button>
-          <button class="btn-artsy btn-secondary" onclick="closeModal('modal-add-book')">Zrušit</button>
+        <div style="display: flex; gap: 10px; margin-top: 20px;">
+          <button class="btn-main" onclick="saveBookFromModal()">Uložit</button>
+          <button class="btn-main btn-secondary" onclick="closeModal('modal-add-book')">Zrušit</button>
         </div>
       </div>
     </div>
@@ -534,14 +464,14 @@
     <!-- MODAL: CÍL -->
     <div class="modal-overlay" id="modal-goal">
       <div class="modal-sheet">
-        <div class="section-title" style="margin-bottom: 18px;">Roční čtenářský cíl</div>
+        <div class="section-title" style="margin-bottom: 14px;">Roční čtenářský cíl</div>
         <div class="form-group">
-          <label>Cílový počet svazků</label>
+          <label>Počet knih za rok</label>
           <input type="number" id="goal-input-val" class="form-control" min="1" max="365" value="12">
         </div>
-        <div style="display: flex; gap: 12px; margin-top: 24px;">
-          <button class="btn-artsy" onclick="saveGoal()">Potvrdit cíl</button>
-          <button class="btn-artsy btn-secondary" onclick="closeModal('modal-goal')">Zrušit</button>
+        <div style="display: flex; gap: 10px; margin-top: 20px;">
+          <button class="btn-main" onclick="saveGoal()">Uložit cíl</button>
+          <button class="btn-main btn-secondary" onclick="closeModal('modal-goal')">Zrušit</button>
         </div>
       </div>
     </div>
@@ -563,101 +493,73 @@
       document.getElementById('goal-target-total').textContent = annualGoal;
       const pct = Math.min(100, Math.round((readCount / annualGoal) * 100));
       document.getElementById('goal-bar-fill').style.width = pct + '%';
-      document.getElementById('goal-percent-text').textContent = `Splněno na ${pct} %`;
+      document.getElementById('goal-percent-text').textContent = `Splněno ${pct} %`;
       document.getElementById('stat-books').textContent = readCount;
-      
-      const totalPages = userBooks.filter(b => b.status === 'read').reduce((acc, b) => acc + (parseInt(b.pages) || 250), 0);
-      document.getElementById('stat-pages').textContent = totalPages;
     }
 
     function renderLibrary() {
       const listContainer = document.getElementById('library-books-list');
       if(userBooks.length === 0) {
-        listContainer.innerHTML = `<div style="text-align:center; padding: 24px; color: var(--text-muted); font-style:italic;">Tvůj regál je zatím prázdný. Přidej první knihu nahoře.</div>`;
+        listContainer.innerHTML = `
+          <div class="clean-card" style="text-align: center; padding: 24px; color: var(--text-muted); font-size: 14px;">
+            Vaše knihovna je zatím prázdná.
+          </div>`;
         return;
       }
-      
+
+      const statusLabels = { reading: 'Právě čtu', tbr: 'Chci číst', read: 'Přečteno' };
       listContainer.innerHTML = userBooks.map((book, index) => `
         <div class="book-item-card">
-          <div class="book-cover-thumb">
-            ${book.cover ? `<img src="${book.cover}" style="width:100%; height:100%; object-fit:cover; border-radius:5px;" alt="Cover">` : '📖'}
+          <img src="${book.coverUrl || 'https://via.placeholder.com/50x75?text=Kniha'}" class="book-cover" alt="Obálka">
+          <div class="book-info">
+            <div class="book-title-text">${escapeHtml(book.title)}</div>
+            <div class="book-author-text">${escapeHtml(book.author)}</div>
+            <span class="book-status-badge">${statusLabels[book.status] || book.status}</span>
           </div>
-          <div style="flex: 1;">
-            <div style="font-family: var(--font-subheading); font-weight: 700; font-size: 14px; color: var(--text-main);">${book.title}</div>
-            <div style="font-size: 13px; color: var(--text-muted); margin-top: 2px;">${book.author}</div>
-            <div style="font-size: 11px; margin-top: 6px; color: var(--accent); font-weight: 800; text-transform: uppercase;">
-              ${book.status === 'read' ? '✓ Přečteno' : book.status === 'reading' ? '⏳ Právě čtu' : '📌 Chci číst'}
-            </div>
-          </div>
-          <button onclick="deleteBook(${index})" style="background: none; border: none; color: #ff8080; cursor: pointer; padding: 8px; font-size: 16px;"><i class="fas fa-trash-can"></i></button>
+          <button onclick="deleteBook(${index})" style="background: none; border: none; color: var(--text-muted); cursor: pointer; padding: 8px;" title="Smazat">
+            <i class="fas fa-trash-can" style="font-size: 13px;"></i>
+          </button>
         </div>
       `).join('');
     }
 
-    /* Open Library API integrace */
-    let searchTimeout = null;
-    function searchOpenLibrary(query) {
-      clearTimeout(searchTimeout);
-      const autocomplete = document.getElementById('book-autocomplete');
-      if(!query || query.length < 3) {
-        autocomplete.style.display = 'none';
-        return;
-      }
-
-      searchTimeout = setTimeout(() => {
-        fetch(`https://openlibrary.org/search.json?q=${encodeURIComponent(query)}&limit=5`)
-          .then(res => res.json())
-          .then(data => {
-            if(data.docs && data.docs.length > 0) {
-              autocomplete.style.display = 'block';
-              autocomplete.innerHTML = data.docs.map(doc => {
-                const title = doc.title.replace(/'/g, "");
-                const author = doc.author_name ? doc.author_name[0].replace(/'/g, "") : "Neznámý autor";
-                const coverId = doc.cover_i;
-                const coverUrl = coverId ? `https://covers.openlibrary.org/b/id/${coverId}-M.jpg` : '';
-                return `<div class="autocomplete-item" onclick="selectBookFromApi('${title}', '${author}', '${coverUrl}')">
-                  <span><strong>${title}</strong><br><small style="color:var(--text-muted);">${author}</small></span>
-                  <span>🔍</span>
-                </div>`;
-              }).join('');
-            } else {
-              autocomplete.style.display = 'none';
-            }
-          }).catch(() => autocomplete.style.display = 'none');
-      }, 350);
+    function escapeHtml(str) {
+      return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
     }
 
-    function selectBookFromApi(title, author, coverUrl) {
-      document.getElementById('book-title').value = title;
-      document.getElementById('book-author').value = author;
-      document.getElementById('book-cover-url').value = coverUrl;
-      document.getElementById('book-autocomplete').style.display = 'none';
-    }
-
-    function saveBookItem() {
+    async function saveBookFromModal() {
       const title = document.getElementById('book-title').value.trim();
       const author = document.getElementById('book-author').value.trim();
       const status = document.getElementById('book-status').value;
-      const cover = document.getElementById('book-cover-url').value;
 
       if(!title || !author) {
-        alert("Vyplň prosím název i autora.");
+        alert("Vyplňte prosím název i autora knihy.");
         return;
       }
 
-      userBooks.unshift({ title, author, status, cover, pages: 250 });
+      let coverUrl = "";
+      try {
+        const query = encodeURIComponent(`${title} ${author}`);
+        const res = await fetch(`https://openlibrary.org/search.json?q=${query}&limit=1`);
+        const data = await res.json();
+        if(data.docs && data.docs.length > 0 && data.docs[0].cover_i) {
+          coverUrl = `https://covers.openlibrary.org/b/id/${data.docs[0].cover_i}-M.jpg`;
+        }
+      } catch(err) {
+        console.error("Chyba Open Library API:", err);
+      }
+
+      userBooks.push({ title, author, status, coverUrl });
       localStorage.setItem('knihomol_books', JSON.stringify(userBooks));
-      
+
       document.getElementById('book-title').value = '';
       document.getElementById('book-author').value = '';
-      document.getElementById('book-cover-url').value = '';
-      
       closeModal('modal-add-book');
       renderAll();
     }
 
     function deleteBook(index) {
-      if(confirm("Opravdu chceš tento svazek odstranit ze své knihovny?")) {
+      if(confirm("Opravdu chcete tuto knihu odstranit?")) {
         userBooks.splice(index, 1);
         localStorage.setItem('knihomol_books', JSON.stringify(userBooks));
         renderAll();
@@ -675,18 +577,18 @@
       const switchLink = document.getElementById('auth-switch-link');
 
       if (window.isRegisterMode) {
-        title.textContent = 'Nový čtenář';
-        subtitle.textContent = 'Založ si svůj osobní svitek.';
+        title.textContent = 'Vytvoření účtu';
+        subtitle.textContent = 'Zaregistrujte se do své knihovny.';
         submitBtn.textContent = 'Zaregistrovat se';
         confirmGroup.style.display = 'block';
-        switchText.textContent = 'Již vlastníš klíč?';
-        switchLink.textContent = 'Vstoupit do přihlášení';
+        switchText.textContent = 'Máte již účet?';
+        switchLink.textContent = 'Přihlásit se';
       } else {
-        title.textContent = 'Vstup do kabinetu';
-        subtitle.textContent = 'Přenes se do světa svých příběhů.';
-        submitBtn.textContent = 'Otevřít bránu';
+        title.textContent = 'Vítejte zpět';
+        subtitle.textContent = 'Přihlaste se do svého čtenářského kabinetu.';
+        submitBtn.textContent = 'Pokračovat';
         confirmGroup.style.display = 'none';
-        switchText.textContent = 'Nemáš dosud svůj klíč?';
+        switchText.textContent = 'Nemáte ještě účet?';
         switchLink.textContent = 'Zaregistrovat se';
       }
     }
@@ -726,17 +628,6 @@
       const val = parseInt(document.getElementById('goal-input-val').value);
       if(val > 0) { annualGoal = val; localStorage.setItem('knihomol_goal', annualGoal); renderGoal(); }
       closeModal('modal-goal');
-    }
-  </script>
-
-  <!-- Registrace Service Workeru pro PWA -->
-  <script>
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('sw.js')
-          .then(() => console.log('Service Worker zaregistrován'))
-          .catch(err => console.log('Chyba registrace SW:', err));
-      });
     }
   </script>
 </body>
