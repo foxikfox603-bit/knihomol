@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="cs" data-theme="academic">
 <head>
@@ -21,7 +20,7 @@
       signInWithEmailAndPassword, 
       signOut, 
       onAuthStateChanged 
-    } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+    } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
 
     // ==========================================
     // TVÉ FIREBASE ÚDAJE
@@ -387,15 +386,20 @@
       <button class="nav-item" onclick="switchTab('ucet', this)"><i class="fas fa-user" style="font-size: 14px;"></i>Účet</button>
     </nav>
 
-    <!-- MODAL: KNIHA -->
+    <!-- MODAL: KNIHA S GOOGLE BOOKS -->
     <div class="modal-overlay" id="modal-add-book">
       <div class="modal-sheet">
         <div class="section-title" id="modal-book-title-header" style="margin-bottom: 14px;">Přidat knihu</div>
         <input type="hidden" id="edit-book-id">
+        
         <div class="form-group">
-          <label>Název *</label>
-          <input type="text" id="book-title" class="form-control" placeholder="Název knihy...">
+          <label>Název * (Zadej a stiskněte Enter pro vyhledání)</label>
+          <div style="display: flex; gap: 6px;">
+            <input type="text" id="book-title" class="form-control" placeholder="např. Malý princ" onkeydown="checkBookEnter(event)">
+            <button type="button" class="btn-artsy btn-secondary" onclick="searchGoogleBooks()" style="margin: 0; width: auto; padding: 0 12px;"><i class="fas fa-search"></i></button>
+          </div>
         </div>
+
         <div class="form-group">
           <label>Autor *</label>
           <input type="text" id="book-author" class="form-control" placeholder="Jméno autora...">
@@ -442,7 +446,7 @@
     ];
     let annualGoal = parseInt(localStorage.getItem('knihomol_goal')) || 12;
     let currentFilter = 'all';
-    window.isRegisterMode = false; // Výchozí je přihlášení
+    window.isRegisterMode = false;
 
     function toggleAuthMode(e) {
       e.preventDefault();
@@ -468,6 +472,45 @@
         confirmGroup.style.display = 'none';
         switchText.textContent = 'Nemáš ještě účet?';
         switchLink.textContent = 'Zaregistrovat se';
+      }
+    }
+
+    // Google Books API propojení
+    function checkBookEnter(e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        searchGoogleBooks();
+      }
+    }
+
+    async function searchGoogleBooks() {
+      const query = document.getElementById('book-title').value.trim();
+      if (!query) {
+        alert("Nejprve zadej název knihy.");
+        return;
+      }
+
+      try {
+        const response = await fetch(`https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}`);
+        const data = await response.json();
+
+        if (data.items && data.items.length > 0) {
+          const bookInfo = data.items[0].volumeInfo;
+          
+          // Předvyplnění polí
+          if (bookInfo.title) document.getElementById('book-title').value = bookInfo.title;
+          if (bookInfo.authors && bookInfo.authors.length > 0) {
+            document.getElementById('book-author').value = bookInfo.authors.join(', ');
+          }
+          if (bookInfo.pageCount) {
+            document.getElementById('book-pages').value = bookInfo.pageCount;
+          }
+        } else {
+          alert("Kniha nebyla v databázi Google Books nalezena.");
+        }
+      } catch (err) {
+        console.error("Chyba při komunikaci s Google Books:", err);
+        alert("Nepodařilo se připojit k databázi knih.");
       }
     }
 
