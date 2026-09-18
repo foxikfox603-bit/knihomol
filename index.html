@@ -6,411 +6,378 @@
   <title>Knihomol — Čtenářská síť</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,800;1,400&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,800&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Firebase SDK (Version 9) -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+    import { 
+      getAuth, 
+      signInWithPopup, 
+      GoogleAuthProvider, 
+      createUserWithEmailAndPassword, 
+      signInWithEmailAndPassword, 
+      signOut, 
+      onAuthStateChanged 
+    } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+
+    // ==========================================
+    // SEM VLOŽ SVÉ ÚDAJE Z FIREBASE KONZOLE (Krok 2 v návodu dole)
+    // ==========================================
+    const firebaseConfig = {
+      apiKey: "TVUJ_API_KEY",
+      authDomain: "TVUJ_PROJEKT.firebaseapp.com",
+      projectId: "TVUJ_PROJEKT_ID",
+      storageBucket: "TVUJ_PROJEKT.appspot.com",
+      messagingSenderId: "TVUJ_SENDER_ID",
+      appId: "TVUJ_APP_ID"
+    };
+
+    // Inicializace Firebase
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const googleProvider = new GoogleAuthProvider();
+
+    // Globální funkce dostupné pro HTML tlačítka
+    window.handleGoogleLogin = function() {
+      signInWithPopup(auth, googleProvider).catch((error) => {
+        alert("Chyba při přihlášení přes Google: " + error.message);
+      });
+    };
+
+    window.handleEmailAuth = function(isRegister) {
+      const email = document.getElementById('auth-email').value.trim();
+      const pass = document.getElementById('auth-pass').value.trim();
+      if(!email || !pass) { alert("Vyplň e-mail i heslo."); return; }
+
+      if(isRegister) {
+        createUserWithEmailAndPassword(auth, email, pass).catch(err => alert("Chyba registrace: " + err.message));
+      } else {
+        signInWithEmailAndPassword(auth, email, pass).catch(err => alert("Chyba přihlášení: " + err.message));
+      }
+    };
+
+    window.handleLogout = function() {
+      signOut(auth);
+    };
+
+    // Sledování stavu přihlášení
+    onAuthStateChanged(auth, (user) => {
+      const authScreen = document.getElementById('auth-screen');
+      const mainApp = document.getElementById('main-app-container');
+      
+      if (user) {
+        // Uživatel je přihlášený -> schováme přihlášení, ukážeme appku
+        authScreen.style.display = 'none';
+        mainApp.style.display = 'flex';
+        document.getElementById('user-badge').textContent = user.displayName || user.email.split('@')[0];
+        renderAll();
+      } else {
+        // Uživatel NENÍ přihlášený -> ukážeme přihlášení, schováme appku
+        authScreen.style.display = 'flex';
+        mainApp.style.display = 'none';
+      }
+    });
+  </script>
+
   <style>
-    /* 1. DARK ACADEMIC (Default) */
+    /* TEMATA / MOODY */
     :root[data-theme="academic"] {
-      --bg-main: #0A0D0B;
-      --bg-dark: #121614;
-      --card-bg: #1B221E;
-      --card-border: rgba(212, 175, 55, 0.2);
-      --text-main: #E8E3D9;
-      --text-muted: #8F9E94;
-      --accent: #D4AF37;
-      --accent-glow: rgba(212, 175, 55, 0.15);
-      --btn-grad: linear-gradient(135deg, #D4AF37 0%, #AA820A 100%);
-      --btn-text: #0F1210;
-      --wood-dark: #2A1F18;
-      --wood-shelf: #423024;
-      --font-heading: 'Cinzel', serif;
-      --font-body: 'Plus Jakarta Sans', sans-serif;
+      --bg-main: #0A0D0B; --bg-dark: #121614; --card-bg: #1B221E;
+      --card-border: rgba(212, 175, 55, 0.2); --text-main: #E8E3D9;
+      --text-muted: #8F9E94; --accent: #D4AF37; --accent-glow: rgba(212, 175, 55, 0.15);
+      --btn-grad: linear-gradient(135deg, #D4AF37 0%, #AA820A 100%); --btn-text: #0F1210;
+      --font-heading: 'Cinzel', serif; --font-body: 'Plus Jakarta Sans', sans-serif;
     }
-
-    /* 2. COZY COFFEE */
     :root[data-theme="coffee"] {
-      --bg-main: #1C130E;
-      --bg-dark: #2B1D16;
-      --card-bg: #38271E;
-      --card-border: rgba(210, 153, 106, 0.25);
-      --text-main: #F4ECE4;
-      --text-muted: #BCAAA0;
-      --accent: #D2996A;
-      --accent-glow: rgba(210, 153, 106, 0.2);
-      --btn-grad: linear-gradient(135deg, #E2A87B 0%, #B87B4A 100%);
-      --btn-text: #22140C;
-      --wood-dark: #1F140E;
-      --wood-shelf: #4A3324;
-      --font-heading: 'Playfair Display', serif;
-      --font-body: 'Plus Jakarta Sans', sans-serif;
+      --bg-main: #1C130E; --bg-dark: #2B1D16; --card-bg: #38271E;
+      --card-border: rgba(210, 153, 106, 0.25); --text-main: #F4ECE4;
+      --text-muted: #BCAAA0; --accent: #D2996A; --accent-glow: rgba(210, 153, 106, 0.2);
+      --btn-grad: linear-gradient(135deg, #E2A87B 0%, #B87B4A 100%); --btn-text: #22140C;
+      --font-heading: 'Playfair Display', serif; --font-body: 'Plus Jakarta Sans', sans-serif;
     }
-
-    /* 3. FAIRY FANTASY */
     :root[data-theme="fairy"] {
-      --bg-main: #0F0A1C;
-      --bg-dark: #19122B;
-      --card-bg: #261B3D;
-      --card-border: rgba(216, 128, 255, 0.3);
-      --text-main: #F5EBFB;
-      --text-muted: #AA97C4;
-      --accent: #D880FF;
-      --accent-glow: rgba(216, 128, 255, 0.2);
-      --btn-grad: linear-gradient(135deg, #E199FF 0%, #A242E6 100%);
-      --btn-text: #17092B;
-      --wood-dark: #1D1533;
-      --wood-shelf: #3E2B63;
-      --font-heading: 'Quicksand', sans-serif;
-      --font-body: 'Quicksand', sans-serif;
+      --bg-main: #0F0A1C; --bg-dark: #19122B; --card-bg: #261B3D;
+      --card-border: rgba(216, 128, 255, 0.3); --text-main: #F5EBFB;
+      --text-muted: #AA97C4; --accent: #D880FF; --accent-glow: rgba(216, 128, 255, 0.2);
+      --btn-grad: linear-gradient(135deg, #E199FF 0%, #A242E6 100%); --btn-text: #17092B;
+      --font-heading: 'Quicksand', sans-serif; --font-body: 'Quicksand', sans-serif;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-tap-highlight-color: transparent; }
-    
     body {
-      background-color: var(--bg-main);
-      font-family: var(--font-body);
-      color: var(--text-main);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      font-weight: 500;
+      background-color: var(--bg-main); font-family: var(--font-body);
+      color: var(--text-main); display: flex; justify-content: center;
+      align-items: center; min-height: 100vh; font-weight: 500;
       transition: background-color 0.3s ease, color 0.3s ease;
     }
-
     .app-frame {
-      width: 100%;
-      max-width: 414px;
-      height: 100vh;
-      max-height: 896px;
-      background-color: var(--bg-dark);
-      display: flex;
-      flex-direction: column;
-      position: relative;
-      overflow: hidden;
-      box-shadow: 0 0 50px rgba(0,0,0,0.8), 0 0 15px var(--accent-glow);
-      border-radius: 20px;
+      width: 100%; max-width: 414px; height: 100vh; max-height: 896px;
+      background-color: var(--bg-dark); display: flex; flex-direction: column;
+      position: relative; overflow: hidden; border-radius: 20px;
       border: 1px solid var(--card-border);
-      transition: all 0.3s ease;
+      box-shadow: 0 0 50px rgba(0,0,0,0.8), 0 0 15px var(--accent-glow);
     }
-
     @media (max-width: 450px) {
       .app-frame { max-height: 100vh; border-radius: 0; border: none; }
     }
 
+    /* PŘIHLAŠOVACÍ OBRAZOVKA */
+    #auth-screen {
+      position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+      background: var(--bg-dark); z-index: 1000; display: flex;
+      flex-direction: column; justify-content: center; align-items: center; padding: 24px; text-align: center;
+    }
+    #auth-screen h1 { font-family: var(--font-heading); color: var(--accent); font-size: 28px; margin-bottom: 8px; }
+    #auth-screen p { color: var(--text-muted); font-size: 13px; margin-bottom: 24px; }
+    .auth-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 16px; padding: 20px; width: 100%; max-width: 320px; }
+
+    /* KOMPONENTY APLIKACE */
     .app-header {
-      padding: 22px 20px 16px;
-      background: linear-gradient(180deg, rgba(255,255,255,0.03) 0%, var(--bg-dark) 100%);
+      padding: 22px 20px 16px; background: var(--bg-dark);
       border-bottom: 1px solid var(--card-border);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+      display: flex; justify-content: space-between; align-items: center;
     }
-
     .app-header h1 {
-      font-family: var(--font-heading);
-      font-size: 22px;
-      font-weight: 800;
-      color: var(--accent);
-      letter-spacing: 1.5px;
-      text-transform: uppercase;
+      font-family: var(--font-heading); font-size: 22px; font-weight: 800;
+      color: var(--accent); letter-spacing: 1.5px; text-transform: uppercase;
     }
-
     .header-badge {
-      font-size: 10px;
-      background: var(--accent-glow);
-      color: var(--accent);
-      border: 1px solid var(--accent);
-      padding: 4px 10px;
-      border-radius: 12px;
-      font-weight: 800;
-      letter-spacing: 1px;
+      font-size: 10px; background: var(--accent-glow); color: var(--accent);
+      border: 1px solid var(--accent); padding: 4px 10px; border-radius: 12px; font-weight: 800;
     }
-
     .app-content {
-      flex: 1;
-      overflow-y: auto;
-      padding: 18px;
-      display: flex;
-      flex-direction: column;
-      gap: 18px;
+      flex: 1; overflow-y: auto; padding: 18px; display: flex; flex-direction: column; gap: 18px;
     }
-
-    .section-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-      margin-bottom: 6px;
-    }
-
     .section-title {
-      font-family: var(--font-heading);
-      font-size: 15px;
-      font-weight: 700;
-      color: var(--accent);
-      letter-spacing: 0.8px;
+      font-family: var(--font-heading); font-size: 15px; font-weight: 700;
+      color: var(--accent); letter-spacing: 0.8px; margin-bottom: 6px;
     }
-
     .artsy-card {
-      background: var(--card-bg);
-      border-radius: 12px;
-      padding: 16px;
-      border: 1px solid var(--card-border);
-      box-shadow: 0 8px 20px rgba(0,0,0,0.3);
-      transition: all 0.3s ease;
+      background: var(--card-bg); border-radius: 12px; padding: 16px;
+      border: 1px solid var(--card-border); box-shadow: 0 8px 20px rgba(0,0,0,0.3);
     }
-    
     .empty-state { text-align: center; padding: 20px 12px; color: var(--text-muted); }
-    .empty-state-icon { font-size: 32px; margin-bottom: 8px; }
     .empty-state p { font-size: 13px; font-weight: 600; margin-bottom: 14px; }
 
     .btn-artsy {
-      background: var(--btn-grad);
-      color: var(--btn-text);
-      border: none;
-      border-radius: 8px;
-      padding: 11px 16px;
-      font-family: var(--font-body);
-      font-weight: 800;
-      font-size: 11px;
-      letter-spacing: 0.5px;
-      text-transform: uppercase;
-      cursor: pointer;
-      width: 100%;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      box-shadow: 0 4px 12px var(--accent-glow);
-      transition: opacity 0.2s;
+      background: var(--btn-grad); color: var(--btn-text); border: none;
+      border-radius: 8px; padding: 11px 16px; font-family: var(--font-body);
+      font-weight: 800; font-size: 11px; letter-spacing: 0.5px; text-transform: uppercase;
+      cursor: pointer; width: 100%; display: inline-flex; align-items: center;
+      justify-content: center; gap: 8px; box-shadow: 0 4px 12px var(--accent-glow); margin-top: 8px;
     }
-    .btn-artsy:hover { opacity: 0.9; }
-
     .btn-secondary {
-      background: rgba(255, 255, 255, 0.05);
-      color: var(--text-main);
-      border: 1px solid var(--card-border);
-      box-shadow: none;
+      background: rgba(255, 255, 255, 0.05); color: var(--text-main);
+      border: 1px solid var(--card-border); box-shadow: none;
     }
 
-    /* Theme Switcher */
-    .theme-selector {
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap: 8px;
-      margin-top: 6px;
-    }
+    .theme-selector { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-top: 6px; }
     .theme-btn {
-      padding: 10px 6px;
-      border-radius: 8px;
-      border: 1px solid var(--card-border);
-      background: rgba(0,0,0,0.2);
-      color: var(--text-muted);
-      font-size: 11px;
-      font-weight: 700;
-      cursor: pointer;
-      text-align: center;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 4px;
+      padding: 10px 6px; border-radius: 8px; border: 1px solid var(--card-border);
+      background: rgba(0,0,0,0.2); color: var(--text-muted); font-size: 11px;
+      font-weight: 700; cursor: pointer; text-align: center; display: flex;
+      flex-direction: column; align-items: center; gap: 4px;
     }
-    .theme-btn.active {
-      border-color: var(--accent);
-      background: var(--accent-glow);
-      color: var(--accent);
-    }
+    .theme-btn.active { border-color: var(--accent); background: var(--accent-glow); color: var(--accent); }
 
-    /* Stats Grid & Goal */
     .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
     .stat-card { background: rgba(0,0,0,0.2); border-radius: 8px; padding: 12px; border: 1px solid var(--card-border); }
     .stat-card .val { font-family: var(--font-heading); font-size: 20px; font-weight: 800; color: var(--accent); }
     .stat-card .lbl { font-size: 10px; font-weight: 700; color: var(--text-muted); margin-top: 2px; text-transform: uppercase; }
-
     .goal-box { display: flex; flex-direction: column; gap: 10px; }
-    .goal-top { display: flex; justify-content: space-between; align-items: center; }
     .goal-bar-bg { width: 100%; background: rgba(0,0,0,0.3); border-radius: 6px; height: 10px; overflow: hidden; border: 1px solid var(--card-border); }
     .goal-bar-fill { background: var(--btn-grad); height: 100%; width: 0%; transition: width 0.4s ease; }
 
-    /* Books & Shelves */
     .filter-pills { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 4px; }
-    .pill-btn { background: rgba(0,0,0,0.2); border: 1px solid var(--card-border); color: var(--text-muted); padding: 6px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; cursor: pointer; white-space: nowrap; }
+    .pill-btn {
+      background: rgba(0,0,0,0.2); border: 1px solid var(--card-border); color: var(--text-muted);
+      padding: 6px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; cursor: pointer; white-space: nowrap;
+    }
     .pill-btn.active { background: var(--accent-glow); border-color: var(--accent); color: var(--accent); }
-
-    .book-card-item { background: rgba(0,0,0,0.2); border: 1px solid var(--card-border); border-radius: 10px; padding: 12px; display: flex; flex-direction: column; gap: 8px; }
+    .book-card-item {
+      background: rgba(0,0,0,0.2); border: 1px solid var(--card-border);
+      border-radius: 10px; padding: 12px; display: flex; flex-direction: column; gap: 8px;
+    }
     .book-status-badge { font-size: 9px; padding: 3px 8px; border-radius: 10px; font-weight: 800; text-transform: uppercase; display: inline-block; }
     .status-reading { background: rgba(59, 130, 246, 0.2); color: #60A5FA; border: 1px solid rgba(59, 130, 246, 0.4); }
     .status-read { background: rgba(34, 197, 94, 0.2); color: #4ADE80; border: 1px solid rgba(34, 197, 94, 0.4); }
     .status-tbr { background: rgba(234, 179, 8, 0.2); color: #FACC15; border: 1px solid rgba(234, 179, 8, 0.4); }
 
-    .app-nav { background: var(--bg-dark); border-top: 1px solid var(--card-border); display: flex; justify-content: space-around; padding: 10px 4px 16px; }
-    .nav-item { background: none; border: none; color: var(--text-muted); font-family: var(--font-body); font-size: 10px; font-weight: 700; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px; flex: 1; text-transform: uppercase; letter-spacing: 0.5px; }
+    .app-nav {
+      background: var(--bg-dark); border-top: 1px solid var(--card-border);
+      display: flex; justify-content: space-around; padding: 10px 4px 16px;
+    }
+    .nav-item {
+      background: none; border: none; color: var(--text-muted); font-family: var(--font-body);
+      font-size: 10px; font-weight: 700; cursor: pointer; display: flex;
+      flex-direction: column; align-items: center; gap: 4px; flex: 1; text-transform: uppercase;
+    }
     .nav-item.active { color: var(--accent); font-weight: 800; }
-    .nav-icon { font-size: 16px; }
 
-    .modal-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.75); backdrop-filter: blur(6px); display: flex; justify-content: center; align-items: flex-end; z-index: 100; opacity: 0; pointer-events: none; transition: opacity 0.2s ease; }
+    .modal-overlay {
+      position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.75); backdrop-filter: blur(6px); display: flex;
+      justify-content: center; align-items: flex-end; z-index: 100;
+      opacity: 0; pointer-events: none; transition: opacity 0.2s ease;
+    }
     .modal-overlay.open { opacity: 1; pointer-events: auto; }
-    .modal-sheet { width: 100%; background: var(--card-bg); border-radius: 20px 20px 0 0; border-top: 1px solid var(--accent); padding: 22px 18px 28px; max-height: 85vh; overflow-y: auto; }
-
-    .form-group { margin-bottom: 14px; position: relative; }
-    .form-group label { display: block; font-size: 11px; font-weight: 800; margin-bottom: 6px; color: var(--accent); text-transform: uppercase; letter-spacing: 0.5px; }
-    .form-control { width: 100%; padding: 11px 14px; border: 1px solid var(--card-border); border-radius: 8px; font-family: var(--font-body); font-size: 13px; font-weight: 600; background: rgba(0,0,0,0.4); color: var(--text-main); outline: none; }
+    .modal-sheet {
+      width: 100%; background: var(--card-bg); border-radius: 20px 20px 0 0;
+      border-top: 1px solid var(--accent); padding: 22px 18px 28px; max-height: 85vh; overflow-y: auto;
+    }
+    .form-group { margin-bottom: 14px; text-align: left; }
+    .form-group label { display: block; font-size: 11px; font-weight: 800; margin-bottom: 6px; color: var(--accent); text-transform: uppercase; }
+    .form-control {
+      width: 100%; padding: 11px 14px; border: 1px solid var(--card-border);
+      border-radius: 8px; font-family: var(--font-body); font-size: 13px; font-weight: 600;
+      background: rgba(0,0,0,0.4); color: var(--text-main); outline: none;
+    }
     .form-control:focus { border-color: var(--accent); }
-
-    .tab-content { display: none; }
-    .tab-content.active { display: flex; flex-direction: column; gap: 16px; }
+    .tab-content { display: none; flex-direction: column; gap: 16px; }
+    .tab-content.active { display: flex; }
   </style>
 </head>
 <body>
 
-  <div class="app-frame">
+  <!-- PŘIHLAŠOVACÍ OBRAZOVKA (Vynucené přihlášení) -->
+  <div id="auth-screen">
+    <div class="auth-card">
+      <h1>Knihomol</h1>
+      <p>Pro vstup do aplikace se prosím přihlaš.</p>
+      
+      <button class="btn-artsy" onclick="handleGoogleLogin()" style="background: white; color: #333; margin-bottom: 14px;">
+        <i class="fab fa-google" style="color: #4285F4;"></i> Přihlásit přes Google
+      </button>
+
+      <div style="border-top: 1px solid var(--card-border); margin: 14px 0; padding-top: 14px;">
+        <div class="form-group">
+          <label>E-mail</label>
+          <input type="email" id="auth-email" class="form-control" placeholder="vas@email.cz">
+        </div>
+        <div class="form-group">
+          <label>Heslo</label>
+          <input type="password" id="auth-pass" class="form-control" placeholder="••••••••">
+        </div>
+        <div style="display: flex; gap: 8px;">
+          <button class="btn-artsy" onclick="handleEmailAuth(false)">Přihlásit</button>
+          <button class="btn-artsy btn-secondary" onclick="handleEmailAuth(true)">Registrovat</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- HLAVNÍ APLIKACE (Skrytá, dokud se uživatel nepřihlásí) -->
+  <div class="app-frame" id="main-app-container" style="display: none;">
     <header class="app-header">
       <h1>Knihomol</h1>
       <span class="header-badge" id="user-badge">Čtenář</span>
     </header>
 
     <main class="app-content">
-      <!-- TAB 1: PŘEHLED -->
+      <!-- PŘEHLED -->
       <div id="tab-prehled" class="tab-content active">
-        <!-- Roční cíl čtení -->
         <div class="artsy-card goal-box">
-          <div class="goal-top">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
             <div>
-              <span style="font-size: 10px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;">Roční výzva</span>
+              <span style="font-size: 10px; font-weight: 800; color: var(--text-muted); text-transform: uppercase;">Roční výzva</span>
               <div style="font-family: var(--font-heading); font-size: 18px; font-weight: 800; color: var(--accent); margin-top: 2px;">
                 <span id="goal-current-read">0</span> / <span id="goal-target-total">12</span> knih
               </div>
             </div>
-            <button onclick="openGoalModal()" class="btn-artsy btn-secondary" style="width: auto; padding: 6px 12px; font-size: 10px;">Upravit cíl</button>
+            <button onclick="openGoalModal()" class="btn-artsy btn-secondary" style="width: auto; padding: 6px 12px; font-size: 10px;">Upravit</button>
           </div>
-          <div class="goal-bar-bg">
-            <div class="goal-bar-fill" id="goal-bar-fill"></div>
-          </div>
+          <div class="goal-bar-bg"><div class="goal-bar-fill" id="goal-bar-fill"></div></div>
           <div style="font-size: 11px; color: var(--text-muted); text-align: right;" id="goal-percent-text">Splněno na 0 %</div>
         </div>
 
-        <div class="section-header"><div class="section-title">Právě čtu</div></div>
-        <div class="artsy-card" id="dashboard-reading-box">
-          <!-- Populated dynamically -->
+        <div>
+          <div class="section-title">Právě čtu</div>
+          <div class="artsy-card" id="dashboard-reading-box"></div>
         </div>
 
-        <div class="section-header"><div class="section-title">Čtenářský zápisník</div></div>
-        <div class="artsy-card">
-          <div class="stats-grid">
-            <div class="stat-card"><div class="val" id="stat-pages">0</div><div class="lbl">Přečteno stran</div></div>
-            <div class="stat-card"><div class="val" id="stat-books">0</div><div class="lbl">Dočtené knihy</div></div>
-            <div class="stat-card"><div class="val" id="stat-tbr">0</div><div class="lbl">V seznamu TBR</div></div>
-            <div class="stat-card"><div class="val">12 dní</div><div class="lbl">Série čtení</div></div>
+        <div>
+          <div class="section-title">Zápisník</div>
+          <div class="artsy-card">
+            <div class="stats-grid">
+              <div class="stat-card"><div class="val" id="stat-pages">0</div><div class="lbl">Přečteno stran</div></div>
+              <div class="stat-card"><div class="val" id="stat-books">0</div><div class="lbl">Dočtené knihy</div></div>
+              <div class="stat-card"><div class="val" id="stat-tbr">0</div><div class="lbl">V seznamu TBR</div></div>
+              <div class="stat-card"><div class="val">12 dní</div><div class="lbl">Série čtení</div></div>
+            </div>
           </div>
         </div>
       </div>
 
-      <!-- TAB 2: KNIHOVNA -->
+      <!-- KNIHOVNA -->
       <div id="tab-knihovna" class="tab-content">
-        <div class="section-header">
-          <div class="section-title">Moje Knihovna</div>
+        <div style="display: flex; justify-content: space-between; align-items: baseline;">
+          <div class="section-title" style="margin: 0;">Moje Knihovna</div>
           <span style="font-size: 11px; color: var(--accent); font-weight: 700;" id="total-books-count">0 knih</span>
         </div>
         
         <div class="filter-pills">
           <button class="pill-btn active" onclick="setLibraryFilter('all', this)">Všechny</button>
           <button class="pill-btn" onclick="setLibraryFilter('reading', this)">Právě čtu</button>
-          <button class="pill-btn" onclick="setLibraryFilter('tbr', this)">TBR (Chci číst)</button>
+          <button class="pill-btn" onclick="setLibraryFilter('tbr', this)">TBR</button>
           <button class="pill-btn" onclick="setLibraryFilter('read', this)">Přečteno</button>
         </div>
 
         <button class="btn-artsy" onclick="openAddBookModal()">+ Přidat knihu</button>
-        
-        <div id="library-books-list" style="display: flex; flex-direction: column; gap: 10px;">
-          <!-- Books rendered here -->
-        </div>
+        <div id="library-books-list" style="display: flex; flex-direction: column; gap: 10px;"></div>
       </div>
 
-      <!-- TAB 3: E-KNIHY -->
-      <div id="tab-eknihy" class="tab-content">
-        <div class="section-header"><div class="section-title">Digitální Archiv</div></div>
-        <div class="artsy-card">
-          <div class="empty-state">
-            <div class="empty-state-icon">📄</div>
-            <p>Nahrávej e-knihy (EPUB / PDF) přímo do svého archivu.</p>
-            <button class="btn-artsy btn-secondary">Nahrát e-knihu</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- TAB 4: STATS -->
-      <div id="tab-statistiky" class="tab-content">
-        <div class="section-header"><div class="section-title">Detailní statistiky</div></div>
-        <div class="artsy-card">
-          <div class="empty-state"><div class="empty-state-icon">📊</div><p>Sleduj své čtenářské návyky a rychlost čtení.</p></div>
-        </div>
-      </div>
-
-      <!-- TAB 5: ÚČET & MOODS -->
+      <!-- PROFIL & ODHLÁŠENÍ -->
       <div id="tab-ucet" class="tab-content">
-        <div class="section-header"><div class="section-title">Atmosféra aplikace</div></div>
-        <div class="artsy-card">
-          <div class="form-group">
-            <label>Vyber si svůj Mood</label>
-            <div class="theme-selector">
-              <div class="theme-btn active" onclick="setTheme('academic', this)"><span>🏰</span>Dark Academic</div>
-              <div class="theme-btn" onclick="setTheme('coffee', this)"><span>☕</span>Cozy Coffee</div>
-              <div class="theme-btn" onclick="setTheme('fairy', this)"><span>✨</span>Fairy Fantasy</div>
+        <div>
+          <div class="section-title">Atmosféra aplikace</div>
+          <div class="artsy-card">
+            <div class="form-group" style="margin-bottom: 0;">
+              <label>Vyber si svůj Mood</label>
+              <div class="theme-selector">
+                <div class="theme-btn active" onclick="setTheme('academic', this)"><span>🏰</span>Dark Ac.</div>
+                <div class="theme-btn" onclick="setTheme('coffee', this)"><span>☕</span>Coffee</div>
+                <div class="theme-btn" onclick="setTheme('fairy', this)"><span>✨</span>Fantasy</div>
+              </div>
             </div>
           </div>
         </div>
 
-        <div class="section-header"><div class="section-title">Čtenářský Profil</div></div>
-        <div class="artsy-card">
-          <div style="display: flex; gap: 14px; align-items: center; margin-bottom: 16px;">
-            <img id="avatar-preview" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150" style="width: 60px; height: 60px; border-radius: 50%; object-fit: cover; border: 2px solid var(--accent);">
-            <div>
-              <h3 id="profile-name" style="font-family: var(--font-heading); font-size: 16px; color: var(--accent);">Knihomol</h3>
-              <p id="profile-bio" style="font-size: 11px; color: var(--text-muted);">Vášnivý čtenář</p>
-            </div>
+        <div>
+          <div class="section-title">Účet</div>
+          <div class="artsy-card">
+            <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">Jsi přihlášený do své čtenářské sítě.</p>
+            <button class="btn-artsy btn-secondary" onclick="handleLogout()" style="color: #ef4444; border-color: rgba(239,68,68,0.3);">Odhlásit se</button>
           </div>
-          <div class="form-group">
-            <label>Nahrát profilový portrét</label>
-            <input type="file" id="avatar-input" accept="image/*" class="form-control" onchange="loadAvatar(event)">
-          </div>
-          <div class="form-group">
-            <label>Jméno / Pseudonym</label>
-            <input type="text" id="username-input" class="form-control" placeholder="Tvé jméno">
-          </div>
-          <div class="form-group">
-            <label>O mně / Čtenářské motto</label>
-            <input type="text" id="bio-input" class="form-control" placeholder="Co nejraději čteš?">
-          </div>
-          <button class="btn-artsy" onclick="saveProfile()">Uložit profil</button>
         </div>
       </div>
     </main>
 
     <nav class="app-nav">
-      <button class="nav-item active" onclick="switchTab('prehled', this)"><span class="nav-icon">📜</span>Přehled</button>
-      <button class="nav-item" onclick="switchTab('knihovna', this)"><span class="nav-icon">📚</span>Knihovna</button>
-      <button class="nav-item" onclick="switchTab('eknihy', this)"><span class="nav-icon">📖</span>Archiv</button>
-      <button class="nav-item" onclick="switchTab('statistiky', this)"><span class="nav-icon">📊</span>Stats</button>
-      <button class="nav-item" onclick="switchTab('ucet', this)"><span class="nav-icon">⚙️</span>Profil</button>
+      <button class="nav-item active" onclick="switchTab('prehled', this)"><i class="fas fa-home" style="font-size: 14px;"></i>Přehled</button>
+      <button class="nav-item" onclick="switchTab('knihovna', this)"><i class="fas fa-book" style="font-size: 14px;"></i>Knihovna</button>
+      <button class="nav-item" onclick="switchTab('ucet', this)"><i class="fas fa-user" style="font-size: 14px;"></i>Účet</button>
     </nav>
 
-    <!-- Modal: Add / Edit Book -->
+    <!-- MODAL: KNIHA -->
     <div class="modal-overlay" id="modal-add-book">
       <div class="modal-sheet">
-        <div class="section-title" id="modal-book-title-header" style="margin-bottom: 14px;">Přidat knihu do knihovny</div>
+        <div class="section-title" id="modal-book-title-header" style="margin-bottom: 14px;">Přidat knihu</div>
         <input type="hidden" id="edit-book-id">
         <div class="form-group">
-          <label>Název knihy *</label>
-          <input type="text" id="book-title" class="form-control" placeholder="Zadej název knihy...">
+          <label>Název *</label>
+          <input type="text" id="book-title" class="form-control" placeholder="Název knihy...">
         </div>
         <div class="form-group">
           <label>Autor *</label>
           <input type="text" id="book-author" class="form-control" placeholder="Jméno autora...">
         </div>
         <div class="form-group">
-          <label>Čtenářský stav</label>
+          <label>Stav</label>
           <select id="book-status" class="form-control">
             <option value="reading">Právě čtu</option>
-            <option value="tbr">TBR (Chci si přečíst)</option>
+            <option value="tbr">TBR (Chci číst)</option>
             <option value="read">Přečteno</option>
           </select>
         </div>
@@ -419,22 +386,22 @@
           <input type="number" id="book-pages" class="form-control" placeholder="např. 320">
         </div>
         <div style="display: flex; gap: 10px; margin-top: 18px;">
-          <button class="btn-artsy" onclick="submitBook()">Uložit knihu</button>
+          <button class="btn-artsy" onclick="submitBook()">Uložit</button>
           <button class="btn-artsy btn-secondary" onclick="closeModal('modal-add-book')">Zrušit</button>
         </div>
       </div>
     </div>
 
-    <!-- Modal: Edit Goal -->
+    <!-- MODAL: CÍL -->
     <div class="modal-overlay" id="modal-goal">
       <div class="modal-sheet">
-        <div class="section-title" style="margin-bottom: 14px;">Nastavit roční cíl čtení</div>
+        <div class="section-title" style="margin-bottom: 14px;">Nastavit roční cíl</div>
         <div class="form-group">
-          <label>Cílový počet knih za rok</label>
+          <label>Počet knih za rok</label>
           <input type="number" id="goal-input-val" class="form-control" min="1" max="365" value="12">
         </div>
         <div style="display: flex; gap: 10px; margin-top: 18px;">
-          <button class="btn-artsy" onclick="saveGoal()">Uložit cíl</button>
+          <button class="btn-artsy" onclick="saveGoal()">Uložit</button>
           <button class="btn-artsy btn-secondary" onclick="closeModal('modal-goal')">Zrušit</button>
         </div>
       </div>
@@ -444,22 +411,18 @@
   <script>
     let userBooks = JSON.parse(localStorage.getItem('knihomol_books')) || [
       { id: '1', title: 'Jméno růže', author: 'Umberto Eco', status: 'read', pages: 512 },
-      { id: '2', title: 'Sto roků samoty', author: 'G. G. Márquez', status: 'reading', pages: 360 },
-      { id: '3', title: 'Konec civilizace', author: 'Aldous Huxley', status: 'tbr', pages: 270 }
+      { id: '2', title: 'Sto roků samoty', author: 'G. G. Márquez', status: 'reading', pages: 360 }
     ];
     let annualGoal = parseInt(localStorage.getItem('knihomol_goal')) || 12;
     let currentFilter = 'all';
 
     function setTheme(themeName, btn) {
-      // Oprava: Nastavujeme data-theme rovnou na element <html> (root) a ukládáme do localStorage
       document.documentElement.setAttribute('data-theme', themeName);
       localStorage.setItem('knihomol_theme', themeName);
-
       document.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'));
       if(btn) btn.classList.add('active');
     }
 
-    // Načtení uloženého moodu při startu
     const savedTheme = localStorage.getItem('knihomol_theme') || 'academic';
     document.documentElement.setAttribute('data-theme', savedTheme);
     window.addEventListener('DOMContentLoaded', () => {
@@ -480,7 +443,7 @@
 
     function openAddBookModal() {
       document.getElementById('edit-book-id').value = '';
-      document.getElementById('modal-book-title-header').textContent = 'Přidat knihu do knihovny';
+      document.getElementById('modal-book-title-header').textContent = 'Přidat knihu';
       document.getElementById('book-title').value = '';
       document.getElementById('book-author').value = '';
       document.getElementById('book-status').value = 'reading';
@@ -505,25 +468,19 @@
       document.getElementById('modal-goal').classList.add('open');
     }
 
-    function closeModal(id) {
-      document.getElementById(id).classList.remove('open');
-    }
+    function closeModal(id) { document.getElementById(id).classList.remove('open'); }
 
     function saveGoal() {
       const val = parseInt(document.getElementById('goal-input-val').value);
-      if(val > 0) {
-        annualGoal = val;
-        localStorage.setItem('knihomol_goal', annualGoal);
-        renderGoal();
-      }
+      if(val > 0) { annualGoal = val; localStorage.setItem('knihomol_goal', annualGoal); renderGoal(); }
       closeModal('modal-goal');
     }
 
     function renderGoal() {
-      const readBooksCount = userBooks.filter(b => b.status === 'read').length;
-      document.getElementById('goal-current-read').textContent = readBooksCount;
+      const readCount = userBooks.filter(b => b.status === 'read').length;
+      document.getElementById('goal-current-read').textContent = readCount;
       document.getElementById('goal-target-total').textContent = annualGoal;
-      const pct = Math.min(100, Math.round((readBooksCount / annualGoal) * 100));
+      const pct = Math.min(100, Math.round((readCount / annualGoal) * 100));
       document.getElementById('goal-bar-fill').style.width = pct + '%';
       document.getElementById('goal-percent-text').textContent = `Splněno na ${pct} %`;
     }
@@ -535,25 +492,13 @@
       const status = document.getElementById('book-status').value;
       const pages = parseInt(document.getElementById('book-pages').value) || 0;
 
-      if(!title || !author) {
-        alert('Prosím vyplň název i autora knihy.');
-        return;
-      }
+      if(!title || !author) { alert('Vyplň název i autora.'); return; }
 
       if(editId) {
         const book = userBooks.find(b => b.id === editId);
-        if(book) {
-          book.title = title;
-          book.author = author;
-          book.status = status;
-          book.pages = pages;
-        }
+        if(book) { book.title = title; book.author = author; book.status = status; book.pages = pages; }
       } else {
-        const newBook = {
-          id: Date.now().toString(),
-          title, author, status, pages
-        };
-        userBooks.push(newBook);
+        userBooks.push({ id: Date.now().toString(), title, author, status, pages });
       }
 
       localStorage.setItem('knihomol_books', JSON.stringify(userBooks));
@@ -569,11 +514,7 @@
 
     function updateStatus(id, newStatus) {
       const book = userBooks.find(b => b.id === id);
-      if(book) {
-        book.status = newStatus;
-        localStorage.setItem('knihomol_books', JSON.stringify(userBooks));
-        renderAll();
-      }
+      if(book) { book.status = newStatus; localStorage.setItem('knihomol_books', JSON.stringify(userBooks)); renderAll(); }
     }
 
     function setLibraryFilter(filter, btn) {
@@ -585,102 +526,68 @@
 
     function renderAll() {
       renderGoal();
-      
       const readBooks = userBooks.filter(b => b.status === 'read');
       const readingBooks = userBooks.filter(b => b.status === 'reading');
       const tbrBooks = userBooks.filter(b => b.status === 'tbr');
       
       document.getElementById('stat-books').textContent = readBooks.length;
       document.getElementById('stat-tbr').textContent = tbrBooks.length;
-      const totalPages = userBooks.reduce((acc, b) => acc + (b.status === 'read' ? (b.pages || 0) : 0), 0);
-      document.getElementById('stat-pages').textContent = totalPages;
+      document.getElementById('stat-pages').textContent = userBooks.reduce((acc, b) => acc + (b.status === 'read' ? (b.pages || 0) : 0), 0);
       document.getElementById('total-books-count').textContent = `${userBooks.length} knih`;
 
-      const dashReadingBox = document.getElementById('dashboard-reading-box');
+      const dashBox = document.getElementById('dashboard-reading-box');
       if(readingBooks.length === 0) {
-        dashReadingBox.innerHTML = `
-          <div class="empty-state">
-            <div class="empty-state-icon">📖</div>
-            <p>Zatím nemáš rozečtenou žádnou knihu.</p>
-            <button class="btn-artsy" onclick="openAddBookModal()">+ Přidat rozečtenou knihu</button>
-          </div>
-        `;
+        dashBox.innerHTML = `<div class="empty-state"><p>Žádná rozečtená kniha.</p><button class="btn-artsy" onclick="openAddBookModal()">+ Přidat knihu</button></div>`;
       } else {
-        dashReadingBox.innerHTML = readingBooks.map(b => `
+        dashBox.innerHTML = readingBooks.map(b => `
           <div style="display: flex; justify-content: space-between; align-items: center; gap: 10px;">
             <div>
-              <strong style="font-size: 14px; color: var(--text-main); display: block; margin-bottom: 2px;">${b.title}</strong>
+              <strong style="font-size: 14px; display: block; margin-bottom: 2px;">${b.title}</strong>
               <span style="font-size: 11px; color: var(--text-muted);">${b.author}</span>
             </div>
-            <div style="display: flex; gap: 6px;">
-              <button onclick="updateStatus('${b.id}', 'read')" class="btn-artsy" style="padding: 6px 10px; font-size: 10px;">Dočteno</button>
-            </div>
+            <button onclick="updateStatus('${b.id}', 'read')" class="btn-artsy" style="padding: 6px 10px; font-size: 10px; width: auto;">Dočteno</button>
           </div>
         `).join('<hr style="border:0; border-top: 1px solid var(--card-border); margin: 10px 0;">');
       }
-
       renderLibrary();
     }
 
     function renderLibrary() {
       const listContainer = document.getElementById('library-books-list');
-      let filtered = userBooks;
-      if(currentFilter !== 'all') {
-        filtered = userBooks.filter(b => b.status === currentFilter);
-      }
+      let filtered = currentFilter === 'all' ? userBooks : userBooks.filter(b => b.status === currentFilter);
 
       if(filtered.length === 0) {
-        listContainer.innerHTML = `<div class="empty-state"><p>V této kategorii nejsou žádné knihy.</p></div>`;
+        listContainer.innerHTML = `<div class="empty-state"><p>V této kategorii nic není.</p></div>`;
         return;
       }
 
       listContainer.innerHTML = filtered.map(b => {
-        let badgeText = 'Právě čtu';
-        let badgeClass = 'status-reading';
-        if(b.status === 'read') { badgeText = 'Přečteno'; badgeClass = 'status-read'; }
-        else if(b.status === 'tbr') { badgeText = 'TBR'; badgeClass = 'status-tbr'; }
+        let badge = { text: 'Právě čtu', cls: 'status-reading' };
+        if(b.status === 'read') badge = { text: 'Přečteno', cls: 'status-read' };
+        if(b.status === 'tbr') badge = { text: 'TBR', cls: 'status-tbr' };
 
         return `
           <div class="book-card-item">
             <div style="display: flex; justify-content: space-between; align-items: flex-start;">
               <div>
-                <span class="book-status-badge ${badgeClass}">${badgeText}</span>
-                <h4 style="font-size: 14px; font-weight: 700; color: var(--text-main); margin-top: 4px;">${b.title}</h4>
+                <span class="book-status-badge ${badge.cls}">${badge.text}</span>
+                <h4 style="font-size: 14px; font-weight: 700; margin-top: 4px;">${b.title}</h4>
                 <p style="font-size: 11px; color: var(--text-muted);">${b.author} ${b.pages ? '• ' + b.pages + ' str.' : ''}</p>
               </div>
               <div style="display: flex; gap: 6px;">
-                <button onclick="openEditBookModal('${b.id}')" style="background: none; border: none; color: var(--text-muted); cursor: pointer; padding: 4px;" title="Upravit"><i class="fas fa-edit"></i></button>
-                <button onclick="deleteBook('${b.id}')" style="background: none; border: none; color: #ef4444; cursor: pointer; padding: 4px;" title="Smazat"><i class="fas fa-trash"></i></button>
+                <button onclick="openEditBookModal('${b.id}')" style="background: none; border: none; color: var(--text-muted); cursor: pointer; padding: 4px;"><i class="fas fa-edit"></i></button>
+                <button onclick="deleteBook('${b.id}')" style="background: none; border: none; color: #ef4444; cursor: pointer; padding: 4px;"><i class="fas fa-trash"></i></button>
               </div>
             </div>
-            <div style="display: flex; gap: 6px; margin-top: 4px; justify-content: flex-end;">
+            <div style="display: flex; gap: 6px; justify-content: flex-end;">
               ${b.status !== 'reading' ? `<button onclick="updateStatus('${b.id}', 'reading')" class="btn-artsy btn-secondary" style="padding: 4px 8px; font-size: 9px; width: auto;">Právě čtu</button>` : ''}
-              ${b.status !== 'tbr' ? `<button onclick="updateStatus('${b.id}', 'tbr')" class="btn-artsy btn-secondary" style="padding: 4px 8px; font-size: 9px; width: auto;">Do TBR</button>` : ''}
+              ${b.status !== 'tbr' ? `<button onclick="updateStatus('${b.id}', 'tbr')" class="btn-artsy btn-secondary" style="padding: 4px 8px; font-size: 9px; width: auto;">TBR</button>` : ''}
               ${b.status !== 'read' ? `<button onclick="updateStatus('${b.id}', 'read')" class="btn-artsy" style="padding: 4px 8px; font-size: 9px; width: auto;">Přečteno</button>` : ''}
             </div>
           </div>
         `;
       }).join('');
     }
-
-    function loadAvatar(e) {
-      const reader = new FileReader();
-      reader.onload = (event) => document.getElementById('avatar-preview').src = event.target.result;
-      reader.readAsDataURL(e.target.files[0]);
-    }
-
-    function saveProfile() {
-      const name = document.getElementById('username-input').value;
-      const bio = document.getElementById('bio-input').value;
-      if(name) {
-        document.getElementById('profile-name').textContent = name;
-        document.getElementById('user-badge').textContent = name;
-      }
-      if(bio) document.getElementById('profile-bio').textContent = bio;
-    }
-
-    // Initialize on load
-    renderAll();
   </script>
 </body>
 </html>
