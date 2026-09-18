@@ -315,7 +315,7 @@
     .admin-table th { background: #F8FAFC; font-weight: 800; color: var(--text-muted); }
   </style>
 
-  <!-- FIREBASE LOGIKA PRO REÁLNÉ PŘIHLÁŠENÍ A REGISTRACI -->
+  <!-- FIREBASE LOGIKA S OPRAVENÝMI ÚDAJI -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { 
@@ -328,7 +328,6 @@
       onAuthStateChanged 
     } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
-    // Tvoje reálné Firebase nastavení
     const firebaseConfig = {
       apiKey: "AIzaSyAskaujKDExzAVlb_1luskQDXm7LEMLrtcU",
       authDomain: "knihomol-c559a.firebaseapp.com",
@@ -387,11 +386,9 @@
         return;
       }
 
-      if(isRegisterMode) {
-        if(pass !== confirmPass) {
-          errBox.textContent = "Hesla se neshodují! Zkontroluj potvrzení hesla.";
-          return;
-        }
+      if(isRegisterMode && pass !== confirmPass) {
+        errBox.textContent = "Hesla se neshodují!";
+        return;
       }
 
       try {
@@ -411,7 +408,6 @@
       }
     };
 
-    // Sledování reálného přihlášení
     onAuthStateChanged(auth, (user) => {
       const overlay = document.getElementById('auth-overlay');
       if (user) {
@@ -436,7 +432,6 @@
         traffic.logs.unshift({ time: new Date().toLocaleString('cs-CZ'), user: email });
         if(traffic.logs.length > 20) traffic.logs.pop();
         localStorage.setItem('knihomol_real_traffic', JSON.stringify(traffic));
-
       } else {
         overlay.style.display = 'flex';
       }
@@ -445,7 +440,7 @@
 </head>
 <body>
 
-  <!-- PŘIHLAŠOVACÍ / REGISTRAČNÍ OKNO -->
+  <!-- PŘIHLAŠOVACÍ OKNO -->
   <div id="auth-overlay">
     <div class="auth-card">
       <div class="auth-logo"><i class="fas fa-book-open-reader"></i> Knihomol</div>
@@ -458,11 +453,9 @@
 
       <div class="divider">nebo e-mailem</div>
 
-      <!-- E-mailový formulář -->
       <div class="auth-form">
         <input type="email" id="auth-input-email" class="form-input" placeholder="E-mailová adresa">
         <input type="password" id="auth-input-pass" class="form-input" placeholder="Heslo (min. 6 znaků)">
-        <!-- Druhé políčko na potvrzení hesla (zobrazené pouze při registraci) -->
         <input type="password" id="auth-input-confirm-pass" class="form-input" placeholder="Opište heslo pro potvrzení" style="display:none;">
         
         <div id="auth-error-msg"></div>
@@ -493,7 +486,7 @@
         <div class="hero-banner">
           <div>
             <h1 id="welcome-title">Ahoj, Čtenáři!</h1>
-            <p id="welcome-bio">Vítej ve svém barevném čtenářském světě.</p>
+            <p>Vítej ve svém barevném čtenářském světě.</p>
           </div>
           <button class="btn-fun" onclick="switchTab('pridat', document.querySelectorAll('.tab-pill')[2])"><i class="fas fa-plus"></i> Nová kniha</button>
         </div>
