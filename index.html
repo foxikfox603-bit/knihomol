@@ -301,6 +301,7 @@
                     <div style="display: flex; flex-direction: column; gap: 10px;">
                         <input type="text" id="m-title" class="input-field" placeholder="Název knihy *">
                         <input type="text" id="m-author" class="input-field" placeholder="Autor *">
+                        <input type="text" id="m-cover" class="input-field" placeholder="URL obálky (nepovinné)">
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
                             <select id="m-genre" class="input-field" style="font-size: 11px;">
                                 <option value="Beletrie">Beletrie</option>
@@ -520,6 +521,7 @@
         function saveManual() {
             const title = document.getElementById('m-title').value.trim();
             const author = document.getElementById('m-author').value.trim();
+            const cover = document.getElementById('m-cover').value.trim();
             const genre = document.getElementById('m-genre').value;
             const pages = parseInt(document.getElementById('m-pages').value) || 300;
             const status = document.getElementById('m-status').value;
@@ -527,10 +529,11 @@
 
             if(!title || !author) { alert("Vyplň název a autora!"); return; }
 
-            books.push({ title, author, genre, totalPages: pages, currentPage: status === 'read' ? pages : 0, status, rating, cover: "" });
+            books.push({ title, author, genre, totalPages: pages, currentPage: status === 'read' ? pages : 0, status, rating, cover });
             persistAndRefresh();
             document.getElementById('m-title').value = '';
             document.getElementById('m-author').value = '';
+            document.getElementById('m-cover').value = '';
             switchTab('knihovna', document.querySelectorAll('.nav-item')[1]);
         }
 
