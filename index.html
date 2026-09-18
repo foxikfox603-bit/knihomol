@@ -233,7 +233,7 @@
                 <button class="nav-btn" onclick="switchTab('knihovna', this)"><i class="fas fa-layer-group"></i> Knihovna</button>
                 <button class="nav-btn" onclick="switchTab('pridat', this)"><i class="fas fa-plus-circle"></i> Přidat</button>
                 <button class="nav-btn" onclick="switchTab('profil', this)"><i class="fas fa-user"></i> Profil</button>
-                <button class="nav-btn admin-btn" id="admin-nav-btn" onclick="switchTab('admin', this)"><i class="fas fa-shield-alt"></i> Admin</button>
+                <button class="nav-btn admin-btn" id="admin-nav-btn" onclick="tryOpenAdmin(this)"><i class="fas fa-shield-alt"></i> Admin</button>
             </nav>
         </header>
 
@@ -413,6 +413,15 @@
 
             if(id === 'admin') loadAdminData();
             renderEverything();
+        }
+
+        function tryOpenAdmin(btn) {
+            let pin = prompt("Zadej admin PIN:");
+            if (pin === "1234") {
+                switchTab('admin', btn);
+            } else if (pin !== null) {
+                alert("Nesprávný PIN!");
+            }
         }
 
         function loadAdminData() {
