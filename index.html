@@ -53,17 +53,17 @@
       background: #FFFFFF;
       width: 100%;
       max-width: 420px;
-      padding: 40px 32px;
+      padding: 36px 32px;
       border-radius: 32px;
       box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35);
       display: flex;
       flex-direction: column;
-      gap: 16px;
+      gap: 14px;
       text-align: center;
       border: 4px solid rgba(255, 255, 255, 0.2);
     }
     .auth-logo {
-      font-size: 32px;
+      font-size: 30px;
       font-weight: 800;
       background: linear-gradient(135deg, #8B5CF6 0%, #EC4899 100%);
       -webkit-background-clip: text;
@@ -79,7 +79,7 @@
       background: #FFFFFF;
       color: #334155;
       border: 2px solid var(--border-color);
-      padding: 14px;
+      padding: 12px;
       border-radius: 16px;
       font-family: 'Outfit', sans-serif;
       font-weight: 700;
@@ -125,7 +125,7 @@
     .auth-toggle-text {
       font-size: 13px;
       color: var(--text-muted);
-      margin-top: 4px;
+      margin-top: 2px;
     }
     .auth-toggle-text span {
       color: var(--primary);
@@ -328,9 +328,9 @@
       onAuthStateChanged 
     } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
-    // Reálné Firebase nastavení pro projekt Knihomol
+    // Reálné Firebase nastavení
     const firebaseConfig = {
-      apiKey: "AIzaSyD-T... (sem vlož svůj klíč z Firebase konzole)",
+      apiKey: "ZdeVlozSveAPIKey",
       authDomain: "knihomol-xxxx.firebaseapp.com",
       projectId: "knihomol-xxxx",
       storageBucket: "knihomol-xxxx.appspot.com",
@@ -348,8 +348,18 @@
     
     window.toggleAuthMode = function() {
       isRegisterMode = !isRegisterMode;
+      const confirmPassField = document.getElementById('auth-input-confirm-pass');
+      
       document.getElementById('auth-card-title').textContent = isRegisterMode ? "Vytvořit nový účet" : "Přihlášení do knihovny";
       document.getElementById('auth-submit-btn').textContent = isRegisterMode ? "Zaregistrovat se" : "Přihlásit se";
+      
+      if(isRegisterMode) {
+        confirmPassField.style.display = 'block';
+      } else {
+        confirmPassField.style.display = 'none';
+        confirmPassField.value = '';
+      }
+
       document.getElementById('auth-toggle-desc').innerHTML = isRegisterMode 
         ? 'Už máš svůj účet? <span onclick="toggleAuthMode()">Přihlas se</span>' 
         : 'Ještě nemáš účet? <span onclick="toggleAuthMode()">Zaregistruj se</span>';
@@ -367,12 +377,20 @@
     window.handleEmailAuth = async function() {
       const email = document.getElementById('auth-input-email').value.trim();
       const pass = document.getElementById('auth-input-pass').value.trim();
+      const confirmPass = document.getElementById('auth-input-confirm-pass').value.trim();
       const errBox = document.getElementById('auth-error-msg');
       errBox.textContent = "";
 
       if(!email || !pass) {
         errBox.textContent = "Vyplň prosím e-mail i heslo.";
         return;
+      }
+
+      if(isRegisterMode) {
+        if(pass !== confirmPass) {
+          errBox.textContent = "Hesla se neshodují! Zkontroluj potvrzení hesla.";
+          return;
+        }
       }
 
       try {
@@ -404,7 +422,6 @@
         document.getElementById('profile-name-input').value = `${name} (${email})`;
         document.getElementById('profile-avatar-letter').textContent = name.charAt(0).toUpperCase();
 
-        // Skrytá administrace ověřená na pozadí podle tvého e-mailu
         const adminBtn = document.getElementById('nav-admin-btn');
         if(email.toLowerCase() === ADMIN_EMAIL.toLowerCase()) {
           adminBtn.style.display = 'flex';
@@ -413,7 +430,6 @@
           adminBtn.style.display = 'none';
         }
 
-        // Zápis do statistik návštěvnosti
         let traffic = JSON.parse(localStorage.getItem('knihomol_real_traffic')) || { totalVisits: 0, logs: [] };
         traffic.totalVisits += 1;
         traffic.logs.unshift({ time: new Date().toLocaleString('cs-CZ'), user: email });
@@ -434,7 +450,6 @@
       <div class="auth-logo"><i class="fas fa-book-open-reader"></i> Knihomol</div>
       <p id="auth-card-title" style="font-size: 16px; font-weight: 700; color: var(--text-main);">Přihlášení do knihovny</p>
       
-      <!-- Reálné tlačítko pro Google přihlášení -->
       <button class="google-login-btn" onclick="loginWithGoogle()">
         <svg width="20" height="20" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.46-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
         Pokračovat přes Google
@@ -442,12 +457,15 @@
 
       <div class="divider">nebo e-mailem</div>
 
-      <!-- Reálná e-mailová registrace / přihlášení -->
+      <!-- E-mailový formulář -->
       <div class="auth-form">
         <input type="email" id="auth-input-email" class="form-input" placeholder="E-mailová adresa">
         <input type="password" id="auth-input-pass" class="form-input" placeholder="Heslo (min. 6 znaků)">
+        <!-- Druhé políčko na potvrzení hesla (zobrazené pouze při registraci) -->
+        <input type="password" id="auth-input-confirm-pass" class="form-input" placeholder="Opište heslo pro potvrzení" style="display:none;">
+        
         <div id="auth-error-msg"></div>
-        <button id="auth-submit-btn" class="btn-fun" style="background: var(--primary); color: #FFF; width: 100%; padding: 14px;" onclick="handleEmailAuth()">Přihlásit se</button>
+        <button id="auth-submit-btn" class="btn-fun" style="background: var(--primary); color: #FFF; width: 100%; padding: 12px;" onclick="handleEmailAuth()">Přihlásit se</button>
       </div>
 
       <div class="auth-toggle-text" id="auth-toggle-desc">
@@ -464,7 +482,6 @@
         <button class="tab-pill" onclick="switchTab('knihovna', this)"><i class="fas fa-layer-group"></i> Knihovna</button>
         <button class="tab-pill" onclick="switchTab('pridat', this)"><i class="fas fa-plus-circle"></i> Přidat</button>
         <button class="tab-pill" onclick="switchTab('profil', this)"><i class="fas fa-user-gear"></i> Profil</button>
-        <!-- SKRYTÉ ADMIN TLAČÍTKO - ZOBRAZÍ SE JEN TVÉMU ADMIN E-MAILU -->
         <button class="tab-pill admin-pill" id="nav-admin-btn" style="display:none;" onclick="switchTab('admin', this)"><i class="fas fa-shield-halved"></i> Admin</button>
       </nav>
     </header>
@@ -561,7 +578,7 @@
         </div>
       </div>
 
-      <!-- ADMIN DASHBOARD (VIDÍŠ POUZE TY) -->
+      <!-- ADMIN DASHBOARD -->
       <div id="tab-admin" class="tab-pane">
         <div class="section-heading"><i class="fas fa-shield-halved" style="color: #F59E0B;"></i> Administrace & Návštěvnost</div>
         
@@ -593,7 +610,6 @@
   </div>
 
   <script>
-    // Aplikace pro správu knih
     let myBooks = JSON.parse(localStorage.getItem('knihomol_real_books')) || [
       { title: "Hobit", author: "J. R. R. Tolkien", totalPages: 320, currentPage: 120, status: "reading", cover: "https://covers.openlibrary.org/b/id/8431969-M.jpg" }
     ];
