@@ -58,7 +58,7 @@
       box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35);
       display: flex;
       flex-direction: column;
-      gap: 20px;
+      gap: 16px;
       text-align: center;
       border: 4px solid rgba(255, 255, 255, 0.2);
     }
@@ -105,7 +105,7 @@
       color: var(--text-muted);
       font-size: 13px;
       font-weight: 600;
-      margin: 5px 0;
+      margin: 2px 0;
     }
     .divider::before, .divider::after {
       content: '';
@@ -118,8 +118,27 @@
     .auth-form {
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 10px;
       text-align: left;
+    }
+
+    .auth-toggle-text {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+    .auth-toggle-text span {
+      color: var(--primary);
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: underline;
+    }
+
+    #auth-error-msg {
+      color: #EF4444;
+      font-size: 12px;
+      font-weight: 600;
+      min-height: 16px;
     }
 
     /* HLAVNÍ APLIKACE */
@@ -295,29 +314,144 @@
     .admin-table th, .admin-table td { padding: 12px 16px; text-align: left; font-size: 13px; border-bottom: 1px solid var(--border-color); }
     .admin-table th { background: #F8FAFC; font-weight: 800; color: var(--text-muted); }
   </style>
+
+  <!-- FIREBASE LOGIKA PRO REÁLNÉ PŘIHLÁŠENÍ A REGISTRACI -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { 
+      getAuth, 
+      signInWithPopup, 
+      GoogleAuthProvider, 
+      createUserWithEmailAndPassword, 
+      signInWithEmailAndPassword, 
+      signOut, 
+      onAuthStateChanged 
+    } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+    // Reálné Firebase nastavení pro projekt Knihomol
+    const firebaseConfig = {
+      apiKey: "AIzaSyD-T... (sem vlož svůj klíč z Firebase konzole)",
+      authDomain: "knihomol-xxxx.firebaseapp.com",
+      projectId: "knihomol-xxxx",
+      storageBucket: "knihomol-xxxx.appspot.com",
+      messagingSenderId: "xxxx",
+      appId: "xxxx"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const googleProvider = new GoogleAuthProvider();
+
+    const ADMIN_EMAIL = "foxikfox603@gmail.com";
+
+    let isRegisterMode = false;
+    
+    window.toggleAuthMode = function() {
+      isRegisterMode = !isRegisterMode;
+      document.getElementById('auth-card-title').textContent = isRegisterMode ? "Vytvořit nový účet" : "Přihlášení do knihovny";
+      document.getElementById('auth-submit-btn').textContent = isRegisterMode ? "Zaregistrovat se" : "Přihlásit se";
+      document.getElementById('auth-toggle-desc').innerHTML = isRegisterMode 
+        ? 'Už máš svůj účet? <span onclick="toggleAuthMode()">Přihlas se</span>' 
+        : 'Ještě nemáš účet? <span onclick="toggleAuthMode()">Zaregistruj se</span>';
+    };
+
+    window.loginWithGoogle = async function() {
+      try {
+        document.getElementById('auth-error-msg').textContent = "";
+        await signInWithPopup(auth, googleProvider);
+      } catch (error) {
+        document.getElementById('auth-error-msg').textContent = "Chyba Google přihlášení: " + error.message;
+      }
+    };
+
+    window.handleEmailAuth = async function() {
+      const email = document.getElementById('auth-input-email').value.trim();
+      const pass = document.getElementById('auth-input-pass').value.trim();
+      const errBox = document.getElementById('auth-error-msg');
+      errBox.textContent = "";
+
+      if(!email || !pass) {
+        errBox.textContent = "Vyplň prosím e-mail i heslo.";
+        return;
+      }
+
+      try {
+        if(isRegisterMode) {
+          await createUserWithEmailAndPassword(auth, email, pass);
+        } else {
+          await signInWithEmailAndPassword(auth, email, pass);
+        }
+      } catch (error) {
+        errBox.textContent = "Chyba: " + error.message;
+      }
+    };
+
+    window.logoutUser = async function() {
+      if(confirm("Opravdu se chceš odhlásit?")) {
+        await signOut(auth);
+      }
+    };
+
+    // Sledování reálného přihlášení
+    onAuthStateChanged(auth, (user) => {
+      const overlay = document.getElementById('auth-overlay');
+      if (user) {
+        overlay.style.display = 'none';
+        const email = user.email || "Neznámý";
+        const name = user.displayName || email.split('@')[0];
+        
+        document.getElementById('welcome-title').textContent = `Ahoj, ${name}!`;
+        document.getElementById('profile-name-input').value = `${name} (${email})`;
+        document.getElementById('profile-avatar-letter').textContent = name.charAt(0).toUpperCase();
+
+        // Skrytá administrace ověřená na pozadí podle tvého e-mailu
+        const adminBtn = document.getElementById('nav-admin-btn');
+        if(email.toLowerCase() === ADMIN_EMAIL.toLowerCase()) {
+          adminBtn.style.display = 'flex';
+          document.getElementById('admin-owner-email').textContent = ADMIN_EMAIL;
+        } else {
+          adminBtn.style.display = 'none';
+        }
+
+        // Zápis do statistik návštěvnosti
+        let traffic = JSON.parse(localStorage.getItem('knihomol_real_traffic')) || { totalVisits: 0, logs: [] };
+        traffic.totalVisits += 1;
+        traffic.logs.unshift({ time: new Date().toLocaleString('cs-CZ'), user: email });
+        if(traffic.logs.length > 20) traffic.logs.pop();
+        localStorage.setItem('knihomol_real_traffic', JSON.stringify(traffic));
+
+      } else {
+        overlay.style.display = 'flex';
+      }
+    });
+  </script>
 </head>
 <body>
 
-  <!-- PŘIHLAŠOVACÍ / REGISTRAČNÍ OVERLAY -->
+  <!-- PŘIHLAŠOVACÍ / REGISTRAČNÍ OKNO -->
   <div id="auth-overlay">
     <div class="auth-card">
       <div class="auth-logo"><i class="fas fa-book-open-reader"></i> Knihomol</div>
-      <p style="font-size: 14px; color: var(--text-muted);">Přihlas se ke své čtenářské knihovně nebo si vytvoř účet.</p>
+      <p id="auth-card-title" style="font-size: 16px; font-weight: 700; color: var(--text-main);">Přihlášení do knihovny</p>
       
-      <!-- Google přihlášení -->
-      <button class="google-login-btn" onclick="loginWithGoogleAccount()">
+      <!-- Reálné tlačítko pro Google přihlášení -->
+      <button class="google-login-btn" onclick="loginWithGoogle()">
         <svg width="20" height="20" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.46-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
         Pokračovat přes Google
       </button>
 
       <div class="divider">nebo e-mailem</div>
 
-      <!-- Klasická registrace / přihlášení -->
+      <!-- Reálná e-mailová registrace / přihlášení -->
       <div class="auth-form">
-        <input type="text" id="auth-input-name" class="form-input" placeholder="Tvoje jméno">
         <input type="email" id="auth-input-email" class="form-input" placeholder="E-mailová adresa">
-        <input type="password" id="auth-input-pass" class="form-input" placeholder="Heslo">
-        <button class="btn-fun" style="background: var(--primary); color: #FFF; width: 100%; margin-top: 4px; padding: 14px;" onclick="registerOrLoginEmail()">Vstoupit do knihovny</button>
+        <input type="password" id="auth-input-pass" class="form-input" placeholder="Heslo (min. 6 znaků)">
+        <div id="auth-error-msg"></div>
+        <button id="auth-submit-btn" class="btn-fun" style="background: var(--primary); color: #FFF; width: 100%; padding: 14px;" onclick="handleEmailAuth()">Přihlásit se</button>
+      </div>
+
+      <div class="auth-toggle-text" id="auth-toggle-desc">
+        Ještě nemáš účet? <span onclick="toggleAuthMode()">Zaregistruj se</span>
       </div>
     </div>
   </div>
@@ -330,7 +464,7 @@
         <button class="tab-pill" onclick="switchTab('knihovna', this)"><i class="fas fa-layer-group"></i> Knihovna</button>
         <button class="tab-pill" onclick="switchTab('pridat', this)"><i class="fas fa-plus-circle"></i> Přidat</button>
         <button class="tab-pill" onclick="switchTab('profil', this)"><i class="fas fa-user-gear"></i> Profil</button>
-        <!-- ADMIN TLAČÍTKO - ZOBRAZÍ SE POUZE TVÉMU ÚČTU NA POZADÍ -->
+        <!-- SKRYTÉ ADMIN TLAČÍTKO - ZOBRAZÍ SE JEN TVÉMU ADMIN E-MAILU -->
         <button class="tab-pill admin-pill" id="nav-admin-btn" style="display:none;" onclick="switchTab('admin', this)"><i class="fas fa-shield-halved"></i> Admin</button>
       </nav>
     </header>
@@ -422,12 +556,7 @@
               <label style="font-size: 11px; font-weight: 800; color: var(--text-muted); display: block; margin-bottom: 4px;">PŘIHLÁŠENÝ ÚČET</label>
               <input type="text" id="profile-name-input" class="form-input" readonly style="background:#F1F5F9; color:var(--text-muted);">
             </div>
-            <div>
-              <label style="font-size: 11px; font-weight: 800; color: var(--text-muted); display: block; margin-bottom: 4px;">BIO / O MNĚ</label>
-              <textarea id="profile-bio-input" class="form-input" style="resize: vertical; min-height: 80px;" placeholder="Milovník detektivek..."></textarea>
-            </div>
-            <button class="btn-fun" style="background: var(--primary); color: #FFF; width: 100%; padding: 14px;" onclick="saveProfile()"><i class="fas fa-floppy-disk"></i> Uložit profil</button>
-            <button class="btn-fun" style="background: #E2E8F0; color: var(--text-main); width: 100%; padding: 12px; margin-top: 10px;" onclick="logout()"><i class="fas fa-right-from-bracket"></i> Odhlásit se</button>
+            <button class="btn-fun" style="background: #E2E8F0; color: var(--text-main); width: 100%; padding: 14px; margin-top: 10px;" onclick="logoutUser()"><i class="fas fa-right-from-bracket"></i> Odhlásit se</button>
           </div>
         </div>
       </div>
@@ -464,104 +593,11 @@
   </div>
 
   <script>
-    // TVŮJ TAJNÝ ADMIN E-MAIL (nikde jinde v UI se nezobrazuje)
-    const ADMIN_EMAIL = "foxikfox603@gmail.com"; 
-
-    let myBooks = JSON.parse(localStorage.getItem('knihomol_fun_books_v8')) || [
+    // Aplikace pro správu knih
+    let myBooks = JSON.parse(localStorage.getItem('knihomol_real_books')) || [
       { title: "Hobit", author: "J. R. R. Tolkien", totalPages: 320, currentPage: 120, status: "reading", cover: "https://covers.openlibrary.org/b/id/8431969-M.jpg" }
     ];
-    let annualGoal = parseInt(localStorage.getItem('knihomol_fun_goal_v8')) || 12;
-    let userProfile = JSON.parse(localStorage.getItem('knihomol_fun_profile_v8')) || null;
-
-    // EVIDENCE NÁVŠTĚVNOSTI
-    let trafficData = JSON.parse(localStorage.getItem('knihomol_fun_traffic_v8')) || { totalVisits: 0, logs: [] };
-    trafficData.totalVisits += 1;
-    const nowTime = new Date().toLocaleString('cs-CZ');
-    trafficData.logs.unshift({ time: nowTime, user: userProfile ? userProfile.email : 'Neznámý host' });
-    if(trafficData.logs.length > 20) trafficData.logs.pop();
-    localStorage.setItem('knihomol_fun_traffic_v8', JSON.stringify(trafficData));
-
-    function initApp() {
-      if(!userProfile) {
-        document.getElementById('auth-overlay').style.display = 'flex';
-        return;
-      }
-      document.getElementById('auth-overlay').style.display = 'none';
-      document.getElementById('profile-name-input').value = userProfile.name + ' (' + userProfile.email + ')';
-      document.getElementById('profile-bio-input').value = userProfile.bio || '';
-      document.getElementById('welcome-title').textContent = `Ahoj, ${userProfile.name}!`;
-      document.getElementById('welcome-bio').textContent = userProfile.bio || 'Vítej ve svém čtenářském světě.';
-      document.getElementById('profile-avatar-letter').textContent = userProfile.name.charAt(0).toUpperCase();
-      
-      // ADMIN KONTROLA NA POZADÍ
-      const adminNavBtn = document.getElementById('nav-admin-btn');
-      if(userProfile.email.toLowerCase() === ADMIN_EMAIL.toLowerCase()) {
-        adminNavBtn.style.display = 'flex';
-        renderAdminStats();
-      } else {
-        adminNavBtn.style.display = 'none';
-      }
-
-      renderAll();
-    }
-
-    function loginWithGoogleAccount() {
-      // Simulační Google přihlášení (nebo může uživatel zadat svůj reálný gmail)
-      let emailInput = prompt("Zadej svůj Google e-mail:", "uzivatel@gmail.com");
-      if(!emailInput) return;
-      
-      let namePart = emailInput.split('@')[0];
-      namePart = namePart.charAt(0).toUpperCase() + namePart.slice(1);
-
-      userProfile = { 
-        name: namePart, 
-        email: emailInput, 
-        bio: "Vášnivý čtenář knih." 
-      };
-      
-      localStorage.setItem('knihomol_fun_profile_v8', JSON.stringify(userProfile));
-      
-      if(trafficData.logs.length > 0) {
-        trafficData.logs[0].user = emailInput;
-        localStorage.setItem('knihomol_fun_traffic_v8', JSON.stringify(trafficData));
-      }
-
-      initApp();
-    }
-
-    function registerOrLoginEmail() {
-      const name = document.getElementById('auth-input-name').value.trim();
-      const email = document.getElementById('auth-input-email').value.trim();
-      const pass = document.getElementById('auth-input-pass').value.trim();
-
-      if(!name || !email || !pass) {
-        alert("Prosím vyplň všechny údaje (jméno, e-mail i heslo).");
-        return;
-      }
-
-      userProfile = {
-        name: name,
-        email: email,
-        bio: "Vášnivý čtenář knih."
-      };
-
-      localStorage.setItem('knihomol_fun_profile_v8', JSON.stringify(userProfile));
-
-      if(trafficData.logs.length > 0) {
-        trafficData.logs[0].user = email;
-        localStorage.setItem('knihomol_fun_traffic_v8', JSON.stringify(trafficData));
-      }
-
-      initApp();
-    }
-
-    function logout() {
-      if(confirm("Opravdu se chceš odhlásit?")) {
-        localStorage.removeItem('knihomol_fun_profile_v8');
-        userProfile = null;
-        location.reload();
-      }
-    }
+    let annualGoal = parseInt(localStorage.getItem('knihomol_real_goal')) || 12;
 
     function switchTab(tabId, btn) {
       document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
@@ -574,11 +610,11 @@
     }
 
     function renderAdminStats() {
-      document.getElementById('admin-total-visits').textContent = trafficData.totalVisits;
-      document.getElementById('admin-owner-email').textContent = ADMIN_EMAIL;
+      let traffic = JSON.parse(localStorage.getItem('knihomol_real_traffic')) || { totalVisits: 0, logs: [] };
+      document.getElementById('admin-total-visits').textContent = traffic.totalVisits;
       
       const tbody = document.getElementById('admin-logs-tbody');
-      tbody.innerHTML = trafficData.logs.map(log => `
+      tbody.innerHTML = traffic.logs.map(log => `
         <tr>
           <td><i class="far fa-clock" style="color:var(--text-muted); margin-right:6px;"></i> ${escapeHtml(log.time)}</td>
           <td><b>${escapeHtml(log.user)}</b></td>
@@ -604,7 +640,7 @@
       const newG = prompt("Zadej nový roční cíl (počet knih):", annualGoal);
       if(newG && !isNaN(newG) && parseInt(newG) > 0) {
         annualGoal = parseInt(newG);
-        localStorage.setItem('knihomol_fun_goal_v8', annualGoal);
+        localStorage.setItem('knihomol_real_goal', annualGoal);
         renderGoal();
       }
     }
@@ -709,7 +745,7 @@
 
     function selectApiBook(title, author, pages, cover) {
       myBooks.push({ title, author, totalPages: pages, currentPage: 0, status: 'reading', cover });
-      localStorage.setItem('knihomol_fun_books_v8', JSON.stringify(myBooks));
+      localStorage.setItem('knihomol_real_books', JSON.stringify(myBooks));
       document.getElementById('api-search-input').value = '';
       document.getElementById('search-results-container').style.display = 'none';
       switchTab('domu', document.querySelectorAll('.tab-pill')[0]);
@@ -724,7 +760,7 @@
       if(!title || !author) { alert("Vyplň název i autora!"); return; }
 
       myBooks.push({ title, author, totalPages, currentPage: 0, status, cover: "" });
-      localStorage.setItem('knihomol_fun_books_v8', JSON.stringify(myBooks));
+      localStorage.setItem('knihomol_real_books', JSON.stringify(myBooks));
 
       document.getElementById('manual-title').value = '';
       document.getElementById('manual-author').value = '';
@@ -737,7 +773,7 @@
       if(val !== null && !isNaN(val)) {
         b.currentPage = Math.min(parseInt(val), b.totalPages);
         if(b.currentPage >= b.totalPages) b.status = 'read';
-        localStorage.setItem('knihomol_fun_books_v8', JSON.stringify(myBooks));
+        localStorage.setItem('knihomol_real_books', JSON.stringify(myBooks));
         renderAll();
       }
     }
@@ -745,24 +781,15 @@
     function deleteBook(index) {
       if(confirm("Opravdu smazat tuto knihu?")) {
         myBooks.splice(index, 1);
-        localStorage.setItem('knihomol_fun_books_v8', JSON.stringify(myBooks));
+        localStorage.setItem('knihomol_real_books', JSON.stringify(myBooks));
         renderAll();
       }
-    }
-
-    function saveProfile() {
-      const bio = document.getElementById('profile-bio-input').value.trim();
-      userProfile.bio = bio;
-      localStorage.setItem('knihomol_fun_profile_v8', JSON.stringify(userProfile));
-      alert("Profil byl úspěšně uložen!");
     }
 
     function escapeHtml(str) {
       if(!str) return '';
       return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
     }
-
-    initApp();
   </script>
 </body>
 </html>
