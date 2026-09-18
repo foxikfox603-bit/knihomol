@@ -17,7 +17,6 @@
       --text-main: #1E293B;
       --text-muted: #64748B;
       --primary: #8B5CF6;
-      --primary-glow: rgba(139, 92, 246, 0.2);
       --accent-pink: #EC4899;
       --accent-yellow: #F59E0B;
       --accent-green: #10B981;
@@ -37,6 +36,109 @@
       align-items: center;
       padding: 20px;
     }
+
+    /* PŘIHLAŠOVACÍ / REGISTRAČNÍ OVERLAY PŘI VSTUPU */
+    #auth-overlay {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(15, 23, 42, 0.75);
+      backdrop-filter: blur(8px);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      padding: 20px;
+    }
+    .auth-card {
+      background: #FFFFFF;
+      width: 100%;
+      max-width: 440px;
+      padding: 36px 32px;
+      border-radius: 32px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35);
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      border: 4px solid rgba(255, 255, 255, 0.2);
+    }
+    .auth-logo {
+      font-size: 28px;
+      font-weight: 800;
+      background: linear-gradient(135deg, #8B5CF6 0%, #EC4899 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      text-align: center;
+    }
+
+    .auth-tabs {
+      display: flex;
+      background: #F1F5F9;
+      border-radius: 12px;
+      padding: 4px;
+      margin-bottom: 4px;
+    }
+    .auth-tab-btn {
+      flex: 1;
+      background: transparent;
+      border: none;
+      padding: 10px;
+      font-family: 'Outfit';
+      font-weight: 700;
+      font-size: 13px;
+      color: var(--text-muted);
+      cursor: pointer;
+      border-radius: 10px;
+      transition: all 0.2s;
+    }
+    .auth-tab-btn.active {
+      background: #FFFFFF;
+      color: var(--primary);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+
+    .google-login-btn {
+      width: 100%;
+      background: #FFFFFF;
+      color: #334155;
+      border: 2px solid var(--border-color);
+      padding: 12px;
+      border-radius: 14px;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      font-size: 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      transition: all 0.2s;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+    }
+    .google-login-btn:hover {
+      background: #F8FAFC;
+      border-color: var(--primary);
+    }
+
+    .divider {
+      display: flex;
+      align-items: center;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 12px;
+      font-weight: 700;
+      margin: 2px 0;
+    }
+    .divider::before, .divider::after {
+      content: '';
+      flex: 1;
+      border-bottom: 2px solid var(--border-color);
+    }
+    .divider::before { margin-right: 10px; }
+    .divider::after { margin-left: 10px; }
 
     /* HLAVNÍ KONTEJNER APLIKACE */
     .fun-app-container {
@@ -105,6 +207,17 @@
       background: linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%);
       color: #FFFFFF;
       box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+    }
+
+    /* ADMIN SPECIÁLNÍ TLAČÍTKO */
+    .tab-pill.admin-pill {
+      background: #FEF3C7;
+      color: #D97706;
+      border: 2px dashed #F59E0B;
+    }
+    .tab-pill.admin-pill:hover, .tab-pill.admin-pill.active {
+      background: #F59E0B;
+      color: #FFFFFF;
     }
 
     /* OBSAHOVÁ ČÁST */
@@ -265,7 +378,6 @@
       color: var(--primary);
     }
 
-    /* PROGRAS BAR U KNIHY */
     .mini-prog-container {
       margin: 8px 0;
     }
@@ -321,7 +433,7 @@
     /* FORMULÁŘE A VYHLEDÁVÁNÍ */
     .form-input {
       width: 100%;
-      padding: 14px 16px;
+      padding: 12px 16px;
       border-radius: 14px;
       border: 2px solid var(--border-color);
       font-family: 'Outfit';
@@ -381,18 +493,82 @@
       box-shadow: 0 8px 20px rgba(139,92,246,0.3);
     }
 
-    /* RESPONSIVNÍ PRO MOBIL */
+    /* ADMIN DASHBOARD STYLY */
+    .admin-stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+    }
+    .admin-stat-card {
+      background: #FFFFFF;
+      border-radius: 20px;
+      padding: 20px;
+      border: 2px solid var(--border-color);
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .admin-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #FFFFFF;
+      border-radius: 16px;
+      overflow: hidden;
+      border: 2px solid var(--border-color);
+    }
+    .admin-table th, .admin-table td {
+      padding: 12px 16px;
+      text-align: left;
+      font-size: 13px;
+      border-bottom: 1px solid var(--border-color);
+    }
+    .admin-table th {
+      background: #F8FAFC;
+      font-weight: 800;
+      color: var(--text-muted);
+    }
+
     @media (max-width: 768px) {
       body { padding: 0; align-items: flex-end; }
       .fun-app-container { height: 100vh; max-height: 100vh; border-radius: 0; border: none; }
       .fun-header { flex-direction: column; gap: 12px; padding: 16px; }
-      .fun-nav { width: 100%; justify-content: space-around; }
+      .fun-nav { width: 100%; justify-content: space-around; flex-wrap: wrap; }
       .tab-pill { padding: 8px 12px; font-size: 12px; }
       .hero-banner { flex-direction: column; gap: 16px; text-align: center; }
     }
   </style>
 </head>
 <body>
+
+  <!-- PŘIHLAŠOVACÍ / REGISTRAČNÍ OVERLAY PŘI VSTUPU -->
+  <div id="auth-overlay">
+    <div class="auth-card">
+      <div class="auth-logo"><i class="fas fa-book-open-reader"></i> Knihomol</div>
+      
+      <!-- Přepínač Login / Registrace -->
+      <div class="auth-tabs">
+        <button class="auth-tab-btn active" id="tab-btn-login" onclick="switchAuthMode('login')">Přihlásit se</button>
+        <button class="auth-tab-btn" id="tab-btn-register" onclick="switchAuthMode('register')">Zaregistrovat se</button>
+      </div>
+
+      <button class="google-login-btn" onclick="loginWithGoogle()">
+        <svg width="18" height="18" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.46-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+        Pokračovat přes Google
+      </button>
+
+      <div class="divider">nebo klasicky</div>
+
+      <div style="display: flex; flex-direction: column; gap: 12px;">
+        <input type="text" id="auth-username" class="form-input" placeholder="Jméno nebo e-mail">
+        <input type="password" id="auth-password" class="form-input" placeholder="Heslo">
+        <!-- Zobrazí se jen při registraci pro ověření hesla 2x -->
+        <input type="password" id="auth-password-confirm" class="form-input" placeholder="Zadej heslo znovu" style="display:none;">
+
+        <button class="btn-fun" id="auth-submit-btn" style="background: var(--primary); color: #FFF; width: 100%; padding: 14px; margin-top: 4px;" onclick="handleCustomAuth()">Vstoupit do aplikace</button>
+      </div>
+    </div>
+  </div>
 
   <div class="fun-app-container">
     <!-- HORNÍ LIŠTA -->
@@ -405,6 +581,8 @@
         <button class="tab-pill" onclick="switchTab('knihovna', this)"><i class="fas fa-layer-group"></i> Knihovna</button>
         <button class="tab-pill" onclick="switchTab('pridat', this)"><i class="fas fa-plus-circle"></i> Přidat</button>
         <button class="tab-pill" onclick="switchTab('profil', this)"><i class="fas fa-user-gear"></i> Profil</button>
+        <!-- TLAČÍTKO ADMIN - ZOBRAZÍ SE POUZE TVŮRCI (POKUD JE JMÉNO ADMIN) -->
+        <button class="tab-pill admin-pill" id="nav-admin-btn" style="display:none;" onclick="switchTab('admin', this)"><i class="fas fa-shield-halved"></i> Admin</button>
       </nav>
     </header>
 
@@ -447,7 +625,7 @@
         <div id="library-books-grid" class="books-grid-fun" style="margin-top: 10px;"></div>
       </div>
 
-      <!-- PŘIDAT KNIHU (OPEN LIBRARY + RUČNĚ) -->
+      <!-- PŘIDAT KNIHU -->
       <div id="tab-pridat" class="tab-pane">
         <div class="section-heading"><i class="fas fa-wand-magic-sparkles" style="color: var(--accent-pink);"></i> Přidat knihu do knihovny</div>
         
@@ -490,7 +668,7 @@
         </div>
       </div>
 
-      <!-- PROFIL A NASTAVENÍ -->
+      <!-- PROFIL -->
       <div id="tab-profil" class="tab-pane">
         <div class="section-heading"><i class="fas fa-user-circle" style="color: var(--primary);"></i> Nastavení profilu</div>
         
@@ -506,7 +684,39 @@
               <textarea id="profile-bio-input" class="form-input" style="resize: vertical; min-height: 80px;" placeholder="Milovník detektivek a kávy..."></textarea>
             </div>
             <button class="btn-fun" style="background: var(--primary); color: #FFF; width: 100%; padding: 14px;" onclick="saveProfile()"><i class="fas fa-floppy-disk"></i> Uložit profil</button>
+            <button class="btn-fun" style="background: #E2E8F0; color: var(--text-main); width: 100%; padding: 12px; margin-top: 10px;" onclick="logout()"><i class="fas fa-right-from-bracket"></i> Odhlásit se</button>
           </div>
+        </div>
+      </div>
+
+      <!-- ADMIN DASHBOARD (VIDÍŠ POUZE TY JAKO ADMIN) -->
+      <div id="tab-admin" class="tab-pane">
+        <div class="section-heading"><i class="fas fa-shield-halved" style="color: #F59E0B;"></i> Administrace & Statistiky návštěvnosti</div>
+        
+        <div class="admin-stats-grid">
+          <div class="admin-stat-card">
+            <div style="font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Celková návštěvnost</div>
+            <div style="font-size: 28px; font-weight: 800; color: var(--primary);" id="admin-total-visits">0</div>
+          </div>
+          <div class="admin-stat-card">
+            <div style="font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Evidovaných uživatelů</div>
+            <div style="font-size: 28px; font-weight: 800; color: var(--accent-pink);" id="admin-total-users">1</div>
+          </div>
+        </div>
+
+        <div style="margin-top: 10px;">
+          <div style="font-size: 15px; font-weight: 800; margin-bottom: 10px;">Záznamy přístupů (Logy)</div>
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Čas přístupu</th>
+                <th>Uživatel / Zařízení</th>
+              </tr>
+            </thead>
+            <tbody id="admin-logs-tbody">
+              <!-- Vykreslí se dynamicky -->
+            </tbody>
+          </table>
         </div>
       </div>
 
@@ -514,19 +724,116 @@
   </div>
 
   <script>
-    let myBooks = JSON.parse(localStorage.getItem('knihomol_fun_books_v2')) || [
+    let authMode = 'login'; 
+    let myBooks = JSON.parse(localStorage.getItem('knihomol_fun_books_v6')) || [
       { title: "Hobit", author: "J. R. R. Tolkien", totalPages: 320, currentPage: 120, status: "reading", cover: "https://covers.openlibrary.org/b/id/8431969-M.jpg" }
     ];
-    let annualGoal = parseInt(localStorage.getItem('knihomol_fun_goal')) || 12;
-    let userProfile = JSON.parse(localStorage.getItem('knihomol_fun_profile')) || { name: "Vášnivý Čtenář", bio: "Vítej ve svém barevném čtenářském světě." };
+    let annualGoal = parseInt(localStorage.getItem('knihomol_fun_goal_v6')) || 12;
+    let userProfile = JSON.parse(localStorage.getItem('knihomol_fun_profile_v6')) || null;
+
+    // EVIDENCE NÁVŠTĚVNOSTI PRO ADMINA
+    let trafficData = JSON.parse(localStorage.getItem('knihomol_fun_traffic')) || { totalVisits: 0, logs: [] };
+    trafficData.totalVisits += 1;
+    const nowTime = new Date().toLocaleString('cs-CZ');
+    trafficData.logs.unshift({ time: nowTime, user: userProfile ? userProfile.name : 'Neznámý / Host' });
+    if(trafficData.logs.length > 20) trafficData.logs.pop(); // držet posledních 20 záznamů
+    localStorage.setItem('knihomol_fun_traffic', JSON.stringify(trafficData));
 
     function initApp() {
+      if(!userProfile) {
+        document.getElementById('auth-overlay').style.display = 'flex';
+        return;
+      }
+      document.getElementById('auth-overlay').style.display = 'none';
       document.getElementById('profile-name-input').value = userProfile.name;
-      document.getElementById('profile-bio-input').value = userProfile.bio;
+      document.getElementById('profile-bio-input').value = userProfile.bio || '';
       document.getElementById('welcome-title').textContent = `Ahoj, ${userProfile.name}!`;
-      document.getElementById('welcome-bio').textContent = userProfile.bio;
+      document.getElementById('welcome-bio').textContent = userProfile.bio || 'Vítej ve svém barevném čtenářském světě.';
       document.getElementById('profile-avatar-letter').textContent = userProfile.name.charAt(0).toUpperCase();
+      
+      // ZOBRAZENÍ ADMIN TLAČÍTKA POUZE PRO ADMINA (když se uživatel jmenuje "admin")
+      const adminNavBtn = document.getElementById('nav-admin-btn');
+      if(userProfile.name.toLowerCase() === 'admin') {
+        adminNavBtn.style.display = 'flex';
+        renderAdminStats();
+      } else {
+        adminNavBtn.style.display = 'none';
+      }
+
       renderAll();
+    }
+
+    function switchAuthMode(mode) {
+      authMode = mode;
+      const confirmInput = document.getElementById('auth-password-confirm');
+      const submitBtn = document.getElementById('auth-submit-btn');
+      const btnLogin = document.getElementById('tab-btn-login');
+      const btnReg = document.getElementById('tab-btn-register');
+
+      if(mode === 'register') {
+        confirmInput.style.display = 'block';
+        submitBtn.textContent = 'Zaregistrovat se a vstoupit';
+        btnReg.classList.add('active');
+        btnLogin.classList.remove('active');
+      } else {
+        confirmInput.style.display = 'none';
+        submitBtn.textContent = 'Vstoupit do aplikace';
+        btnLogin.classList.add('active');
+        btnReg.classList.remove('active');
+      }
+    }
+
+    function handleCustomAuth() {
+      const username = document.getElementById('auth-username').value.trim();
+      const pass1 = document.getElementById('auth-password').value;
+      const pass2 = document.getElementById('auth-password-confirm').value;
+
+      if(!username || !pass1) {
+        alert("Prosím vyplň jméno i heslo!");
+        return;
+      }
+
+      if(authMode === 'register') {
+        if(pass1 !== pass2) {
+          alert("Hesla se neshodují! Zadej prosím obě hesla naprosto stejně.");
+          return;
+        }
+        alert("Registrace proběhla úspěšně! Vítej v klubu.");
+      } else {
+        alert(`Vítej zpět, ${username}!`);
+      }
+
+      userProfile = { name: username, bio: "Vášnivý čtenář knih." };
+      localStorage.setItem('knihomol_fun_profile_v6', JSON.stringify(userProfile));
+      
+      // Aktualizujeme poslední log v administraci na skutečné jméno přihlášeného
+      if(trafficData.logs.length > 0) {
+        trafficData.logs[0].user = username;
+        localStorage.setItem('knihomol_fun_traffic', JSON.stringify(trafficData));
+      }
+
+      initApp();
+    }
+
+    function loginWithGoogle() {
+      userProfile = { name: "Google Uživatel", bio: "Přihlášen přes Google účet." };
+      localStorage.setItem('knihomol_fun_profile_v6', JSON.stringify(userProfile));
+      
+      if(trafficData.logs.length > 0) {
+        trafficData.logs[0].user = "Google Uživatel";
+        localStorage.setItem('knihomol_fun_traffic', JSON.stringify(trafficData));
+      }
+
+      initApp();
+      alert("Úspěšně přihlášen přes Google! 🎉");
+    }
+
+    function logout() {
+      if(confirm("Opravdu se chceš odhlásit?")) {
+        localStorage.removeItem('knihomol_fun_profile_v6');
+        userProfile = null;
+        location.reload();
+      }
     }
 
     function switchTab(tabId, btn) {
@@ -534,7 +841,24 @@
       document.querySelectorAll('.tab-pill').forEach(b => b.classList.remove('active'));
       document.getElementById('tab-' + tabId).classList.add('active');
       if(btn) btn.classList.add('active');
+      
+      if(tabId === 'admin') {
+        renderAdminStats();
+      }
       renderAll();
+    }
+
+    function renderAdminStats() {
+      document.getElementById('admin-total-visits').textContent = trafficData.totalVisits;
+      document.getElementById('admin-total-users').textContent = 1; // Lokální úložiště ukazuje aktivního uživatele
+      
+      const tbody = document.getElementById('admin-logs-tbody');
+      tbody.innerHTML = trafficData.logs.map(log => `
+        <tr>
+          <td><i class="far fa-clock" style="color:var(--text-muted); margin-right:6px;"></i> ${escapeHtml(log.time)}</td>
+          <td><b>${escapeHtml(log.user)}</b></td>
+        </tr>
+      `).join('');
     }
 
     function renderAll() {
@@ -555,7 +879,7 @@
       const newG = prompt("Zadej nový roční cíl (počet knih):", annualGoal);
       if(newG && !isNaN(newG) && parseInt(newG) > 0) {
         annualGoal = parseInt(newG);
-        localStorage.setItem('knihomol_fun_goal', annualGoal);
+        localStorage.setItem('knihomol_fun_goal_v6', annualGoal);
         renderGoal();
       }
     }
@@ -666,7 +990,7 @@
 
     function selectApiBook(title, author, pages, cover) {
       myBooks.push({ title, author, totalPages: pages, currentPage: 0, status: 'reading', cover });
-      localStorage.setItem('knihomol_fun_books_v2', JSON.stringify(myBooks));
+      localStorage.setItem('knihomol_fun_books_v6', JSON.stringify(myBooks));
       document.getElementById('api-search-input').value = '';
       document.getElementById('search-results-container').style.display = 'none';
       switchTab('domu', document.querySelectorAll('.tab-pill')[0]);
@@ -681,7 +1005,7 @@
       if(!title || !author) { alert("Vyplň název i autora!"); return; }
 
       myBooks.push({ title, author, totalPages, currentPage: 0, status, cover: "" });
-      localStorage.setItem('knihomol_fun_books_v2', JSON.stringify(myBooks));
+      localStorage.setItem('knihomol_fun_books_v6', JSON.stringify(myBooks));
 
       document.getElementById('manual-title').value = '';
       document.getElementById('manual-author').value = '';
@@ -694,7 +1018,7 @@
       if(val !== null && !isNaN(val)) {
         b.currentPage = Math.min(parseInt(val), b.totalPages);
         if(b.currentPage >= b.totalPages) b.status = 'read';
-        localStorage.setItem('knihomol_fun_books_v2', JSON.stringify(myBooks));
+        localStorage.setItem('knihomol_fun_books_v6', JSON.stringify(myBooks));
         renderAll();
       }
     }
@@ -702,7 +1026,7 @@
     function deleteBook(index) {
       if(confirm("Opravdu smazat tuto knihu?")) {
         myBooks.splice(index, 1);
-        localStorage.setItem('knihomol_fun_books_v2', JSON.stringify(myBooks));
+        localStorage.setItem('knihomol_fun_books_v6', JSON.stringify(myBooks));
         renderAll();
       }
     }
@@ -710,8 +1034,9 @@
     function saveProfile() {
       const name = document.getElementById('profile-name-input').value.trim() || "Čtenář";
       const bio = document.getElementById('profile-bio-input').value.trim();
-      userProfile = { name, bio };
-      localStorage.setItem('knihomol_fun_profile', JSON.stringify(userProfile));
+      userProfile.name = name;
+      userProfile.bio = bio;
+      localStorage.setItem('knihomol_fun_profile_v6', JSON.stringify(userProfile));
       initApp();
       alert("Profil byl úspěšně uložen!");
     }
