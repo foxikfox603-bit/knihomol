@@ -89,7 +89,7 @@
             display: flex;
             flex-direction: column;
             gap: 20px;
-            padding-bottom: 100px; /* Větší prostor pro plovoucí lištu dole */
+            padding-bottom: 100px;
         }
 
         .tab-content { display: none; flex-direction: column; gap: 15px; }
@@ -226,6 +226,32 @@
         .admin-table { width: 100%; border-collapse: collapse; font-size: 12px; }
         .admin-table th, .admin-table td { padding: 10px; text-align: left; border-bottom: 1px solid #eee; }
         .admin-table th { color: #888; background: #f8f9fa; }
+
+        /* Modální okno pro úpravu knihy */
+        .modal-overlay {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.6);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 200;
+            padding: 20px;
+        }
+        .modal-overlay.active { display: flex; }
+        .modal-card {
+            background: white;
+            width: 100%;
+            max-width: 400px;
+            border-radius: 20px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
     </style>
 </head>
 <body>
@@ -393,6 +419,75 @@
                 <span>Profil</span>
             </button>
         </nav>
+
+        <!-- Modální okno pro úpravu knihy -->
+        <div id="edit-modal" class="modal-overlay">
+            <div class="modal-card">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div style="font-size: 15px; font-weight: 700;"><i class="fas fa-pen" style="color: var(--primary);"></i> Upravit knihu</div>
+                    <button class="icon-btn" onclick="closeEditModal()"><i class="fas fa-times"></i></button>
+                </div>
+                <input type="hidden" id="edit-index">
+                <div style="display: flex; flex-direction: column; gap: 8px;">
+                    <div>
+                        <label style="font-size: 10px; font-weight: 700; color: #888;">NÁZEV</label>
+                        <input type="text" id="edit-title" class="input-field">
+                    </div>
+                    <div>
+                        <label style="font-size: 10px; font-weight: 700; color: #888;">AUTOR</label>
+                        <input type="text" id="edit-author" class="input-field">
+                    </div>
+                    <div>
+                        <label style="font-size: 10px; font-weight: 700; color: #888;">URL OBÁLKY</label>
+                        <input type="text" id="edit-cover" class="input-field">
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                        <div>
+                            <label style="font-size: 10px; font-weight: 700; color: #888;">ŽÁNR</label>
+                            <select id="edit-genre" class="input-field" style="font-size: 11px;">
+                                <option value="Beletrie">Beletrie</option>
+                                <option value="Fantasy">Fantasy</option>
+                                <option value="Sci-Fi">Sci-Fi</option>
+                                <option value="Thriller / Krimi">Thriller / Krimi</option>
+                                <option value="Romantika">Romantika</option>
+                                <option value="Historie">Historie</option>
+                                <option value="Osobní rozvoj">Osobní rozvoj</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label style="font-size: 10px; font-weight: 700; color: #888;">CELKEM STRAN</label>
+                            <input type="number" id="edit-pages" class="input-field" min="1">
+                        </div>
+                    </div>
+                    <div>
+                        <label style="font-size: 10px; font-weight: 700; color: #888;">AKTUÁLNĚ PŘEČTENO STRAN</label>
+                        <input type="number" id="edit-current-pages" class="input-field" min="0">
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                        <div>
+                            <label style="font-size: 10px; font-weight: 700; color: #888;">STAV</label>
+                            <select id="edit-status" class="input-field" style="font-size: 11px;">
+                                <option value="reading">Právě čtu</option>
+                                <option value="tbr">Chci číst</option>
+                                <option value="read">Přečteno</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label style="font-size: 10px; font-weight: 700; color: #888;">HODNOCENÍ</label>
+                            <select id="edit-rating" class="input-field" style="font-size: 11px;">
+                                <option value="0">Bez hodnocení</option>
+                                <option value="5">⭐⭐⭐⭐⭐ (5)</option>
+                                <option value="4">⭐⭐⭐⭐ (4)</option>
+                                <option value="3">⭐⭐⭐ (3)</option>
+                                <option value="2">⭐⭐ (2)</option>
+                                <option value="1">⭐ (1)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button class="btn-main" style="margin-top: 6px;" onclick="saveEditedBook()"><i class="fas fa-save"></i> Uložit změny</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -464,7 +559,7 @@
             let filtered = books;
             if(filter !== 'all') filtered = books.filter(b => b.status === filter);
 
-            libraryGrid.innerHTML = filtered.map((b, index) => createBookCardHtml(b, index)).join('') || '<p style="color:#888; font-size:12px;">Žádné knihy.</p>';
+            libraryGrid.innerHTML = filtered.map((b, index) => createBookCardHtml(b, books.indexOf(b))).join('') || '<p style="color:#888; font-size:12px;">Žádné knihy.</p>';
             
             const readingBooks = books.filter(b => b.status === 'reading');
             homeGrid.innerHTML = readingBooks.map((b) => createBookCardHtml(b, books.indexOf(b))).join('') || '<p style="color:#888; font-size:12px;">Právě nečteš žádnou knihu.</p>';
@@ -479,7 +574,7 @@
 
             return `
                 <div class="book-card">
-                    <img src="${b.cover || 'https://via.placeholder.com/60x90?text=?'}" class="book-cover">
+                    <img src="${b.cover || 'https://via.placeholder.com/60x90?text=?'}" class="book-cover" onerror="this.src='https://via.placeholder.com/60x90?text=Chyba'">
                     <div class="book-details">
                         <div>
                             <div class="book-title">${escapeHtml(b.title)}</div>
@@ -497,13 +592,52 @@
                             </div>
                             <div class="progress-container"><div class="progress-fill" style="width: ${pct}%;"></div></div>
                             <div style="display:flex; gap:6px; margin-top:6px;">
-                                <button class="icon-btn" onclick="updatePages(${index})" title="Stránky"><i class="fas fa-plus"></i></button>
+                                <button class="icon-btn" onclick="updatePages(${index})" title="Rychlé přičtení stran"><i class="fas fa-plus"></i></button>
+                                <button class="icon-btn" onclick="openEditModal(${index})" title="Upravit knihu"><i class="fas fa-pen"></i></button>
                                 <button class="icon-btn" onclick="deleteBook(${index})" title="Smazat"><i class="fas fa-trash"></i></button>
                             </div>
                         </div>
                     </div>
                 </div>
             `;
+        }
+
+        function openEditModal(index) {
+            let b = books[index];
+            document.getElementById('edit-index').value = index;
+            document.getElementById('edit-title').value = b.title;
+            document.getElementById('edit-author').value = b.author;
+            document.getElementById('edit-cover').value = b.cover || '';
+            document.getElementById('edit-genre').value = b.genre || 'Beletrie';
+            document.getElementById('edit-pages').value = b.totalPages;
+            document.getElementById('edit-current-pages').value = b.currentPage;
+            document.getElementById('edit-status').value = b.status;
+            document.getElementById('edit-rating').value = b.rating || 0;
+            
+            document.getElementById('edit-modal').classList.add('active');
+        }
+
+        function closeEditModal() {
+            document.getElementById('edit-modal').classList.remove('active');
+        }
+
+        function saveEditedBook() {
+            let index = parseInt(document.getElementById('edit-index').value);
+            let title = document.getElementById('edit-title').value.trim();
+            let author = document.getElementById('edit-author').value.trim();
+            let cover = document.getElementById('edit-cover').value.trim();
+            let genre = document.getElementById('edit-genre').value;
+            let totalPages = parseInt(document.getElementById('edit-pages').value) || 1;
+            let currentPage = parseInt(document.getElementById('edit-current-pages').value) || 0;
+            let status = document.getElementById('edit-status').value;
+            let rating = parseInt(document.getElementById('edit-rating').value);
+
+            if(!title || !author) { alert("Název a autor nesmí být prázdné!"); return; }
+            if(currentPage > totalPages) currentPage = totalPages;
+
+            books[index] = { title, author, cover, genre, totalPages, currentPage, status, rating };
+            persistAndRefresh();
+            closeEditModal();
         }
 
         function rateBook(index, rating) {
