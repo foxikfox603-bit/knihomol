@@ -236,9 +236,9 @@
     <!-- SUPABASE SDK -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-        // Zde vlož své reálné Supabase údaje, pokud se liší
-        const SUPABASE_URL = 'https://tvuj-supabase-projekt.supabase.co';
-        const SUPABASE_ANON_KEY = 'tvuj-supabase-anon-key';
+        // Nastaveno pro tvůj Supabase projekt
+        const SUPABASE_URL = 'https://qumqsbsylebksohnljwn.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_Uk8dCOLaqasXo91BqCVrg_KQR...';
         
         let supabaseClient = null;
         try {
@@ -265,7 +265,7 @@
 
         window.handleAuth = async function() {
             if (!supabaseClient) {
-                alert("Supabase není správně inicializovaný. Zkontroluj URL a klíč.");
+                alert("Supabase není správně inicializovaný.");
                 return;
             }
 
