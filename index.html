@@ -16,9 +16,9 @@
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
         body { background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); color: var(--dark); min-height: 100vh; display: flex; justify-content: center; align-items: center; padding: 20px; }
         
-        .app-container { width: 100%; max-width: 950px; height: 88vh; max-height: 850px; background: var(--card-bg); border-radius: var(--radius); box-shadow: var(--shadow); display: flex; flex-direction: column; overflow: hidden; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.5); }
+        .app-container { width: 100%; max-width: 1000px; height: 90vh; max-height: 900px; background: var(--card-bg); border-radius: var(--radius); box-shadow: var(--shadow); display: flex; flex-direction: column; overflow: hidden; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.5); }
         header { padding: 20px 30px; display: flex; justify-content: space-between; align-items: center; background: white; border-bottom: 1px solid rgba(0,0,0,0.05); flex-shrink: 0; }
-        .logo { font-size: 22px; font-weight: 700; background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; display: flex; align-items: center; gap: 10px; }
+        .logo { font-size: 22px; font-weight: 700; background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; display: flex; align-items: center; gap: 10px; cursor: pointer; }
         nav { display: flex; gap: 8px; flex-wrap: wrap; }
         .nav-btn { background: #f0f2f5; border: none; padding: 10px 18px; border-radius: 12px; font-weight: 600; font-size: 13px; color: #666; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: 0.3s; }
         .nav-btn:hover { background: #e4e6eb; color: var(--dark); }
@@ -30,7 +30,8 @@
 
         .card { background: white; border-radius: 16px; padding: 24px; box-shadow: 0 4px 20px rgba(0,0,0,0.03); display: flex; flex-direction: column; gap: 15px; border: 1px solid rgba(0,0,0,0.02); }
         .books-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; }
-        .book-card { background: white; border-radius: 16px; padding: 16px; box-shadow: 0 5px 15px rgba(0,0,0,0.04); display: flex; gap: 16px; border: 1px solid #eee; position: relative; }
+        .book-card { background: white; border-radius: 16px; padding: 16px; box-shadow: 0 5px 15px rgba(0,0,0,0.04); display: flex; gap: 16px; border: 1px solid #eee; position: relative; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; }
+        .book-card:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(0,0,0,0.08); }
         .book-cover { width: 70px; height: 105px; border-radius: 10px; object-fit: cover; background: #eee; flex-shrink: 0; }
         .book-details { flex: 1; display: flex; flex-direction: column; justify-content: space-between; min-width: 0; }
         .book-title { font-size: 15px; font-weight: 700; color: var(--dark); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -44,17 +45,23 @@
         .input-field:focus { border-color: var(--primary); background: white; }
         .btn-main { background: var(--gradient); color: white; border: none; padding: 12px 20px; border-radius: 12px; font-weight: 600; font-size: 14px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3); transition: 0.2s; }
         .btn-main:hover { opacity: 0.9; transform: translateY(-1px); }
-        .btn-secondary { background: #e2e8f0; color: #334155; border: none; padding: 10px 16px; border-radius: 12px; font-weight: 600; font-size: 13px; cursor: pointer; transition: 0.2s; }
+        .btn-secondary { background: #e2e8f0; color: #334155; border: none; padding: 10px 16px; border-radius: 12px; font-weight: 600; font-size: 13px; cursor: pointer; transition: 0.2s; white-space: nowrap; }
         .btn-secondary:hover { background: #cbd5e1; }
-        .icon-btn { background: #f8f9fa; border: 1px solid #dee2e6; width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #6c757d; }
+        .icon-btn { background: #f8f9fa; border: 1px solid #dee2e6; width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #6c757d; z-index: 2; }
         .icon-btn:hover { background: #fee2e2; color: #ef4444; border-color: #fca5a5; }
 
+        /* Modal pro detail knihy */
+        #book-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(41, 47, 54, 0.7); backdrop-filter: blur(5px); display: none; justify-content: center; align-items: center; z-index: 1000; padding: 20px; }
+        .modal-card { background: white; width: 100%; max-width: 600px; padding: 30px; border-radius: var(--radius); box-shadow: 0 20px 40px rgba(0,0,0,0.2); display: flex; flex-direction: column; gap: 15px; max-height: 85vh; overflow-y: auto; position: relative; }
+        
         .profile-avatar { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; background: var(--gradient); color: white; font-size: 28px; font-weight: 700; display: flex; align-items: center; justify-content: center; border: 3px solid white; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .filters-bar { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 5px; }
     </style>
 
     <script>
         let books = [];
         let profile = { name: "Knihomol", bio: "Vášnivý čtenář" };
+        let currentModalBookId = null;
 
         window.addEventListener('DOMContentLoaded', () => {
             loadFromStorage();
@@ -62,16 +69,16 @@
         });
 
         function loadFromStorage() {
-            const savedBooks = localStorage.getItem('knihomol_books');
+            const savedBooks = localStorage.getItem('knihomol_books_v2');
             if (savedBooks) books = JSON.parse(savedBooks);
 
-            const savedProfile = localStorage.getItem('knihomol_profile');
+            const savedProfile = localStorage.getItem('knihomol_profile_v2');
             if (savedProfile) profile = JSON.parse(savedProfile);
         }
 
         function saveToStorage() {
-            localStorage.setItem('knihomol_books', JSON.stringify(books));
-            localStorage.setItem('knihomol_profile', JSON.stringify(profile));
+            localStorage.setItem('knihomol_books_v2', JSON.stringify(books));
+            localStorage.setItem('knihomol_profile_v2', JSON.stringify(profile));
         }
 
         function renderAll() {
@@ -88,7 +95,7 @@
             if(!query) { alert("Nejprve zadej název knihy."); return; }
 
             const btn = document.getElementById('search-api-btn');
-            btn.textContent = "Hledám...";
+            btn.textContent = "Hledám v OL...";
             btn.disabled = true;
 
             try {
@@ -107,15 +114,18 @@
                     if(book.cover_i) {
                         document.getElementById('book-cover').value = `https://covers.openlibrary.org/b/id/${book.cover_i}-M.jpg`;
                     }
-                    alert("Kniha byla úspěšně dohledána z Open Library!");
+                    if(book.first_publish_year) {
+                        document.getElementById('book-note').value = `První vydání: ${book.first_publish_year}. `;
+                    }
+                    alert("Úspěšně dohledáno z Open Library!");
                 } else {
-                    alert("V Open Library se nic nenašlo, vyplň údaje ručně.");
+                    alert("V Open Library se nic nenašlo. Vyplň údaje ručně.");
                 }
             } catch(e) {
                 console.error(e);
-                alert("Chyba při komunikaci s Open Library.");
+                alert("Chyba při komunikaci s Open Library API.");
             } finally {
-                btn.innerHTML = '<i class="fas fa-search"></i> Dohledat z Open Library';
+                btn.innerHTML = '<i class="fas fa-search"></i> Open Library';
                 btn.disabled = false;
             }
         };
@@ -127,49 +137,59 @@
             const genre = document.getElementById('book-genre').value.trim();
             const rating = parseInt(document.getElementById('book-rating').value) || 0;
             const cover = document.getElementById('book-cover').value.trim();
+            const note = document.getElementById('book-note').value.trim();
 
             if(!title || !author) { alert("Vyplň prosím název a autora knihy."); return; }
 
             const newBook = {
                 id: Date.now().toString(),
-                title, author, status, genre, rating, cover_url: cover
+                title, author, status, genre, rating, cover_url: cover, note
             };
 
             books.push(newBook);
             saveToStorage();
             renderAll();
 
-            // Vyčištění formuláře
+            // Reset formuláře
             document.getElementById('book-title').value = '';
             document.getElementById('book-author').value = '';
             document.getElementById('book-genre').value = '';
             document.getElementById('book-cover').value = '';
+            document.getElementById('book-note').value = '';
             document.getElementById('book-rating').value = '5';
 
             switchTab('knihovna', document.querySelector('nav button:nth-child(2)'));
         };
 
-        window.deleteBook = function(id) {
+        window.deleteBook = function(id, event) {
+            if(event) event.stopPropagation();
             if(!confirm("Opravdu chceš tuto knihu smazat?")) return;
             books = books.filter(b => b.id !== id);
             saveToStorage();
+            closeModal();
             renderAll();
         };
 
         window.filterLibrary = function() {
             const query = document.getElementById('search-box').value.toLowerCase();
-            const filtered = books.filter(b => b.title.toLowerCase().includes(query) || b.author.toLowerCase().includes(query));
+            const statusFilter = document.getElementById('filter-status').value;
+            
+            const filtered = books.filter(b => {
+                const matchesQuery = b.title.toLowerCase().includes(query) || b.author.toLowerCase().includes(query) || (b.genre && b.genre.toLowerCase().includes(query));
+                const matchesStatus = statusFilter === 'all' || b.status === statusFilter;
+                return matchesQuery && matchesStatus;
+            });
             renderBooks(filtered);
         };
 
         function renderBooks(list) {
             const grid = document.getElementById('library-grid');
             if(list.length === 0) {
-                grid.innerHTML = '<p style="color: #666; font-size: 14px;">Zatím zde nemáš žádné knihy. Přidej svou první!</p>';
+                grid.innerHTML = '<p style="color: #666; font-size: 14px;">Zatím zde nejsou žádné knihy odpovídající filtru.</p>';
                 return;
             }
             grid.innerHTML = list.map(b => `
-                <div class="book-card">
+                <div class="book-card" onclick="openBookDetail('${b.id}')">
                     <img src="${b.cover_url || 'https://via.placeholder.com/70x105?text=Kniha'}" class="book-cover" onerror="this.src='https://via.placeholder.com/70x105?text=Kniha'">
                     <div class="book-details">
                         <div>
@@ -182,12 +202,45 @@
                             ${b.rating > 0 ? `<div class="stars">${'★'.repeat(b.rating)}${'☆'.repeat(5 - b.rating)}</div>` : ''}
                         </div>
                         <div style="display: flex; justify-content: flex-end; margin-top: 8px;">
-                            <button class="icon-btn" onclick="deleteBook('${b.id}')" title="Smazat"><i class="fas fa-trash"></i></button>
+                            <button class="icon-btn" onclick="deleteBook('${b.id}', event)" title="Smazat"><i class="fas fa-trash"></i></button>
                         </div>
                     </div>
                 </div>
             `).join('');
         }
+
+        // Detail knihy v modálním okně
+        window.openBookDetail = function(id) {
+            const book = books.find(b => b.id === id);
+            if(!book) return;
+            currentModalBookId = id;
+
+            document.getElementById('modal-cover').src = book.cover_url || 'https://via.placeholder.com/100x150?text=Kniha';
+            document.getElementById('modal-title').textContent = book.title;
+            document.getElementById('modal-author').textContent = "Autor: " + book.author;
+            document.getElementById('modal-genre').textContent = "Žánr: " + (book.genre || "Neuvedeno");
+            document.getElementById('modal-status').textContent = "Stav: " + getStatusLabel(book.status);
+            document.getElementById('modal-stars').innerHTML = book.rating > 0 ? ('★'.repeat(book.rating) + '☆'.repeat(5 - book.rating)) : 'Nehodnoceno';
+            document.getElementById('modal-note').value = book.note || '';
+
+            document.getElementById('book-modal').style.display = 'flex';
+        };
+
+        window.closeModal = function() {
+            document.getElementById('book-modal').style.display = 'none';
+            currentModalBookId = null;
+        };
+
+        window.saveBookNote = function() {
+            if(!currentModalBookId) return;
+            const book = books.find(b => b.id === currentModalBookId);
+            if(book) {
+                book.note = document.getElementById('modal-note').value.trim();
+                saveToStorage();
+                alert("Poznámka / recenze byla uložena!");
+                renderAll();
+            }
+        };
 
         window.saveProfile = function() {
             profile.name = document.getElementById('prof-name').value.trim() || "Knihomol";
@@ -201,6 +254,7 @@
             document.getElementById('stat-total').textContent = books.length;
             document.getElementById('stat-read').textContent = books.filter(b => b.status === 'read').length;
             document.getElementById('stat-reading').textContent = books.filter(b => b.status === 'reading').length;
+            document.getElementById('stat-want').textContent = books.filter(b => b.status === 'want').length;
         }
 
         function getStatusLabel(status) {
@@ -215,9 +269,37 @@
     </script>
 </head>
 <body>
+    <!-- MODAL DETAIL KNIHY -->
+    <div id="book-modal">
+        <div class="modal-card">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h3 style="font-size: 18px;">Detail knihy</h3>
+                <button class="icon-btn" onclick="closeModal()"><i class="fas fa-times"></i></button>
+            </div>
+            <div style="display: flex; gap: 20px; align-items: flex-start; flex-wrap: wrap;">
+                <img id="modal-cover" src="" style="width: 100px; height: 150px; object-fit: cover; border-radius: 10px; background: #eee;">
+                <div style="flex: 1; display: flex; flex-direction: column; gap: 6px;">
+                    <h2 id="modal-title" style="font-size: 18px; color: var(--dark);"></h2>
+                    <div id="modal-author" style="font-size: 14px; color: #666; font-weight: 500;"></div>
+                    <div id="modal-genre" style="font-size: 13px; color: #555;"></div>
+                    <div id="modal-status" style="font-size: 13px; color: #555; font-weight: 600;"></div>
+                    <div id="modal-stars" class="stars" style="font-size: 16px;"></div>
+                </div>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 10px;">
+                <label style="font-size: 12px; font-weight: 600; color: #666;">Moje poznámky & recenze</label>
+                <textarea id="modal-note" class="input-field" style="resize: vertical; min-height: 100px;" placeholder="Napiš si sem dojmy z knihy, citáty nebo poznámky..."></textarea>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 5px;">
+                    <button class="btn-main" onclick="saveBookNote()"><i class="fas fa-save"></i> Uložit poznámku</button>
+                    <button class="icon-btn" onclick="deleteBook(currentModalBookId, event)" title="Smazat knihu" style="background: #fee2e2; color: #ef4444;"><i class="fas fa-trash"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="app-container">
         <header>
-            <div class="logo"><i class="fas fa-book-open"></i> Knihomol</div>
+            <div class="logo" onclick="switchTab('domu', document.querySelector('nav button'))"><i class="fas fa-book-open"></i> Knihomol</div>
             <nav>
                 <button class="nav-btn active" onclick="switchTab('domu', this)"><i class="fas fa-home"></i> Domů</button>
                 <button class="nav-btn" onclick="switchTab('knihovna', this)"><i class="fas fa-layer-group"></i> Knihovna</button>
@@ -231,20 +313,24 @@
             <div id="tab-domu" class="tab-content active">
                 <div class="card" style="background: var(--gradient); color: white;">
                     <h2 id="welcome-msg" style="font-size: 22px; font-weight: 700;">Ahoj, Knihomole!</h2>
-                    <p style="opacity: 0.9; font-size: 14px;">Vítej ve své osobní čtenářské databázi. Zde je rychlý přehled:</p>
+                    <p style="opacity: 0.9; font-size: 14px;">Vítej ve své osobní čtenářské databázi. Všechna data se ukládají bezpečně v tvém prohlížeči.</p>
                 </div>
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px;">
                     <div class="card" style="align-items: center; text-align: center; padding: 20px;">
-                        <span style="color: #888; font-size: 13px; font-weight: 600;">Celkem knih</span>
-                        <h3 id="stat-total" style="font-size: 28px; color: var(--primary);">0</h3>
+                        <span style="color: #888; font-size: 12px; font-weight: 600;">CELKEM KNIH</span>
+                        <h3 id="stat-total" style="font-size: 26px; color: var(--primary);">0</h3>
                     </div>
                     <div class="card" style="align-items: center; text-align: center; padding: 20px;">
-                        <span style="color: #888; font-size: 13px; font-weight: 600;">Přečteno</span>
-                        <h3 id="stat-read" style="font-size: 28px; color: #4ECDC4;">0</h3>
+                        <span style="color: #888; font-size: 12px; font-weight: 600;">PŘEČTENO</span>
+                        <h3 id="stat-read" style="font-size: 26px; color: #4ECDC4;">0</h3>
                     </div>
                     <div class="card" style="align-items: center; text-align: center; padding: 20px;">
-                        <span style="color: #888; font-size: 13px; font-weight: 600;">Právě čtu</span>
-                        <h3 id="stat-reading" style="font-size: 28px; color: #F57F17;">0</h3>
+                        <span style="color: #888; font-size: 12px; font-weight: 600;">PRÁVĚ ČTU</span>
+                        <h3 id="stat-reading" style="font-size: 26px; color: #F57F17;">0</h3>
+                    </div>
+                    <div class="card" style="align-items: center; text-align: center; padding: 20px;">
+                        <span style="color: #888; font-size: 12px; font-weight: 600;">CHCI ČÍST</span>
+                        <h3 id="stat-want" style="font-size: 26px; color: #3b82f6;">0</h3>
                     </div>
                 </div>
             </div>
@@ -252,9 +338,14 @@
             <!-- TAB: KNIHOVNA -->
             <div id="tab-knihovna" class="tab-content">
                 <div class="card" style="gap: 15px;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
-                        <h3 style="font-size: 18px;">Tvoje knihovna</h3>
-                        <input type="text" id="search-box" class="input-field" placeholder="Hledat knihu nebo autora..." style="max-width: 250px; padding: 8px 12px;" onkeyup="filterLibrary()">
+                    <div class="filters-bar">
+                        <input type="text" id="search-box" class="input-field" placeholder="Hledat knihu, autora, žánr..." style="flex: 1; min-width: 200px; padding: 10px 14px;" onkeyup="filterLibrary()">
+                        <select id="filter-status" class="input-field" style="width: 170px; padding: 10px 14px;" onchange="filterLibrary()">
+                            <option value="all">Všechny stavy</option>
+                            <option value="read">Přečteno</option>
+                            <option value="reading">Právě čtu</option>
+                            <option value="want">Chci číst</option>
+                        </select>
                     </div>
                     <div id="library-grid" class="books-grid">
                         <!-- Sem se vykreslí knihy -->
@@ -270,13 +361,13 @@
                         <div>
                             <label style="font-size: 12px; font-weight: 600; color: #666;">Název knihy *</label>
                             <div style="display: flex; gap: 8px;">
-                                <input type="text" id="book-title" class="input-field" placeholder="např. Zaklínač">
-                                <button type="button" id="search-api-btn" class="btn-secondary" onclick="searchOpenLibrary()" style="white-space: nowrap;"><i class="fas fa-search"></i> Dohledat</button>
+                                <input type="text" id="book-title" class="input-field" placeholder="např. Pán prstenů">
+                                <button type="button" id="search-api-btn" class="btn-secondary" onclick="searchOpenLibrary()"><i class="fas fa-search"></i> Open Library</button>
                             </div>
                         </div>
                         <div>
                             <label style="font-size: 12px; font-weight: 600; color: #666;">Autor *</label>
-                            <input type="text" id="book-author" class="input-field" placeholder="např. Andrzej Sapkowski">
+                            <input type="text" id="book-author" class="input-field" placeholder="např. J.R.R. Tolkien">
                         </div>
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
                             <div>
@@ -294,7 +385,7 @@
                         </div>
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
                             <div>
-                                <label style="font-size: 12px; font-weight: 600; color: #666;">Hodnocení (hvězdičky)</label>
+                                <label style="font-size: 12px; font-weight: 600; color: #666;">Hodnocení</label>
                                 <select id="book-rating" class="input-field">
                                     <option value="5">★★★★★ (5/5)</option>
                                     <option value="4">★★★★☆ (4/5)</option>
@@ -309,7 +400,11 @@
                                 <input type="url" id="book-cover" class="input-field" placeholder="Doplní se automaticky">
                             </div>
                         </div>
-                        <button class="btn-main" onclick="addBook()" style="margin-top: 10px;"><i class="fas fa-check"></i> Uložit knihu</button>
+                        <div>
+                            <label style="font-size: 12px; font-weight: 600; color: #666;">Poznámky / Recenze při přidání</label>
+                            <textarea id="book-note" class="input-field" style="resize: vertical; min-height: 60px;" placeholder="Volitelné poznámky..."></textarea>
+                        </div>
+                        <button class="btn-main" onclick="addBook()" style="margin-top: 5px;"><i class="fas fa-check"></i> Uložit knihu do knihovny</button>
                     </div>
                 </div>
             </div>
@@ -325,7 +420,7 @@
                             <input type="text" id="prof-name" class="input-field">
                         </div>
                         <div>
-                            <label style="font-size: 12px; font-weight: 600; color: #666;">O mně / Čtenářské motto</label>
+                            <label style="font-size: 12px; font-weight: 600; color: #666;">O mně / Čtenářský cíl</label>
                             <textarea id="prof-bio" class="input-field" style="resize: vertical; min-height: 80px;"></textarea>
                         </div>
                         <button class="btn-main" onclick="saveProfile()">Uložit změny</button>
